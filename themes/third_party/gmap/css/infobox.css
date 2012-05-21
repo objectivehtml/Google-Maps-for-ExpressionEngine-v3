@@ -1,0 +1,37 @@
+/*-------------------------------------------    
+	Base Styles	
+-------------------------------------------*/
+.ui-infobox,
+.ui-infobox-dark {
+	background: url(images/right-triangle-dark.png) 9px 10px no-repeat;
+	}
+
+.ui-infobox-content {
+	padding: 1em 1em .5em;
+	}
+	
+/*-------------------------------------------    
+	Dark infobox
+-------------------------------------------*/
+
+.ui-infobox-dark .ui-infobox-content {
+	background:-20px bottom no-repeat rgba(0, 0, 0, .9);
+	color: rgb(248, 248, 248);
+	margin: 0 0 0 18px;
+	}
+	
+.ui-infobox-dark .ui-infobox-content > * {
+	color: rgb(255, 255, 255);
+	padding: 0;
+	margin: 0;
+	text-shadow: none;
+	}
+	
+.ui-infobox-dark .ui-infobox-content h3,
+.ui-infobox-dark .ui-infobox-content p {
+	margin-bottom: 10px;
+	}
+	
+.ui-infobox-dark a {
+	color: rgb(168, 168, 168);
+	}
