@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.181
- * @build		20120524
+ * @version		3.0.182
+ * @build		20120525
  */
  
 $(document).ready(function() {
@@ -1175,7 +1175,9 @@ $(document).ready(function() {
 			
 				var _return = response;
 				
-				$('#'+Gmap.settings.response).val(JSON.stringify(response));
+				if(Gmap.settings.response != '') {
+					$('#'+Gmap.settings.response).val(JSON.stringify(response));
+				}
 				
 				if(Gmap.responseType == 'markers' || Gmap.responseType == 'waypoints') {
 				
