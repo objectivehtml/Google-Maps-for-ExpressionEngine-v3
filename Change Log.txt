@@ -5,9 +5,13 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.18
- * @build		20120507
+ * @version		3.0.181
+ * @build		20120524
  */
+
+v3.0.181 - 05/24/2012
+---------------------
+- (Bug Fix) Fixed an issue when updating a custom field, the selector would be just a '#'.
 
 v3.0.18 - 05/07/2012
 --------------------
@@ -20,7 +24,6 @@ Note, this version marks the start of the v3.1 beta. I am doing a silent roll ou
 - (Feature) Implemented MarkerClusterer v3. Use the clustering="true" parameter in the fieldtype to exp:gmap:marker tag.
 - (Feature) Improved region plotting. 
 - (Bug Fix) Fixed a couple issues preventing points from being added if clicking on an existing region, or the new region itelf.
-
 
 v3.0.17 - 05/01/2012
 --------------------

@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.18
- * @build		20120506
+ * @version		3.0.181
+ * @build		20120524
  */
  
 $(document).ready(function() {
@@ -1140,11 +1140,13 @@ $(document).ready(function() {
 				
 				$.each(Gmap.fields, function(i, field) {					
 					$.each(setFields, function(x, setField) {
-						$('#'+setField.replace('#', '')).val(values[x]);					
-						if(i == setField) {
-							$('#'+field.field_name).val(values[x]);
-							$('*[name="'+field.field_name+'"]').val(values[x]);
-							$('#field_id_'+field.field_id).val(values[x]);
+						if(setField.replace('#', '') != '') {
+							$('#'+setField.replace('#', '')).val(values[x]);					
+							if(i == setField) {
+								$('#'+field.field_name).val(values[x]);
+								$('*[name="'+field.field_name+'"]').val(values[x]);
+								$('#field_id_'+field.field_id).val(values[x]);
+							}
 						}
 					});
 				});
