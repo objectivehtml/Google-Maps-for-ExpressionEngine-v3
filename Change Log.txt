@@ -12,6 +12,7 @@
 v3.0.182 - 05/25/2012
 ---------------------
 - (Bug Fix) Fixed the same issue as v3.0.181, except the fix was in the saveResponse method.
+- (Bug Fix) Fixed an issue that caused a PHP notice if the clustering parameter is not set when using the fieldtype tag.
 
 v3.0.181 - 05/24/2012
 ---------------------
