@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.18
- * @build		20120506
+ * @version		3.0.182
+ * @build		20120526
  */
 
 require 'config/gmap_config.php';
