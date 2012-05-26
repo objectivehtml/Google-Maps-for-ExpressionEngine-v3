@@ -1,0 +1,51 @@
+{exp:gmap:results parse="inward" order_by="distance"}
+<h1>Job Search Results</h1>
+<p>Your search for &ldquo;{if post:keywords_like}{post:keywords_like}{/if}&rdquo; found the following {total_results} results:</p>
+
+
+
+<div class="search-results">
+  <div class="search-results-top">
+  {if segment_3 !=''}
+    <?
+    $paginated_number = "{segment_3}";
+    $paginated_number = str_replace("P","",$paginated_number)."0";
+    ?>
+  {/if}
+  <? $pagination_count = 0; ?>
+  {exp:channel:entries entry_id="{entry_ids}" paginate="bottom" limit="10"}
+    <?
+      $pagination_count ++;
+    ?>
+  {/exp:channel:entries}
+    <p>Showing results <?if(isset($paginated_number)){echo $paginated_number;}else{echo "1";} ?> - <?if(isset($paginated_number)){echo $paginated_number+$pagination_count;}else{echo $pagination_count;} ?>:</p>
+    
+  </div><!-- /.search-results-top -->
+   
+  
+  <ul class="search-results-list is-unstyled">
+  
+  {exp:channel:entries entry_id="{entry_ids}"  paginate="bottom" limit="10"}
+  {if no_results}
+  <p>Sorry, but no results were found</p>
+  {/if} 
+    <li>
+      <h3><a href="{title_permalink="jobs"}">{title} - {city}, {state} - {job_type}</a></h3>
+      <p>Donec sed odio dui. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam porta sem malesuada magna mollis euismod. Nullam quis risus eget urna mollis ornare vel eu leo.</p>
+    </li>
+    {if count == total_results}
+    </ul><!-- /.search-results-list -->
+    
+    <div class="search-results-bottom">
+      <ul class="search-results-pag">
+      {paginate}
+              {pagination_links}
+      {/paginate}
+        
+      </ul>
+    </div><!-- /.search-results-bottom -->
+    {/if}
+  {/exp:channel:entries}
+  
+  
+  {/exp:gmap:results}

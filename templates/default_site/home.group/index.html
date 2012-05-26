@@ -1,0 +1,92 @@
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+{exp:channel:entries channel="test_channel" limit="2"}
+	{map parse="markers"}
+		{markers}icon:{marker:icon}|{marker:formatted_address};{/markers}
+	{/map}
+{/exp:channel:entries}{/exp:stash:set}
+
+{exp:stash:get name="static_map" file="yes"}
+
+{!--
+{map parse="markers" limit="1"}
+	{markers}
+		<a href="#" data-id="{marker:entry_id}" data-index="{marker:index}" data-zoom="15" class="show-marker">{title}</a><br>
+	{/markers}
+{/map}
+--}
+
+<div class="checkboxes">
+
+	<label><input type="checkbox" value="{entry_id}" class="show-marker">{title}</label>
+
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.show-marker').click(function() {
+			var $t = $(this);
+			var id = $t.data('id');
+			var index = $t.data('index');
+			var zoom = $t.data('zoom');
+
+			$.each(map_markers, function(i, marker) {
+				if(marker.entry_id == id && marker.index == index && map_windows[i]) {
+					$.each(map_windows, function(x, window) {
+						window.close();
+					});
+
+					if(zoom) {
+						map_map.setZoom(zoom);
+					}
+
+					map_windows[i].open(map_map, marker);
+				}
+			});
+		});
+
+		$('.checkboxes input').click(function() {
+
+			$.each(map_markers, function(i, marker) {
+				marker.setMap(null);
+			});
+
+			var origBounds = map_map.getBounds();
+			var bounds     = new google.maps.LatLngBounds();
+			var count      = 0;
+
+			$('.checkboxes input').each(function() {
+				var $t = $(this);
+				var entryId = $t.val();
+				var zoom = $t.data('zoom');
+
+				if($t.prop('checked')) {
+					$.each(map_markers, function(i, marker) {
+						if(marker.entry_id == entryId) {
+							marker.setMap(map_map);
+							bounds.extend(marker.getPosition());
+						}
+					});
+
+					map_map.fitBounds(bounds);
+
+					if(zoom) {
+						map_map.setZoom(zoom);
+					}
+
+					count++;
+				}
+			});
+
+			if(count == 0) {
+				$.each(map_markers, function(i, marker) {
+					marker.setMap(map_map);
+					bounds.extend(marker.getPosition());
+				});
+
+				map_map.fitBounds(bounds);
+			}
+		});
+
+	});
+</script>

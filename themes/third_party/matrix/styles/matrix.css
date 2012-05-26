@@ -1,0 +1,157 @@
+div.matrix { position: relative; }
+*:first-child+html div.matrix { position: static; }
+
+table.matrix { position: relative; width: 100%; border: 1px solid #b6c0c2;
+	border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 4px;
+	-webkit-user-select: none; }
+*:first-child+html table.matrix { position: static; }
+
+table.matrix th.matrix,
+table.matrix td.matrix { vertical-align: top; text-align: left; }
+
+table.matrix .matrix-tr-header { padding: 7px !important; width: 0.01% !important; }
+
+/* buttons */
+a.matrix-btn { display: block; margin: 3px 0 0 2px; width: 20px; height: 20px; background: no-repeat 0 -20px; cursor: pointer; }
+a.matrix-btn:active { background-position: 0 -40px; }
+a.matrix-btn-disabled { background-position: 0 0 !important; cursor: default; }
+
+a.matrix-add { background-image: url(../images/add_btn.png); }
+a.matrix-remove { background-image: url(../images/remove_btn.png); }
+
+/*-- table head --*/
+table.matrix thead.matrix { background: none; }
+table.matrix thead.matrix th.matrix,
+table.matrix thead.matrix td.matrix { padding: 1px 10px; border: none !important; border-right: 1px solid #ccc !important; border-right-color: rgba(0,0,0,0.1) !important; text-shadow: 0 1px #fff; }
+
+table.matrix thead.matrix th.matrix { color: inherit; line-height: 13px; background: #fff url(../images/thead_bg.png) repeat-x 0 1px;
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), to(rgba(0,0,0,0.06)));
+	background: -moz-linear-gradient(top, transparent, rgba(0,0,0,0.06)); }
+table.matrix thead.matrix td.matrix { font-size: 0.9em; background: #e5e5e5; background: rgba(0,0,0,0.06); }
+
+table.matrix thead.matrix tr.matrix-first th.matrix { border-top: 1px solid #fff !important; padding-top: 5px; }
+table.matrix thead.matrix tr.matrix-last .matrix { padding-bottom: 6px; border-bottom: 1px solid #bbb !important; }
+
+table.matrix-nodata thead.matrix tr.matrix-last .matrix { border-bottom: none !important; }
+
+
+/*-- table body --*/
+table.matrix tbody.matrix th.matrix,
+table.matrix tbody.matrix td.matrix { border: solid #e3e3e3; border-width: 1px 1px 0 0; }
+
+table.matrix tbody.matrix th.matrix { border-color: #c8cbce; text-align: center; vertical-align: middle; text-shadow: 0 1px #fff; background: #e2e2e2; background: rgba(0,0,0,0.06);
+	cursor: move; cursor: -webkit-grab; cursor: -moz-grab; }
+table.matrix tbody.matrix td.matrix { padding: 7px 10px; background: #fff; }
+table.matrix tbody.matrix td.matrix-disabled { background: #eee; -webkit-user-select: none; -moz-user-select: none; }
+
+table.matrix tbody.matrix td.matrix label { font-size: 1em; line-height: 160%; }
+
+/* validation errors */
+table.matrix tbody.matrix td.matrix-error { background: #fff4f2; }
+
+/* focussed borders */
+table.matrix tbody.matrix td.matrix-focussed { border-width: 2px 2px 1px 1px; padding: 6px 9px; }
+table.matrix tbody.matrix td.matrix-firstcell.matrix-focussed { border-left-width: 2px; padding-left: 8px; }
+table.matrix tbody.matrix td.matrix-last.matrix-focussed { border-right-width: 2px !important; padding-right: 8px; }
+table.matrix tbody.matrix tr.matrix-last td.matrix-focussed { border-bottom-width: 2px; padding-bottom: 5px; }
+
+/* menu button */
+table.matrix tbody.matrix th.matrix div { position: relative; z-index: 100 !important; height: 13px; line-height: 13px; }
+table.matrix tbody.matrix th.matrix div a { display: block; opacity: 0; *display: none; position: absolute; z-index: 100 !important; top: -1px; right: -15px; width: 15px; height: 15px; background: url(../images/menu_btn.png) no-repeat; cursor: pointer; }
+
+/* menu */
+#matrix-menu { position: absolute; z-index: 100 !important; /*top: 11px;*/ margin: 0; border: 1px solid rgba(0,0,0,0.3); padding: 4px 0; list-style-type: none; white-space: nowrap; background: #fff; background: rgba(255,255,255,0.95);
+	font-weight: normal; text-align: left; cursor: default;
+	border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px;
+	-webkit-box-shadow: 1px 2px 4px rgba(0,0,0,0.2); -moz-box-shadow: 1px 2px 3px rgba(0,0,0,0.2);
+	*border: 1px solid #b6c0c2; }
+#matrix-menu li { padding: 2px 10px; text-shadow: none; }
+#matrix-menu li:hover { color: #fff; background: #f81a53;
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(#f72a58), to(#cd0649));
+	background: -moz-linear-gradient(top, #f72a58, #cd0649); }
+#matrix-menu li.disabled { color: #aaa; }
+#matrix-menu li.disabled:hover { background: none; }
+#matrix-menu li.br { margin: 4px 0; padding: 0; height: 0; border-top: 1px solid #e5e5e5; background: transparent; }
+
+
+/*-- drag helper --*/
+body.matrix-grabbing * { cursor: -webkit-grabbing !important; cursor: -moz-grabbing !important; }
+
+table.matrix-helper { position: absolute;
+	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.2); -moz-box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+table.matrix-helper th.matrix,
+table.matrix-helper td.matrix { border-top: none; }
+
+
+/*-- configurator --*/
+#matrix-conf-container { position: relative; margin: 0 -10px -7px; padding-left: 10px; overflow: auto; }
+#matrix-conf { position: relative; padding: 17px 33px 33px 12em; }
+
+#matrix-conf a.matrix-add { position: absolute; right: 10px; bottom: 36px; }
+
+table.matrix-conf { margin: 0 !important; }
+table.matrix-conf th { cursor: default !important; white-space: normal; }
+
+table.matrix-conf thead.matrix th.matrix,
+table.matrix-conf thead.matrix td.matrix { cursor: move; cursor: -webkit-grab !important; cursor: -moz-grab !important; }
+
+table.matrix-conf tbody.matrix th.matrix-breakleft,
+table.matrix-conf table.matrix-col-settings th { text-shadow: none; text-align: left; }
+
+/* break-left's */
+table.matrix-conf .matrix-breakleft { display: block; position: absolute; margin-left: -12em; border: none; background: none !important; }
+table.matrix-conf th.matrix-breakleft { border-top: 1px dotted #d0d7df; padding: 7px 0 8px 0; width: 11em; color: inherit; }
+
+/* break-down's */
+table.matrix-conf td.matrix-breakdown { position: relative; padding: 0 !important; height: 0; border: none !important; }
+table.matrix-conf td.matrix-breakdown a.matrix-btn { position: absolute; background-image: url(../images/remove_btn.png); }
+
+table.matrix-conf table.matrix-col-settings { width: 100%; margin: -5px 0 !important; }
+table.matrix-conf table.matrix-col-settings th,
+table.matrix-conf table.matrix-col-settings td { border: none !important; border-bottom: 1px dotted #e3e3e3 !important; padding: 7px 10px; color: inherit; background: none !important; }
+table.matrix-conf table.matrix-col-settings th { border-right: 1px dotted #e3e3e3 !important; padding-left: 0; width: 0.01%; }
+table.matrix-conf table.matrix-col-settings td { padding-right: 0; }
+table.matrix-conf table.matrix-col-settings tr.matrix-last th,
+table.matrix-conf table.matrix-col-settings tr.matrix-last td { border-bottom: none !important; }
+
+table.matrix-conf tr.matrix-placeholder td,
+table.matrix-conf td.matrix-placeholder { background: none !important; border: none !important; }
+
+
+/*-- table styles --*/
+/* prevent double borders without resorting to border-collapse */
+table.matrix thead.matrix th.matrix-last,
+table.matrix thead.matrix td.matrix-last,
+table.matrix tbody.matrix td.matrix-last { border-right-width: 0 !important; }
+
+/* keep the corner cells' BGs from bleeding over the rounded corners */
+table.matrix thead.matrix tr.matrix-first .matrix-first, table.matrix-helper th.matrix      { border-top-left-radius: 2px; -webkit-border-top-left-radius: 2px; -moz-border-radius-topleft: 3px; }
+table.matrix thead.matrix tr.matrix-first .matrix-last,  table.matrix-helper td.matrix-last { border-top-right-radius: 2px; -webkit-border-top-right-radius: 2px; -moz-border-radius-topright: 3px; }
+table.matrix tbody.matrix tr.matrix-last  .matrix-first, table.matrix-helper th.matrix      { border-bottom-left-radius: 2px; -webkit-border-bottom-left-radius: 2px; -moz-border-radius-bottomleft: 3px; }
+table.matrix tbody.matrix tr.matrix-last  .matrix-last,  table.matrix-helper td.matrix-last { border-bottom-right-radius: 2px; -webkit-border-bottom-right-radius: 2px; -moz-border-radius-bottomright: 3px; }
+
+
+/*-- text cell styles --*/
+td.matrix-text { position: relative; cursor: text; }
+*:first-child+html td.matrix-text { position: static; }
+
+td.matrix .matrix-textarea { border: none !important; margin: 0 !important; padding: 0 !important; width: 100%; min-width: 60px; font-family: 'Lucida Grande', sans-serif; font-size: 11px; background: none; resize: none; outline: none;
+	border-radius: 0; -webkit-border-radius: 0; -moz-border-radius: 0; }
+
+td.matrix-text div.matrix-charsleft-container { position: relative; }
+td.matrix-text div.matrix-charsleft-container div.matrix-charsleft { display: none; position: absolute; z-index: 1; right: -10px; bottom: -7px; margin-top: -1em; padding: 1px 2px; font-size: 0.9em; line-height: 1em; color: #666; text-shadow: 0 1px #fff; background: #e3e3e3;
+	border-radius: 2px 0; -webkit-border-top-left-radius: 2px; -webkit-border-bottom-right-radius: 2px; -moz-border-radius-topleft: 3px; -moz-border-radius-bottomright: 3px; }
+td.matrix-text.matrix-focussed div.matrix-charsleft-container div.matrix-charsleft { display: block; }
+td.matrix-text div.negative { display: block; color: #a9432d; }
+
+/*-- date cell styles --*/
+td.matrix-date input { min-width: 11em !important; }
+td.matrix-date div { z-index: 101; }
+
+/*-- file cell styles --*/
+td.matrix-file { text-align: center !important; }
+td.matrix-file input.file { display: none; }
+td.matrix-file .matrix-thumb { position: relative; margin: 3px auto 0; }
+td.matrix-file .matrix-thumb a { display: block; position: absolute; top: -6px; left: -6px; width: 15px; height: 15px; background: url(../images/remove_file_btn.png) no-repeat; cursor: pointer; }
+td.matrix-file .matrix-filename { font-size: 10px; line-height: 15px; }
+td.matrix-file a.matrix-add { display: inline-block; padding: 0 10px 0 21px; width: auto; line-height: 20px; white-space: nowrap; }

@@ -1,0 +1,98 @@
+form#field_editor {
+	position: relative;
+}
+
+#field_editor header {
+	min-height: 36px;
+}
+
+#field_editor header #group_settings {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+#field_editor header #group_settings .field {
+	width: auto;
+}
+
+#field_editor header #clone_field {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+table.field_editor textarea, table.field_editor input[type="text"] {
+    width: 96%;
+}
+table.field_editor textarea {
+    resize: none;
+}
+table.field_editor th {
+  cursor: default;
+}
+table.field_editor th a.remove_column {
+  float: right;
+}
+table.field_editor td {
+    width: auto;
+}
+table.field_editor tr.errors td {
+	color: red;
+	background-color: #eee;
+}
+table.field_editor tr.errors td ul {
+	list-style: disc;
+	padding-left: 15px;
+}
+table.field_editor tr td:nth-child(2),
+table.field_editor tr td:nth-child(6),
+table.field_editor tr td:nth-child(7),
+table.field_editor tr td:nth-child(8),
+table.field_editor tr td:nth-child(9),
+table.field_editor tr td:nth-child(10),
+table.field_editor tr td:nth-child(11), 
+table.field_editor tr td:nth-child(12) {
+    width: 1px;
+}
+table.field_editor td.drag_handle {
+  padding: 0 8px;
+  width: 12px;
+  cursor: move;
+}
+table.field_editor td.remove {
+  padding: 0 0 0 6px;
+  width: 26px;
+}
+div.field_editorControls {
+  margin: 8px 0 0;
+}
+ul.field_editorButtons {
+  list-style: none;
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+ul.field_editorButtons li {
+  float: left;
+  margin: 0 8px 0 0;
+  padding: 0;
+}
+ul.field_editorPresets {
+  float: right;
+}
+ul.field_editorPresets li {
+  float: left;
+  margin: 0 0 0 8px;
+  padding: 0;
+}
+
+#delete_confirm h2 {
+	margin-bottom: 10px;
+}
+
+#delete_confirm ul {
+	list-style: disc;
+	padding-left: 16px;
+	margin-bottom: 10px;
+}
