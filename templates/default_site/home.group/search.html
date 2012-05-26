@@ -1,42 +1,11 @@
-<!-- datepicker stuff -->
-	
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-	 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+{exp:gmap:search
+    channel="test_channel"
+    latitude_field="latitude"
+    longitude_field="longitude"
+    geocode_field="location"
+    distance_field="distance_max"
+    cache_post="false"}
 
-			<script type="text/javascript">
-				$(function(){
-
-					// Datepicker
-					$('#start_date').datepicker({
-						inline: true,
-						altField: 'input[name="date_min"]',
-						altFormat: '@',
-					});
-					$('#end_date').datepicker({
-						inline: true,
-						altField: 'input[name="date_max"]',
-						altFormat: '@',
-					});
-
-					//hover states on the static widgets
-					$('#dialog_link, ul#icons li').hover(
-						function() { $(this).addClass('ui-state-hover'); },
-						function() { $(this).removeClass('ui-state-hover'); }
-					);
-
-				});
-			</script>
-	<!-- end datepicker stuff -->
-
-
-	    {exp:gmap:search
-	        channel="events"
-	        latitude_field="event_lat"
-	        longitude_field="event_lon"
-	        geocode_field="location"
-	        distance_field="distance_max"
-	        cache_post="false"}
-	
 		
 	<div class="block-half-border main-content start">
 		<h3>Search Events</h3>	
@@ -46,14 +15,12 @@
 	                <input type="text" name="title_like" id="title" value="" />
 	            </li> -->
 			<li>
-				<label for="location">Where are you located? You can use a town, place or postcode.</label>	
+				<label for="location">Location</label>	
 				<input name="location" id="location" value="{if post:location}{post:location}{/if}" type="text">	
 			{if error:location}<p class="error">{error:location}</p>{/if}
 			</li>
 			<li>
-				<label for="location">What radius (in miles) do you want to search? Remember you need to input a location for this to work.</label>
-			</li>
-			<li>
+				<label for="location">Distance</label>
 				<select name="distance_max">
 					<option value="" {if !distance_max || distance_max == ""}selected="selected"{/if}>Any
 					<option value="5" {if distance_max == 5}selected="selected"{/if}>5</option>
@@ -64,29 +31,22 @@
 				</select>
 			</li>
 			<li>
-				<label for="start_date">Start Date</label>
-				<input id="start_date" type="text">
-			</li>
-			<li>
-				<label for="end_date">End Date</label>
-				<input id="end_date" type="text">
-			</li>
-			<li>
-				<label>Which genres are you interested in? Leave unchecked to search all genres.</label>
-				{exp:channel:categories category_group="2"}
-					<div class="category-checkbox">
-						<input name="categories[]" value="{category_id}" type="checkbox"> {category_name}
-					</div>
-				{/exp:channel:categories}
-			</li>
-
-			<input type="hidden" value="{if post:date_min}{post:date_min}{/if}" name="date_min" />
-			<input type="hidden" value="{if post:date_max}{post:date_max}{/if}" name="date_max" />
-			
-			<li>
-				<input type="hidden" name="status" value="Open" />
+				{categories}
+					<label><input type="checkbox" name="categories[]" value="{category_id}" {checked} />{category_name}</label><br>
+				{/categories}				
 			</li>
 		</ul>
+			
 		<input type="submit" value="Search Events" class="submit" />
 	</div>
-	    {/exp:gmap:search}
+{/exp:gmap:search}
+
+{exp:gmap:results match_categories="1"}
+	
+	{results}
+		
+		{title} - {category_id} - {category_ids} - {categories}<br>
+		
+	{/results}
+	
+{/exp:gmap:results}

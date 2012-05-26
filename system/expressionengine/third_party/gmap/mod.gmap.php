@@ -1695,7 +1695,8 @@ Class Gmap {
 		}
 		if(count($cat_where) > 0)
 		{
-
+			$select[] = 'cc.*';
+			
 			$match_categories = $this->param('match_categories');
 
 			$cat_having		  = '= '.count($cat_where);
@@ -1706,8 +1707,9 @@ Class Gmap {
 			}
 
 			$table = '(
-			    SELECT distinct entry_id, COUNT(cat_id) AS cat_count
+			    SELECT distinct entry_id, COUNT(cat_id) AS cat_count, cat_id, cat_id as \'category_id\', GROUP_CONCAT(cat_id SEPARATOR \'|\') as \'cat_ids\', GROUP_CONCAT(cat_id SEPARATOR \'|\') as \'category_ids\', exp_categories.cat_name, exp_categories.cat_name as \'category_name\', exp_categories.cat_url_title, exp_categories.cat_url_title as \'category_url_title\', exp_categories.parent_id as \'cat_parent_id\', exp_categories.parent_id as \'category_parent_id\', exp_categories.site_id as \'cat_site_id\', exp_categories.site_id as \'category_site_id\', exp_categories.group_id as \'cat_group_id\', exp_categories.group_id as \'category_group_id\', exp_categories.cat_description as \'cat_description\', exp_categories.cat_description as \'category_description\', exp_categories.cat_image as \'cat_image\', exp_categories.cat_image as \'category_image\', GROUP_CONCAT(exp_categories.cat_name  SEPARATOR \'|\') as \'cat_names\', GROUP_CONCAT(exp_categories.cat_name  SEPARATOR \'|\') as \'category_names\',  GROUP_CONCAT(exp_categories.cat_url_title  SEPARATOR \'|\') as \'cat_url_titles\', GROUP_CONCAT(exp_categories.cat_url_title  SEPARATOR \'|\') as \'category_url_titles\', GROUP_CONCAT(exp_categories.parent_id  SEPARATOR \'|\') as \'cat_parent_ids\', GROUP_CONCAT(exp_categories.parent_id  SEPARATOR \'|\') as \'category_parent_ids\', GROUP_CONCAT(exp_categories.cat_description  SEPARATOR \'|\') as \'cat_descriptions\', GROUP_CONCAT(exp_categories.cat_description  SEPARATOR \'|\') as \'category_descriptions\',  GROUP_CONCAT(exp_categories.group_id SEPARATOR \'|\') as \'cat_group_ids\', GROUP_CONCAT(exp_categories.group_id SEPARATOR \'|\') as \'category_group_ids\', GROUP_CONCAT(exp_categories.site_id  SEPARATOR \'|\') as \'cat_site_ids\', GROUP_CONCAT(exp_categories.site_id  SEPARATOR \'|\') as \'category_site_ids\', GROUP_CONCAT(exp_categories.cat_image  SEPARATOR \'|\') as \'cat_images\',  GROUP_CONCAT(exp_categories.cat_image  SEPARATOR \'|\') as \'category_images\'
 			    FROM exp_category_posts 
+			    INNER JOIN exp_categories USING (cat_id)
 			    WHERE '.implode(' OR ', $cat_where).'
 			    GROUP BY entry_id
 			    HAVING cat_count '.$cat_having.'
@@ -1718,6 +1720,8 @@ Class Gmap {
 		}
 		else
 		{
+			$select[] = '\'\' as cat_id, \'\' as category_id, \'\' as cat_name, \'\' as category_name, \'\' as cat_url_title, \'\' as category_url_title, \'\' as cat_parent_id, \'\' as category_parent_id, \'\' as cat_site_id, \'\' as category_site_id, \'\' as cat_group_id, \'\' as category_group_id, \'\' as cat_description, \'\' as category_description, \'\' as cat_image, \'\' as category_image, \'\' as cat_names, \'\' as category_names, \'\' as cat_url_titles, \'\' as category_url_titles, \'\' as cat_parent_ids, \'\' as category_parent_ids, \'\' as cat_descriptions, \'\' as category_description, \'\' as cat_groups_ids, \'\' as category_group_ids, \'\' as cat_site_ids, \'\' as category_site_ids, \'\' as cat_images, \'\' as category_images, \'\' as cat_ids, \'\' as category_ids, \'\' as categories';
+			
 			$table = '`exp_channel_data`';
 		}
 
@@ -1779,7 +1783,7 @@ Class Gmap {
 		INNER JOIN `exp_channel_titles` USING (entry_id)
 		'.(count($where) > 0 ? ' WHERE ' . implode(' AND ', $where) : NULL).' 
 		'.(count($having) > 0 ? ' HAVING '.implode(' AND ', $having) : NULL);
-
+		
 		$grand_total_results = $this->EE->db->query($base_sql)->num_rows();
 
 		$sql = $base_sql . '
