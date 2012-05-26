@@ -1,0 +1,11 @@
+.DS_Store
+.gitignore
+.htaccess
+admin.php
+index.php
+images/
+templates/
+system/expressionengine/third_party/*
+!system/expressionengine/third_party/gmap
+themes/third_party/*
+!themes/third_party/gmap
