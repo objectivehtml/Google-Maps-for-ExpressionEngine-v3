@@ -1865,7 +1865,6 @@ Class Gmap {
 			return $entry_ids;
 		}		
 	
-		
 		return NULL;
 	}
 	
