@@ -392,7 +392,8 @@ Class Gmap {
 				'script_tag' 	  		 => $this->param('script_tag', FALSE)
 			),
 			'exclude_single_marker' => $this->param('exclude_single_marker', TRUE, TRUE),
-			'clustering'	 => $this->param('clustering', FALSE, TRUE)
+			'clustering'            => $this->param('clustering', FALSE, TRUE),
+			'duplicate_markers'     => $this->param('duplicate_markers', FALSE, TRUE)
 		));
 		
 		/* -------------------------------------------

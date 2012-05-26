@@ -656,12 +656,13 @@ class Gmap_ft extends EE_Fieldtype {
 				'clustering'		=> FALSE
 			);
 			
-			$params 					= array_merge($default_params, $params);
-			$params['clustering'] 		= $this->bool_param($params['clustering']);
-			$params['extend_bounds'] 	= $this->bool_param($params['extend_bounds']);
-			$params['open_windows'] 	= $this->bool_param($params['open_windows']);
-			$params['show_one_window'] 	= $this->bool_param($params['show_one_window']);
-			$params['render']			= explode('|', $params['render']);		
+			$params                      = array_merge($default_params, $params);
+			$params['clustering']        = $this->bool_param($params['clustering']);
+			$params['duplicate_markers'] = $this->bool_param($params['duplicate_markers']);
+			$params['extend_bounds']     = $this->bool_param($params['extend_bounds']);
+			$params['open_windows']      = $this->bool_param($params['open_windows']);
+			$params['show_one_window']   = $this->bool_param($params['show_one_window']);
+			$params['render']            = explode('|', $params['render']);		
 
 			if(isset($params['append']))
 			{
@@ -726,9 +727,10 @@ class Gmap_ft extends EE_Fieldtype {
 							'open_windows'		=> $params['open_windows'],
 							'show_one_window' 	=> $params['show_one_window'] 
 						),
-						'extend_bounds'	=> $params['extend_bounds'], 
-						'script_tag'	=> FALSE,
-						'clustering' 	=> $params['clustering']
+						'extend_bounds'     => $params['extend_bounds'], 
+						'script_tag'        => FALSE,
+						'clustering'        => $params['clustering'],
+						'duplicate_markers' => $params['duplicate_markers']
 					);
 					
 					$marker		= $this->EE->google_maps->marker($options);			

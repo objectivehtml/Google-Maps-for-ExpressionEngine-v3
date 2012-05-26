@@ -290,10 +290,12 @@ class Google_maps {
 	public function marker($params)
 	{
 		$default_params = array(
-			'options'		=> array(),
-			'data'			=> array(),
-			'extend_bounds'	=> FALSE,
-			'script_tag'	=> TRUE
+			'options'           => array(),
+			'data'              => array(),
+			'extend_bounds'     => FALSE,
+			'script_tag'        => TRUE,
+			'duplicate_markers' => TRUE,
+			'clustering' 		=> FALSE
 		);
 		
 		$params = array_merge($default_params, $params);
@@ -367,8 +369,38 @@ class Google_maps {
 								unset($options['map']);
 							}
 
-							$js .= $params['id'].'_markers[index] = new google.maps.Marker('.$this->convert_to_js($options).');';
-
+							if(!$params['duplicate_markers'])
+							{
+								$js .= '
+								var newMarker   = new google.maps.Marker('.$this->convert_to_js($options).');
+								var isDuplicate = false;
+								
+								if(typeof '.$params['id'].'_positions == "undefined") {
+									'.$params['id'].'_positions = [];
+								}
+								
+								if('.$params['id'].'_markers.length > 0) {
+									for(var i in '.$params['id'].'_markers) {
+								
+										var marker = '.$params['id'].'_markers[i];
+										
+										var a = newMarker.getPosition();
+										var b = marker.getPosition();
+											
+										if(a.lat() == b.lat() && a.lng() == b.lng()) {
+											newMarker.setMap(null);
+										}		
+									};
+								}
+								
+								'.$params['id'].'_positions.push(newMarker.getPosition());
+								'.$params['id'].'_markers[index] = newMarker;';
+							}
+							else
+							{
+								$js .= $params['id'].'_markers[index] = new google.maps.Marker('.$this->convert_to_js($options).');';
+							}
+							
 							if(isset($params['clustering']) && $params['clustering'])
 							{
 								$js .= $params['id'].'_cluster.addMarker('.$params['id'].'_markers[index]);';
