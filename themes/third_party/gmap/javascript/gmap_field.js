@@ -7,7 +7,7 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.182
+ * @version		3.0.183
  * @build		20120526
  */
  

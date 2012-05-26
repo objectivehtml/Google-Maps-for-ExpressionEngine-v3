@@ -12,5 +12,6 @@ system/expressionengine/*
 system/expressionengine/third_party/*
 !system/expressionengine/third_party/gmap
 themes/*
+!themes/third_party/
 themes/third_party/*
 !themes/third_party/gmap
