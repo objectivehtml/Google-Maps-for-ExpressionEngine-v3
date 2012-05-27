@@ -170,13 +170,15 @@ class Static_maps extends Google_API {
 		}
 		
 		$components[] = $this->param('size', $this->width.'x'.$this->height);
-		
-		foreach($this->path as $path)
+				
+		if(is_array($this->path))
 		{
-			$components[] = 'path='.$path;
+			foreach($this->path as $path)
+			{
+				$components[] = 'path='.$path;
+			}
 		}
-		
-		
+
 		$url = str_replace('%3A', ':', $this->base_url . '?' . implode('&', $components));		
 		$url = str_replace('%2C', ',', $url);
 		
