@@ -414,6 +414,14 @@ class Google_maps {
 								$js .= $params['id'].'_markers[index] = new google.maps.Marker('.$this->convert_to_js($options).');';
 							}
 							
+							if(isset($params['redirect']) && $params['redirect'])
+							{
+								$js .= '
+								google.maps.event.addListener('.$params['id'].'_markers[index], \'click\', function() {
+									window.location = "'.$this->clean_js($params['redirect']).'";
+								});';
+							}
+							
 							if(isset($params['clustering']) && $params['clustering'])
 							{
 								$js .= $params['id'].'_cluster.addMarker('.$params['id'].'_markers[index]);';

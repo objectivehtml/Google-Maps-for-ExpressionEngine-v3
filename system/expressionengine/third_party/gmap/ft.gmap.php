@@ -798,6 +798,12 @@ class Gmap_ft extends EE_Fieldtype {
 
 			return $this->parse(array($vars), $tagdata);
 		}
+		
+		if(isset($params['redirect']))
+		{
+			$params['redirect'] = $tagdata;
+			$tagdata            = NULL;
+		}
 
 		// If the id parameter is set, add the marker information to the map
 		if(isset($params['id']))
@@ -811,7 +817,8 @@ class Gmap_ft extends EE_Fieldtype {
 				'show_one_window'	=> FALSE,
 				'clustering'		=> FALSE,
 				'duplicate_markers' => TRUE,
-				'window_trigger'    => 'click'
+				'window_trigger'    => 'click',
+				'redirect'			=> FALSE
 			);
 			
 			$params                      = array_merge($default_params, $params);
@@ -889,7 +896,8 @@ class Gmap_ft extends EE_Fieldtype {
 						'script_tag'        => FALSE,
 						'clustering'        => $params['clustering'],
 						'duplicate_markers' => $params['duplicate_markers'],
-						'window_trigger'    => $params['window_trigger']
+						'window_trigger'    => $params['window_trigger'],
+						'redirect'			=> $params['redirect']
 					);
 					
 					$marker		= $this->EE->google_maps->marker($options);			
