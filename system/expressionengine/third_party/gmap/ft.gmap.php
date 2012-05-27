@@ -653,7 +653,8 @@ class Gmap_ft extends EE_Fieldtype {
 				'extend_bounds'		=> TRUE,
 				'open_windows'		=> FALSE,
 				'show_one_window'	=> FALSE,
-				'clustering'		=> FALSE
+				'clustering'		=> FALSE,
+				'duplicate_markers' => TRUE
 			);
 			
 			$params                      = array_merge($default_params, $params);
