@@ -585,6 +585,163 @@ class Gmap_ft extends EE_Fieldtype {
 
 		return $data->waypoint->total;
 	}
+	
+	public function replace_static_map($data, $params, $tagdata = FALSE)
+	{
+		$this->EE->load->library('static_maps');		
+		
+		$default_params = array(
+			'center'            => NULL,
+			'class'             => NULL,
+			'height'            => 300,
+			'id'                => NULL,
+			'language'          => 'en',
+			'maptype'           => 'roadmap',
+			'format'            => 'JPEG',
+			'path'              => NULL,
+			'region'            => NULL,
+			'scale'             => 1,
+			'sensor'            => FALSE,
+			'style'             => NULL,
+			'visible'           => NULL,
+			'width'             => 400,
+			'zoom'              => NULL,
+			'duplicate_markers' => TRUE,
+			'auto_close_region' => TRUE,
+		);
+		
+		$params = array_merge($default_params, $params);
+		
+		if(isset($params['map_type']))
+		{
+			$params['maptype'] = $params['map_type'];	
+		}	
+			
+		$params['duplicate_markers'] = $this->bool_param($params['duplicate_markers']);
+			
+		$data                   = json_decode($data);
+		$markers                = array();
+		$positions              = array();
+		$custom_icons           = 0;
+		$available_custom_icons = ((5 * 2) - 1) - $data->markers->total;
+		
+		foreach($data->markers->results as $marker)
+		{
+			$index        = count($markers);
+			$is_duplicate = FALSE;
+			$new_position = $marker->geometry->location->lat.','.$marker->geometry->location->lng;
+			
+			foreach($positions as $position)
+			{
+				if($position == $new_position)
+				{
+					$is_duplicate = TRUE;
+				}	
+			}
+				
+			if($params['duplicate_markers'] || !$params['duplicate_markers'] && !$is_duplicate)
+			{			
+				$markers[$index] = NULL;
+				
+				if($custom_icons < $available_custom_icons)
+				{
+					if(isset($params['icon']))
+					{
+						$markers[$index] .= 'icon:'.$params['icon'].'|';					
+						$custom_icons++;
+					}
+					elseif(isset($marker->icon) && !empty($marker->icon))
+					{					
+						$markers[$index] .= 'icon:'.$marker->icon.'|';					
+						$custom_icons++;
+					}
+				}
+				
+				$markers[$index] .= $new_position;
+				$positions[]      = $new_position;	
+			}			
+		}
+			
+		$paths  = array();
+		
+		foreach($data->regions->results as $region)
+		{		
+			$path = NULL;
+		
+			$path .= 'fillcolor:0x'.str_replace('#', '', $region->style->fillColor.'|');
+			$path .= 'color:0x'.str_replace('#', '', $region->style->strokeColor.'|');
+			$path .= 'weight:'.str_replace('#', '', $region->style->strokeWeight.'|');
+			
+			foreach($region->coords as $coord)
+			{				
+				$path .= $coord->lat.','.$coord->lng.'|';
+			}
+			
+			if($params['auto_close_region'])
+			{
+				$path .= $region->coords[0]->lat.','.$region->coords[0]->lng;
+			}
+			
+			$paths[] = rtrim($path, '|');
+		}
+		
+		$path = NULL;
+		
+		if($data->waypoints->total > 0)
+		{	
+			$start = NULL;
+			$end = NULL;
+			$waypoints = array();
+			
+			foreach($data->waypoints->results as $index => $waypoint)
+			{
+				$coord = $waypoint->geometry->location->lat.','.$waypoint->geometry->location->lng;
+				
+				if($index == 0)
+				{
+					$start = $coord;
+				}
+				else if($index == $data->waypoints->total - 1)
+				{
+					$end = $coord;
+				}
+				else
+				{
+					$waypoints[] = $coord;
+				}
+			}
+			
+			$this->EE->load->library('directions');
+			
+			$response = $this->EE->directions->query($start, $end, array(
+				'waypoints' => $waypoints
+			));
+						
+			foreach($response->routes as $route)
+			{
+				$paths[] = 'enc:'.$route->overview_polyline->points;
+			}
+		}
+				
+		$this->EE->static_maps->center 	 = $params['center'];
+		$this->EE->static_maps->class 	 = $params['class'];
+		$this->EE->static_maps->format	 = strtoupper($params['format']);	
+		$this->EE->static_maps->height	 = (int) $params['height'];	
+		$this->EE->static_maps->id 	 	 = $params['id'];
+		$this->EE->static_maps->language = $params['language'];
+		$this->EE->static_maps->maptype	 = $params['maptype'];
+		$this->EE->static_maps->markers  = $markers;	
+		$this->EE->static_maps->path 	 = $paths;
+		$this->EE->static_maps->region	 = $params['region'];
+		$this->EE->static_maps->scale	 = $params['scale'];
+		$this->EE->static_maps->sensor	 = $params['sensor'];
+		$this->EE->static_maps->style	 = $params['style'];
+		$this->EE->static_maps->visible	 = $params['visible'];
+		$this->EE->static_maps->width	 = (int) $params['width'];	
+		$this->EE->static_maps->zoom 	 = $params['zoom'];
+		
+		return $this->EE->static_maps->render();
+	}
 
 	/**
 	 * Replaces the template tag

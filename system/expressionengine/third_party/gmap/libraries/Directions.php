@@ -91,7 +91,7 @@ class Directions extends Google_api {
 	
 		if($return_url)
 			return $url;
-			
+		
        	return json_decode($this->connect($url));
 	}
 	
