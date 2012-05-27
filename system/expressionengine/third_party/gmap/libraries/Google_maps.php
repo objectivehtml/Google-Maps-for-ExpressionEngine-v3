@@ -73,6 +73,18 @@ class Google_maps {
 	
 	public function infobox($params)
 	{
+		$default_params = array(
+			'content'         => '',
+			'options'         => array(),
+			'var'             => $params['id'].'_markers[index]',
+			'inner_class' 	  => 'ui-infowindow-content',
+			'open_windows'    => FALSE,
+			'show_one_window' => FALSE,
+			'script_tag'	  => FALSE
+		);
+		
+		$params = array_merge($default_params, $params);
+		
 		if(!isset($params['content']) || empty($params['content']))
 		{
 			return NULL;	
@@ -86,7 +98,7 @@ class Google_maps {
 			'clearanceY'		 	 => 1,
 			'closeBoxMargin'		 => '10px 2px 2px 2px',
 			'closeBoxURL'		 	 => 'http://www.google.com/intl/en_us/mapfiles/close.gif',
-			'inner_class'		 	 => 'ui-infobox-content',
+			'inner_class'		 	 => $params['inner_class'],
 			'content'				 => $params['content'],
 			'disableAutoPan'		 => 'false',
 			'enableEventPropagation' => 'false',
@@ -173,8 +185,13 @@ class Google_maps {
 	public function infowindow($params)
 	{
 		$default_params = array(
-			'options'		=> array(),
-			'script_tag'	=> FALSE
+			'content'         => '',
+			'options'         => array(),
+			'var'             => $params['id'].'_markers[index]',
+			'inner_class' 	  => 'ui-infowindow-content',
+			'open_windows'    => FALSE,
+			'show_one_window' => FALSE,
+			'script_tag'	  => FALSE
 		);
 		
 		$params = array_merge($default_params, $params);
@@ -183,12 +200,7 @@ class Google_maps {
 		{
 			return NULL;	
 		}
-				
-		if(!isset($params['inner_class']) || empty($params['inner_class']))
-		{
-			$params['inner_class'] = 'ui-infowindow-content';
-		}
-		
+			
 		if(!isset($options['content']))
 		{
 			$options['content'] = '\'{exp:gmap:clean_js}<div class="'.$params['inner_class'].'">'.$this->clean_js($params['content']).'</div>{/exp:gmap:clean_js}\'';
