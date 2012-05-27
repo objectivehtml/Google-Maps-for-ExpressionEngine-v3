@@ -191,7 +191,8 @@ class Google_maps {
 			'inner_class' 	  => 'ui-infowindow-content',
 			'open_windows'    => FALSE,
 			'show_one_window' => FALSE,
-			'script_tag'	  => FALSE
+			'script_tag'	  => FALSE,
+			'trigger' 		  => 'click'
 		);
 		
 		$params = array_merge($default_params, $params);
@@ -223,7 +224,7 @@ class Google_maps {
 				'.$params['id'].'_windows.push(infowindow);';
 				
 			$js .= '							
-				google.maps.event.addListener(obj, \'click\', function(e) {
+				google.maps.event.addListener(obj, \''.$params['trigger'].'\', function(e) {
 					obj.position = e.latLng;';
 
 					if(isset($params['show_one_window']) && $params['show_one_window'])
@@ -235,8 +236,7 @@ class Google_maps {
 					}
 					
 			$js.='
-					infowindow.open('.$params['id'].'_map, obj);
-					
+					infowindow.open('.$params['id'].'_map, obj);					
 				});
 				
 				'.$params['id'].'_window = infowindow;
@@ -307,7 +307,8 @@ class Google_maps {
 			'extend_bounds'     => FALSE,
 			'script_tag'        => TRUE,
 			'duplicate_markers' => TRUE,
-			'clustering' 		=> FALSE
+			'clustering' 		=> FALSE,
+			'window_trigger' 	=> 'click'
 		);
 		
 		$params = array_merge($default_params, $params);
@@ -463,13 +464,14 @@ class Google_maps {
 								if(isset($params['infobox']) && $params['infobox'])
 								{							
 									$js .= $this->EE->google_maps->infobox(array(
-										'id'			=> $params['id'],
-										'content'		=> $content,
-										'options'		=> $params['infowindow']['options'],
-										'script_tag'	=> FALSE,
-										'var'			=> $params['id'].'_markers[index]',
-										'show_one_window' 	=> $show_one_window,
-										'open_windows'		=> $open_windows
+										'id'              => $params['id'],
+										'content'         => $content,
+										'options'         => $params['infowindow']['options'],
+										'script_tag'      => FALSE,
+										'var'             => $params['id'].'_markers[index]',
+										'show_one_window' => $show_one_window,
+										'open_windows'    => $open_windows,
+										'trigger'         => $params['window_trigger']
 									));
 								}
 								else
@@ -477,11 +479,12 @@ class Google_maps {
 									$js .= $this->EE->google_maps->infowindow(array(
 										'id'				=> $params['id'],
 										'content'			=> $content, 
-										'options'			=> array(),
+										'options'			=> $params['infowindow']['options'],
 										'script_tag'		=> FALSE,
 										'var'				=> $params['id'].'_markers[index]',
 										'show_one_window' 	=> $show_one_window,
-										'open_windows'		=> $open_windows
+										'open_windows'		=> $open_windows,
+										'trigger'			=> $params['window_trigger']
 									));
 								}
 							}

@@ -755,7 +755,6 @@ class Gmap_ft extends EE_Fieldtype {
 	{
 		$js		= NULL;
 
-		
 		$this->EE->load->library('google_maps');
 		$this->EE->load->driver('channel_data');
 
@@ -811,7 +810,8 @@ class Gmap_ft extends EE_Fieldtype {
 				'open_windows'		=> FALSE,
 				'show_one_window'	=> FALSE,
 				'clustering'		=> FALSE,
-				'duplicate_markers' => TRUE
+				'duplicate_markers' => TRUE,
+				'window_trigger'    => 'click'
 			);
 			
 			$params                      = array_merge($default_params, $params);
@@ -888,7 +888,8 @@ class Gmap_ft extends EE_Fieldtype {
 						'extend_bounds'     => $params['extend_bounds'], 
 						'script_tag'        => FALSE,
 						'clustering'        => $params['clustering'],
-						'duplicate_markers' => $params['duplicate_markers']
+						'duplicate_markers' => $params['duplicate_markers'],
+						'window_trigger'    => $params['window_trigger']
 					);
 					
 					$marker		= $this->EE->google_maps->marker($options);			

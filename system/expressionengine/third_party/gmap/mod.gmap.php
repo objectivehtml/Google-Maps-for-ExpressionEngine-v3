@@ -393,7 +393,8 @@ Class Gmap {
 			),
 			'exclude_single_marker' => $this->param('exclude_single_marker', TRUE, TRUE),
 			'clustering'            => $this->param('clustering', FALSE, TRUE),
-			'duplicate_markers'     => $this->param('duplicate_markers', FALSE, TRUE)
+			'duplicate_markers'     => $this->param('duplicate_markers', FALSE, TRUE),
+			'window_trigger'        => $this->param('window_trigger', 'click')
 		));
 		
 		/* -------------------------------------------
