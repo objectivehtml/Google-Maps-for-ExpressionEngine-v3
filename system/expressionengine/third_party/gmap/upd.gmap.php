@@ -82,6 +82,10 @@ class Gmap_upd {
 		array(
 		    'class'     => 'Gmap_ft',
 		    'method'    => 'curl'
+		),
+		array(
+		    'class'     => 'Gmap_mcp',
+		    'method'    => 'import_csv_action'
 		)
 	);
 	
