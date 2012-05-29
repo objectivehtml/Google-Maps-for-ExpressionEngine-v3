@@ -1288,10 +1288,16 @@ Class Gmap {
 										   $this->EE->input->post('distance'.$append) : '';
 		}
 		
+		
 		//Loops through the defined channels
 		foreach($channels as $channel)
 		{
 			$channel_data = $this->EE->channel_data->get_channel_by_name($channel)->row();
+			
+			if(!isset($channel_data->channel_name))
+			{
+				$this->EE->output->show_user_error('general', '"'.$channel.'" is not a valid channel name.');	
+			}
 			
 			$channel_fields = $this->EE->channel_data->get_channel_fields($channel_data->channel_id)->result();
 			$available_categories = explode('|', $channel_data->cat_group);
