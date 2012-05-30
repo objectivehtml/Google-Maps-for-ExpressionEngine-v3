@@ -1363,45 +1363,44 @@ Class Gmap {
 				
 				$vars[0] = array_merge($fields, $vars[0]);
 			}
-				
-		}
-		
-		//Loops through the channel categories and assigns them to template
-		//variable in a linear fasion, similar to the steps above
-		foreach($available_categories as $cat_group_id)
-		{
-			$cat_data = $this->EE->channel_data->get_category_by_group($cat_group_id, array(
-				'select'   => '*',
-				'order_by' => $this->param('cat_order_by', 'parent_id, cat_order'),
-				'sort'     => $this->param('cat_sort', 'asc, asc'),
-				'limit'    => $this->param('cat_limit', FALSE),
-				'offset'   => $this->param('cat_offset', 0)
-			))->result();
-			
-			foreach($cat_data as $cat_index => $category)
+							
+			//Loops through the channel categories and assigns them to template
+			//variable in a linear fasion, similar to the steps above
+			foreach($available_categories as $cat_group_id)
 			{
-				$selected = '';
-				$checked  = '';
+				$cat_data = $this->EE->channel_data->get_category_by_group($cat_group_id, array(
+					'select'   => '*',
+					'order_by' => $this->param('cat_order_by', 'parent_id, cat_order'),
+					'sort'     => $this->param('cat_sort', 'asc, asc'),
+					'limit'    => $this->param('cat_limit', FALSE),
+					'offset'   => $this->param('cat_offset', 0)
+				))->result();
 				
-				if($this->EE->google_maps->is_checked_or_selected($this->EE->input->post('categories'), $category->cat_id))
+				foreach($cat_data as $cat_index => $category)
 				{
-					$selected = $selected_true;
-					$checked  = $checked_true;
+					$selected = '';
+					$checked  = '';
+					
+					if($this->EE->google_maps->is_checked_or_selected($this->EE->input->post('categories'), $category->cat_id))
+					{
+						$selected = $selected_true;
+						$checked  = $checked_true;
+					}
+					
+					$vars[0]['categories'][] = array(
+						'category_id'   		  => $category->cat_id,
+						'category_group_id'		  => $category->group_id,
+						'category_name' 		  => $category->cat_name,
+						'category_url_title'      => $category->cat_url_title,
+						'category_description'    => $category->cat_description,
+						'category_image'		  => $category->cat_image,
+						'selected'				  => $selected,
+						'checked'				  => $checked
+					);	
 				}
-				
-				$vars[0]['categories'][] = array(
-					'category_id'   		  => $category->cat_id,
-					'category_group_id'		  => $category->group_id,
-					'category_name' 		  => $category->cat_name,
-					'category_url_title'      => $category->cat_url_title,
-					'category_description'    => $category->cat_description,
-					'category_image'		  => $category->cat_image,
-					'selected'				  => $selected,
-					'checked'				  => $checked
-				);	
 			}
 		}
-		
+				
 		//var_dump($vars[0]['categories']);exit();
 		
 		$return    	   = $this->EE->TMPL->fetch_param('return');
@@ -1663,13 +1662,13 @@ Class Gmap {
 				if(count($channel_data) > 0)
 				{	
 					//$this->EE->db->or_where('channel_id', $channel_data->channel_id);
-					$where[] = '`exp_channel_data`.`channel_id` = \''.$channel_data->channel_id.'\'';
+					$where[] = 'OR `exp_channel_data`.`channel_id` = \''.$channel_data->channel_id.'\'';
 
 					if(is_array($prep_fields))
 					{				
 						foreach($prep_fields as $prep_index => $prep_value)
 						{
-							$where[] = $prep_value;
+							$where[] = ' AND '.$prep_value;
 						}
 					}
 					
@@ -1702,6 +1701,7 @@ Class Gmap {
 				}
 			}				
 		}
+		
 		if(count($cat_where) > 0)
 		{
 			$select[] = 'cc.*';
@@ -1790,8 +1790,8 @@ Class Gmap {
 		FROM
 			'.$table.'
 		INNER JOIN `exp_channel_titles` USING (entry_id)
-		'.(count($where) > 0 ? ' WHERE ' . implode(' AND ', $where) : NULL).' 
-		'.(count($having) > 0 ? ' HAVING '.implode(' AND ', $having) : NULL);
+		'.(count($where) > 0 ? ' WHERE ' . ltrim(implode(' ', $where), 'OR') : NULL).' 
+		'.(count($having) > 0 ? ' HAVING '.implode(' ', $having) : NULL);
 		
 		$grand_total_results = $this->EE->db->query($base_sql)->num_rows();
 
