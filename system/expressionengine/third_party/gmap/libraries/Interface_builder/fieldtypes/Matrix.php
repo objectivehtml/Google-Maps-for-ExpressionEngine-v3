@@ -65,35 +65,7 @@ class Matrix_IBField extends IBFieldtype {
 
 		<a href="#" class="add-row">Add Row</a>
 
-		</div>
-
-		<script type="text/javascript">
-		$(document).ready(function() {
-			var id = "#ib-matrix-'.$this->name.'";
-			var $wrapper = $(id);
-			var $body = $wrapper.find("tbody");
-			var $head = $wrapper.find("thead tr");
-			var columns = '.json_encode($this->settings['columns']).'
-
-			$wrapper.find(".add-row").click(function() {
-				
-				var row = $("<tr />");
-				var index = $body.find("tr").length;
-
-				row.append("<td><div class=\"ib-drag-handle\"></div></td>");
-
-				for(var x = 1; x < $head.find("th").length; x++) {
-					row.append("<td><input type=\"text\" name=\"'.$this->name.'["+index+"]["+columns[x-1].name+"]\" value=\"\" /></td>");
-				}
-
-				$body.append(row);
-
-				return false;
-			});
-		});
-		</script>
-
-		';
+		</div>';
 
 		return implode(NULL, $html);
 	}

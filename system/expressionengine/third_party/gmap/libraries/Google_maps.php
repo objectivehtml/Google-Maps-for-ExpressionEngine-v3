@@ -1064,6 +1064,27 @@ class Google_maps {
 		return $return;
 	}  
 
+	public function current_url_new($append = '', $value = '')
+	{
+		$http = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://';
+		
+		$port = $_SERVER['SERVER_PORT'] == '80' || $_SERVER['SERVER_PORT'] == '443' ? NULL : ':' . $_SERVER['SERVER_PORT'];
+		
+		if(!isset($_SERVER['SCRIPT_URI']))
+		{				
+			 $_SERVER['SCRIPT_URI'] = $http . $_SERVER['HTTP_HOST']. $_SERVER['REQUEST_URI'];
+		}
+		
+		$base_url = $http . $_SERVER['HTTP_HOST'];
+		
+		if(!empty($append))
+		{
+			$base_url .= '?'.$append.'='.$value;
+		}
+		
+		return $base_url;
+	}
+	
 	private function parse($vars, $tagdata = FALSE)
 	{
 		if($tagdata === FALSE)
