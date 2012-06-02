@@ -395,7 +395,7 @@ Class Gmap {
 			'clustering'            => $this->param('clustering', FALSE, TRUE),
 			'duplicate_markers'     => $this->param('duplicate_markers', FALSE, TRUE),
 			'window_trigger'        => $this->param('window_trigger', 'click'),
-			'redirect'        		=> $this->param('redirect', 'click')
+			'redirect'        		=> $this->param('redirect', FALSE, TRUE)
 		));
 		
 		/* -------------------------------------------

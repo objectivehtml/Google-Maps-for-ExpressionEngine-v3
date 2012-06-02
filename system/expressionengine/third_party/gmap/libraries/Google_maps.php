@@ -308,7 +308,8 @@ class Google_maps {
 			'script_tag'        => TRUE,
 			'duplicate_markers' => TRUE,
 			'clustering' 		=> FALSE,
-			'window_trigger' 	=> 'click'
+			'window_trigger' 	=> 'click',
+			'redirect'			=> FALSE,
 		);
 		
 		$params = array_merge($default_params, $params);
@@ -413,6 +414,8 @@ class Google_maps {
 							{
 								$js .= $params['id'].'_markers[index] = new google.maps.Marker('.$this->convert_to_js($options).');';
 							}
+							
+							var_dump($params['redirect']);exit();
 							
 							if(isset($params['redirect']) && $params['redirect'])
 							{
