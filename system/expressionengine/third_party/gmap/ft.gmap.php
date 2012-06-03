@@ -799,10 +799,14 @@ class Gmap_ft extends EE_Fieldtype {
 			return $this->parse(array($vars), $tagdata);
 		}
 		
+				
 		if(isset($params['redirect']))
 		{
-			$params['redirect'] = $tagdata;
-			$tagdata            = NULL;
+			if($this->bool_param($params['redirect']))
+			{				
+				$params['redirect'] = $tagdata;
+				$tagdata            = NULL;
+			}			
 		}
 
 		// If the id parameter is set, add the marker information to the map
@@ -875,6 +879,7 @@ class Gmap_ft extends EE_Fieldtype {
 
 				if($data->markers->total > 0 && in_array('markers', $params['render']))
 				{
+				
 					$markers 	= array($data->markers);
 					$options	= array(
 						'id' 			=> $params['id'],
