@@ -415,8 +415,6 @@ class Google_maps {
 								$js .= $params['id'].'_markers[index] = new google.maps.Marker('.$this->convert_to_js($options).');';
 							}
 							
-							var_dump($params['redirect']);exit();
-							
 							if(isset($params['redirect']) && $params['redirect'])
 							{
 								$js .= '
