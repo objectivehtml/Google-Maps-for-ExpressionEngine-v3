@@ -1065,7 +1065,7 @@ class Google_maps {
 		return $return;
 	}  
 
-	public function current_url_new($append = '', $value = '')
+	public function base_url($append = '', $value = '')
 	{
 		$http = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://';
 		
