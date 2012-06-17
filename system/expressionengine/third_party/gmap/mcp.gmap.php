@@ -113,7 +113,7 @@ class Gmap_mcp {
 
 		$vars = array(
 			'return'   => $this->EE->google_maps->current_url(),
-			'action'   => $this->EE->channel_data->get_action_id('Gmap_mcp', 'import_csv_action'),
+			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_csv_action'),
 			'settings' => $this->EE->interface_builder->fieldsets()
 		);
 		

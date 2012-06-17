@@ -822,7 +822,8 @@ class Gmap_ft extends EE_Fieldtype {
 				'clustering'		=> FALSE,
 				'duplicate_markers' => TRUE,
 				'window_trigger'    => 'click',
-				'redirect'			=> FALSE
+				'redirect'			=> FALSE,
+				'category'			=> FALSE,
 			);
 			
 			$params                      = array_merge($default_params, $params);
@@ -902,7 +903,8 @@ class Gmap_ft extends EE_Fieldtype {
 						'clustering'        => $params['clustering'],
 						'duplicate_markers' => $params['duplicate_markers'],
 						'window_trigger'    => $params['window_trigger'],
-						'redirect'			=> $params['redirect']
+						'redirect'			=> $params['redirect'],
+						'category'			=> $params['category']
 					);
 					
 					$marker		= $this->EE->google_maps->marker($options);			

@@ -37,16 +37,57 @@ class Gmap_ext {
 	 * Sets the JavaScript protection to FALSE for the channel entries
 	 * loop to parse variables inside JavaScript.
 	 *
-	 * @return void
+	 * @return string
 	 */
 	 
 	public function channel_entries_tagdata($tagdata, $row, &$obj)
 	{
 		$obj->EE->TMPL->protect_javascript = FALSE;
 		
+		if(isset($obj->categories[$row['entry_id']]))
+		{
+			$categories = $this->get_categories($obj, $row['entry_id']);
+			
+			$tagdata = $obj->EE->TMPL->parse_variables_row($tagdata, array('category_ids' => $categories));
+		}
+		
 		return $tagdata;
 	}
-		 
+	 
+	/**
+	 * Channel Entries Tagdata End
+	 *
+	 * Parses e 
+	 *
+	 * @return string
+	 */
+	 
+	public function channel_entries_tagdata_end($tagdata, $row, &$obj)
+	{
+		if(isset($obj->categories[$row['entry_id']]))
+		{
+			$categories = $this->get_categories($obj, $row['entry_id']);
+			
+			$tagdata = str_replace('["CATEGORY_IDS"]', json_encode($categories), $tagdata);
+		}
+		
+		return $tagdata;
+	}
+	
+	private function get_categories($obj, $entry_id)
+	{
+		$return = array();
+		
+		foreach($obj->categories[$entry_id] as $category)
+		{
+			$return[] = $category[0];	
+		}
+		
+		$return = implode('|', $return);
+		
+		return $return;
+	}
+	 
 	/**
 	 * Activate Extension
 	 *

@@ -310,6 +310,7 @@ class Google_maps {
 			'clustering' 		=> FALSE,
 			'window_trigger' 	=> 'click',
 			'redirect'			=> FALSE,
+			'category'			=> FALSE
 		);
 		
 		$params = array_merge($default_params, $params);
@@ -434,6 +435,11 @@ class Google_maps {
 							}
 							
 							$js .= $params['id'].'_markers[index].index = '.$data_index.';';
+							
+							if(isset($params['category']) && $params['category'] !== FALSE)
+							{								
+								$js .= $params['id'].'_markers[index].category = '.json_encode(explode('|', $params['category'])).';';
+							}
 							
 							if($params['extend_bounds'])
 							{

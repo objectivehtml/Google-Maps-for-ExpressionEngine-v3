@@ -391,6 +391,7 @@ Class Gmap {
 				'open_windows'			 => $this->param('open_windows', $this->param('open_window', FALSE, TRUE), TRUE),
 				'script_tag' 	  		 => $this->param('script_tag', FALSE)
 			),
+			'category'				=> $this->param('category', FALSE),
 			'exclude_single_marker' => $this->param('exclude_single_marker', TRUE, TRUE),
 			'clustering'            => $this->param('clustering', FALSE, TRUE),
 			'duplicate_markers'     => $this->param('duplicate_markers', FALSE, TRUE),
