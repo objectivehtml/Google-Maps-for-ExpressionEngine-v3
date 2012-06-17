@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.183
- * @build		20120526
+ * @version		3.0.184
+ * @build		20120617
  */
 
 include 'config/gmap_config.php';
@@ -90,7 +90,8 @@ class Gmap_upd {
 	);
 	
 	private $hooks = array(
-		array('channel_entries_tagdata', 'channel_entries_tagdata')
+		array('channel_entries_tagdata', 'channel_entries_tagdata'),
+		array('channel_entries_tagdata_end', 'channel_entries_tagdata_end')
 	);
 	
     public function __construct()

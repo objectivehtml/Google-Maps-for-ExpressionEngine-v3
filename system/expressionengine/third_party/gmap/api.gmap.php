@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.183
- * @build		20120526
+ * @version		3.0.184
+ * @build		20120617
  */
 
 class Gmap_api extends Base_API {

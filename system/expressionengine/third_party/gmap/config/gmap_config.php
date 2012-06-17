@@ -4,8 +4,8 @@
  *	Version and Build
 */
 
-$config['gmap_version']	= '3.0.183';
-$config['gmap_build']	= '20120526';
+$config['gmap_version']	= '3.0.184';
+$config['gmap_build']	= '20120617';
 
 /* 
  *	Protect JavaScript
