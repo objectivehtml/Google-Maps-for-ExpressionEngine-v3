@@ -141,9 +141,9 @@ Class Gmap {
 
 		$map_options 	= array_merge($default_options, $this->get_options('map'));
 		
-		$map_options['clusterMaxZoom']  = $this->param('clusterMaxZoom', 0);
-		$map_options['clusterGridSize'] = $this->param('clusterGridSize', 0);
-		$map_options['clusterStyles']   = '['.$this->param('clusterStyles', '').']';
+		$map_options['clusterMaxZoom']  = $this->param('clusterMaxZoom', $this->param('cluster_max_zoom', 0));
+		$map_options['clusterGridSize'] = $this->param('clusterGridSize', $this->param('cluster_grid_size', 0));
+		$map_options['clusterStyles']   = '['.$this->param('clusterStyles', $this->param('cluster_styles', '')).']';
 
 		/* -------------------------------------------
 		/* 'gmap_init_params hook.
