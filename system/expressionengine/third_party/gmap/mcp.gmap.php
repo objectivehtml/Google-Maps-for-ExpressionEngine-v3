@@ -18,11 +18,68 @@ class Gmap_mcp {
 		$this->EE =& get_instance();
 		
 		$this->EE->load->library('Google_maps');
-		$this->EE->load->driver('interface_builder');
-		$this->EE->load->driver('channel_data');
+		$this->EE->load->library('Theme_loader');
+		$this->EE->load->driver('Interface_builder');
+		$this->EE->load->driver('Channel_data');
+		$this->EE->load->library('Data_import');
+		
 	}
 	
 	function index()
+	{		
+		$vars = array(
+			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_data_action'),
+			'settings' => $this->EE->data_import->get_settings()
+		);
+		
+		return $this->EE->load->view('csv_index', $vars, TRUE);
+	}
+	
+	public function import_data_action()
+	{		
+		$entries    = $this->EE->data_import->load_file($_FILES["file"]['tmp_name']);
+		$settings   = (array) $this->EE->data_import->get_setting($this->EE->input->post('id'));
+		$categories = array();;
+		
+		foreach($this->EE->channel_data->get_categories()->result() as $category)
+		{
+			$categories[$category->{$settings['category_column_type']}] = $category;
+		}
+		
+		$data = array();
+		
+		foreach($entries as $entry)
+		{
+			$geocode = FALSE;
+			
+			foreach($settings['geocode_fields'] as $field)
+			{
+				$geocode .= isset($entry[$field->field_name]) ? $entry[$field->field_name] . ' ' : NULL;
+			}
+			
+			if(!isset($data[$entry[$settings['group_by']]]))
+			{
+				$data[$entry[$settings['group_by']]] = array(
+					'settings_id' => $this->EE->input->post('id'),
+					'status'	  => 'pending',
+					'gmt_date'    => $this->EE->localize->now,
+					'geocode'	  => trim($geocode),
+					'data'        => json_encode($entry),
+					'categories'  => $categories[$entry[$settings['category_column']]]->cat_id
+				);	
+			}
+			else
+			{
+				$data[$entry[$settings['group_by']]]['categories'] .= '|'.$categories[$entry[$settings['category_column']]]->cat_id;
+			}
+		}
+		
+		$this->EE->db->insert_batch('gmap_upload_pool', $data);
+		
+		exit();
+	}
+	
+	function settings()
 	{
 		$fields = array(
 			'settings' => array(
@@ -35,6 +92,11 @@ class Gmap_mcp {
 				),
 				'wrapper' => 'div',
 				'fields'  => array(
+					'id' => array(
+						'label'       => 'ID',
+						'description' => 'Since you can save multiple variations of settings to import, your must give a unique identifier for these settings.',
+						'type'        => 'input'
+					),
 					'channel' => array(
 						'label'       => 'Channel',
 						'description' => 'This is the channel where your data will be uploaded.',
@@ -48,13 +110,27 @@ class Gmap_mcp {
 						'description' => 'This is the name of Google Maps for ExpressionEngine fieldtype to store your data.',
 						'type'        => 'select',
 						'settings' => array(
-							'options' => 'CHANNEL_DROPDOWN'
+							'options' => 'FIELD_DROPDOWN'
 						)
 					),
 					'geocode_fields' => array(
 						'label'       => 'Geocode Fields',
-						'description' => 'Use standard ExpressionEngine tags with custom fields to create the string that will be sent to the geocoder.<br>Example: {your_address_field} {your_city_field} {your_state_field} {your_zip_field}',
-						'type'        => 'input'
+						'description' => 'This field is used to define the column(s) in the .CSV you wish to use for geocoding.',
+						'type'	=> 'matrix',
+						'settings' => array(
+							'columns' => array(
+								0 => array(
+									'name'  => 'field_name',
+									'title' => 'Column Name'
+								)
+							),
+							'attributes' => array(
+								'class'       => 'mainTable padTable',
+								'border'      => 0,
+								'cellpadding' => 0,
+								'cellspacing' => 0
+							)
+						)
 					),
 					'author_id' => array(
 						'label'       => 'Author ID',
@@ -85,6 +161,11 @@ class Gmap_mcp {
 							)
 						)
 					),
+					'group_by' => array(
+						'label'       => 'Group By',
+						'description' => 'This is the unique identifier for each row that will group your entries together. If there are duplicate rows, define the column in the .csv that stores the ID.',
+						'type'        => 'input'
+					),
 					'category_column' => array(
 						'label'       => 'Category Column',
 						'description' => 'This is the name of the column that stores the category.',
@@ -106,23 +187,34 @@ class Gmap_mcp {
 			)
 		);
 		
-		$data = array();
+		$data = (array) $this->EE->data_import->get_setting($this->EE->input->get('id'));
 		
 		$this->EE->interface_builder->data = $data;
 		$this->EE->interface_builder->add_fieldsets($fields);
 
 		$vars = array(
-			'return'   => $this->EE->google_maps->current_url(),
-			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_csv_action'),
+			'return'   => $this->EE->google_maps->current_url(TRUE, TRUE, config_item('cp_url')),
+			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'gmap_import_csv_save_settings_action'),
+			'interface_builder' => $this->EE->theme_loader->theme_url().'third_party/gmap/javascript/InterfaceBuilder.js',
 			'settings' => $this->EE->interface_builder->fieldsets()
 		);
 		
 		return $this->EE->load->view('csv_import', $vars, TRUE);
 	}
 	
+	public function gmap_import_csv_save_settings_action()
+	{		
+		$return = $this->EE->input->post('return');
+		
+		unset($_POST['return']);
+		
+		$this->EE->data_import->save_settings($this->EE->input->post('id'), json_encode($_POST));
+		$this->EE->functions->redirect($return);
+	}
+	
 	public function import_csv_action()
 	{
-		echo 'test';exit();	
+		$this->EE->data_import->run();
 	}
 	
 	private function update()

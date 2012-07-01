@@ -1047,9 +1047,50 @@ class Google_maps {
 		return $str;
 	}
 	
-	function current_url($uri_segments = TRUE, $get_string = TRUE)
+	public function prep_field_options($options, $field)
 	{
-		$return = $this->EE->config->site_url();
+		$return = array();
+		
+		//Loops through the list items for the fieldtype
+		foreach($options as $item)
+		{
+			$checked  = '';
+			$selected = '';
+
+			//Checks to see if the entry should be checked or selected
+			if($this->EE->input->post($field) !== FALSE)
+			{
+				$post = $this->EE->input->post($field);
+				
+				if($this->is_checked_or_selected($post, $item))
+				{
+					$checked 	= 'checked="checked"';
+					$selected 	= 'selected="selected"';
+				}
+			}
+			
+			//Adds all the data to the template variable
+			$return[] = array(
+				'option_name'  => ucfirst($item),
+				'option_value' => $item,
+				'selected'	   => $selected,
+				'checked'	   => $checked
+			);
+		}
+		
+		return $return;
+	}
+	
+	function current_url($uri_segments = TRUE, $get_string = TRUE, $base_url = FALSE)
+	{
+		if(!$base_url)
+		{
+			$return = $this->EE->config->site_url();
+		}
+		else
+		{
+			$return = $base_url;
+		}
 		
 		if($uri_segments)
 		{

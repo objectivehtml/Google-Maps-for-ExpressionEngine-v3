@@ -18,7 +18,7 @@ class Matrix_IBField extends IBFieldtype {
 			}
 		}
 
-		$html[] = '<div id="ib-matrix-'.$this->name.'">';
+		$html[] = '<div id="ib-matrix-'.$this->name.'" data-name="'.$this->name.'" class="ib-matrix">';
 		$html[] = '<table '.implode(NULL, $attribute_array).' class="ib-field-matrix">';
 		$html[] = '<thead><tr><th style="width:1px"></th>';
 
@@ -26,6 +26,8 @@ class Matrix_IBField extends IBFieldtype {
 		{
 			if(is_array($column))
 			{
+				$name = $column['name'];
+				
 				if(isset($column['title']))
 				{
 					$column = $column['title'];
@@ -35,10 +37,11 @@ class Matrix_IBField extends IBFieldtype {
 					$column = $column['name'];
 				}
 			}
-
-			$html[] = '<th>'.$column.'</th>';
+			
+			$html[] = '<th data-column-name="'.$name.'">'.$column.'</th>';
 		}
 
+		$html[] = '<th style="width:40px"></th>';	
 		$html[] = '</tr>';
 		$html[] = '</thead>';
 		$html[] = '<tbody>';
@@ -53,9 +56,10 @@ class Matrix_IBField extends IBFieldtype {
 				{
 					$data[$index] = (array) $data[$index];
 
-					$html[] = '<td><input type="text" name="'.$this->name.'['.$index.']['.$column['name'].']" value="'.(isset($data[$index][$column['name']]) ? $data[$index][$column['name']] : NULL).'" /></td>';
+					$html[] = '<td><input type="text" name="'.$this->name.'['.$index.']['.$column['name'].']" value="'.(isset($data[$index][$column['name']]) ? $data[$index][$column['name']] : NULL).'" class="ib-cell" /></td>';
 				}
 				
+				$html[] = '<tr><td><a href="#'+$index+'" class="ib-delete-row">Delete</a></td>';
 				$html[] = '</tr>';
 			}
 		}
@@ -63,7 +67,7 @@ class Matrix_IBField extends IBFieldtype {
 		$html[] = '</tbody>';
 		$html[] = '</table>
 
-		<a href="#" class="add-row">Add Row</a>
+		<a href="#" class="ib-add-row">Add Row</a>
 
 		</div>';
 

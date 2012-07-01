@@ -1289,6 +1289,8 @@ Class Gmap {
 										   $this->EE->input->post('distance'.$append) : '';
 		}
 		
+		$channel_fields = $this->EE->channel_data->get_fields()->result();
+		$field_index    = $this->EE->channel_data->utility->reindex($channel_fields, 'field_id');
 		
 		//Loops through the defined channels
 		foreach($channels as $channel)
@@ -1300,7 +1302,6 @@ Class Gmap {
 				$this->EE->output->show_user_error('general', '"'.$channel.'" is not a valid channel name.');	
 			}
 			
-			$channel_fields = $this->EE->channel_data->get_channel_fields($channel_data->channel_id)->result();
 			$available_categories = explode('|', $channel_data->cat_group);
 						
 			//Loops throught the fields in each channel
@@ -1320,41 +1321,44 @@ Class Gmap {
 					    	 $this->EE->input->post($field_appendage) : '';
 					    		
 					$vars[0]['post:'.$field_appendage] = $input;
-								
+					
+					//If list items are populated from another field
+					if((int) $field->field_pre_field_id)
+					{	
+						$pre_field = $field_index[$field->field_pre_field_id];
+						
+						$entries = $this->EE->channel_data->get_channel_entries($field->field_pre_channel_id, array(
+							'select'   => 'field_id_'.$pre_field->field_id.' as \''.$pre_field->field_name.'\'',
+							'order_by' => $pre_field->field_related_orderby,
+							'limit'    => 5,
+							'sort'     => $pre_field->field_related_sort,
+						));
+						
+						$list_items = array();
+						
+						foreach($entries->result() as $entry)
+						{
+							if(!in_array($entry->{$pre_field->field_name}, (array) $list_items))
+							{
+								$list_items[] = $entry->{$pre_field->field_name};	
+							}
+						}
+						
+						if(!isset($vars[0]['options:'.$channel_field->field_name]))
+						{
+							$vars[0]['options:'.$channel_field->field_name] = $this->EE->google_maps->prep_field_options($list_items, $field_appendage);	
+						}					
+					}
+					
 					//If list items exist, it build the option:field_name array
-					if(!empty($field->field_list_items))
+					else if(!empty($field->field_list_items))
 					{					
 						$list_items = explode("\n", $field->field_list_items);
 								
-						if(count($list_items) > 0)
+						if(!isset($vars[0]['options:'.$channel_field->field_name]))
 						{
-							//Loops through the list items for the fieldtype
-							foreach($list_items as $item)
-							{
-								$checked = '';
-								$selected = '';
-								
-								//Checks to see if the entry should be checked or selected
-								if($this->EE->input->post($field_appendage) !== FALSE)
-								{
-									$post = $this->EE->input->post($field_appendage);
-									
-									if($this->EE->google_maps->is_checked_or_selected($post, $item))
-									{
-										$checked 	= $checked_true;
-										$selected 	= $selected_true;
-									}
-								}
-								
-								//Adds all the data to the template variable
-								$vars[0]['options:'.$field_appendage][] = array(
-									'option_name'  => ucfirst($item),
-									'option_value' => $item,
-									'selected'	   => $selected,
-									'checked'	   => $checked
-								);
-							}
-						}		
+							$vars[0]['options:'.$channel_field->field_name] = $this->EE->google_maps->prep_field_options($list_items, $field_appendage);	
+						}	
 					}
 					
 					$fields['label:'.$field_appendage] = $field->field_label;
@@ -1364,7 +1368,7 @@ Class Gmap {
 				
 				$vars[0] = array_merge($fields, $vars[0]);
 			}
-							
+			
 			//Loops through the channel categories and assigns them to template
 			//variable in a linear fasion, similar to the steps above
 			foreach($available_categories as $cat_group_id)
