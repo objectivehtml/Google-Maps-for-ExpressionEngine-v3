@@ -219,6 +219,11 @@ Class Gmap {
 		return $return;
 	}
 	
+	public function clear_cache()
+	{
+		$this->EE->functions->set_cookie('gmap_last_post', serialize(array()), strtotime('-1 year'));
+	}
+	
 	public function clean_js()
 	{
 		return $this->EE->google_maps->clean_js($this->EE->TMPL->tagdata);

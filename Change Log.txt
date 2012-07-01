@@ -12,6 +12,7 @@
 v3.0.184 - 06/01/2012
 ---------------------
 - (Feature) Added compatibility to related channel field options in the exp:gmap:search method.
+- (Feature) Added new clear_cache() method that clears the search cache.
 - (Bug Fix) Fixed PHP 5.4 compatibility
 - (API) Updated Channel Data Library
 
