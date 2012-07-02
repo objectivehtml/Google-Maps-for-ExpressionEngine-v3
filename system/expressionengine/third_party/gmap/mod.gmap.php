@@ -1335,7 +1335,6 @@ Class Gmap {
 						$entries = $this->EE->channel_data->get_channel_entries($field->field_pre_channel_id, array(
 							'select'   => 'field_id_'.$pre_field->field_id.' as \''.$pre_field->field_name.'\'',
 							'order_by' => $pre_field->field_related_orderby,
-							'limit'    => 5,
 							'sort'     => $pre_field->field_related_sort,
 						));
 						
