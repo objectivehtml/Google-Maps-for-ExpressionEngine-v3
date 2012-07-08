@@ -25,21 +25,153 @@ class Gmap_mcp {
 		
 	}
 	
-	function index()
-	{		
+	public function index()
+	{	
+		$this->EE->cp->set_right_nav(array(
+			'Manage Schemas' => $this->cp_url('schemas'),
+			'New Schema' => $this->cp_url('settings'), 
+		));
+		
 		$vars = array(
 			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_data_action'),
-			'settings' => $this->EE->data_import->get_settings()
+			'settings' => $this->EE->data_import->get_settings(),
+			'stats'    => $this->EE->data_import->get_stats(),
+			'import_url' => $this->cp_url('import_pool'),
+			'return'   => $this->cp_url()
 		);
 		
 		return $this->EE->load->view('csv_index', $vars, TRUE);
 	}
 	
+	public function schemas()
+	{
+		$this->EE->cp->set_right_nav(array(
+			'&larr; Back to Import' => $this->cp_url(),
+			'New Schema' => $this->cp_url('settings'), 
+		));
+		
+		$vars = array(
+			'settings' => $this->EE->data_import->get_settings(),
+			'edit_url' => $this->cp_url('settings')
+		);
+		
+		return $this->EE->load->view('schemas', $vars, TRUE);		
+	}
+	
+	public function import_pool()
+	{
+		$this->EE->cp->set_right_nav(array(
+			'&larr; Back to Pool' => $this->cp_url(), 
+		));
+		
+		$id = $this->EE->input->get('id');
+		
+		$settings = $this->EE->data_import->get_setting($id);
+			
+		$vars = array(
+			'id' => $id,
+			'items' => $this->EE->data_import->get_pools($id, 'pending')->result(),
+			'stats' => $this->EE->data_import->get_stats($id),
+			'import_start_url' => $this->cp_url('import_start_action', TRUE),
+			'import_item_url' => $this->cp_url('import_item_action', TRUE)
+		);
+		/*
+		foreach($vars['items'] as $index => $item)
+		{
+			$item->data = json_decode($item->data);	
+		}*/
+		
+		$vars['items'] = json_encode($vars['items']);
+		
+		return $this->EE->load->view('import_pool', $vars, TRUE);
+	}
+	
+	public function import_start_action()
+	{
+		$id 	  = $this->EE->input->get_post('id');
+		
+		$start_data = $this->EE->data_import->start_import($id);
+		$start_data->importer_last_ran = date('Y-m-d h:i A', $start_data->importer_last_ran);
+		
+		return $this->json($start_data);		
+	}
+	
+	public function import_item_action()
+	{
+		$settings = $this->EE->data_import->get_setting($this->EE->input->get_post('schema_id'));
+		
+		$data = json_decode($this->EE->input->get_post('data'));
+		
+		foreach(explode('|', $this->EE->input->get_post('categories')) as $category)
+		{
+			$data->categories[] = $category;
+		}	
+		
+		$data = (array) $data;
+		
+		$data['entry_date'] = $this->EE->localize->now;
+		
+		$markers = array();
+		
+		//var_dump($this->EE->google_maps->geocode('50 Washington Ave Richmond CA 948013995'));exit();
+		
+		foreach($this->EE->google_maps->geocode($this->EE->input->get_post('geocode')) as $response)
+		{
+			if($response->status == 'OK')
+			{					
+				foreach($response->results as $result)
+				{
+					$markers[] = (object) $result;	
+				}
+			}	
+		}
+		
+		$data['field_id_'.$settings->gmap_field] = $this->EE->google_maps->build_response(array('markers' => $markers));;
+		$data['field_ft_'.$settings->gmap_field] = 'none';
+		
+		$this->EE->load->library('api');
+		$this->EE->api->instantiate('channel_entries');
+		$this->EE->api->instantiate('channel_fields');
+		
+		$this->EE->session->userdata['group_id'] = 1;
+		
+		$this->EE->api_channel_fields->setup_entry_settings($settings->channel, $data);
+		$this->EE->api_channel_entries->submit_new_entry($settings->channel, $data);
+		
+		if(count($this->EE->api_channel_entries->errors) == 0)
+		{
+			$this->EE->data_import->delete_pool($this->EE->input->get('id'));
+			
+			$return = $this->EE->data_import->import_success($this->EE->input->get('schema_id'));
+		}
+		else
+		{
+			$return = $this->EE->data_import->import_failed($this->EE->input->get('schema_id'));
+		}
+		
+		return $this->json($return);
+	}
+	
+	public function import_pool_action()
+	{
+		/*
+		$id = $this->EE->input->get('id');
+		
+		$items = $this->EE->data_import->get_pool($id);
+						
+		foreach($items as $item)
+		{
+			var_dump($item);exit();
+		}
+		*/
+	}
+	
 	public function import_data_action()
 	{		
 		$entries    = $this->EE->data_import->load_file($_FILES["file"]['tmp_name']);
+		$fields     = $this->EE->channel_data->utility->reindex($this->EE->channel_data->get_fields()->result(), 'field_name');
 		$settings   = (array) $this->EE->data_import->get_setting($this->EE->input->post('id'));
-		$categories = array();;
+		$categories = array();
 		
 		foreach($this->EE->channel_data->get_categories()->result() as $category)
 		{
@@ -52,20 +184,44 @@ class Gmap_mcp {
 		{
 			$geocode = FALSE;
 			
-			foreach($settings['geocode_fields'] as $field)
+			if(isset($settings['geocode_fields']))
 			{
-				$geocode .= isset($entry[$field->field_name]) ? $entry[$field->field_name] . ' ' : NULL;
+				foreach($settings['geocode_fields'] as $field)
+				{
+					$geocode .= isset($entry[$field->field_name]) ? $entry[$field->field_name] . ' ' : NULL;
+				}
 			}
 			
 			if(!isset($data[$entry[$settings['group_by']]]))
 			{
+				$title = $settings['title'];
+				
+				$entry_data = array(
+					'status' 	=> $settings['status'],
+					'author_id' => $settings['author_id']
+				);
+				
+				foreach($settings['channel_fields'] as $channel_field)
+				{
+					if(!empty($channel_field->field_name) && !empty($channel_field->column_name))
+					{
+						$title = str_replace(LD.$field->field_name.RD, $entry[$channel_field->column_name], $title);
+						
+						$field = $fields[$channel_field->field_name];
+						$entry_data['field_id_'.$field->field_id] = $entry[$channel_field->column_name];
+						$entry_data['field_ft_'.$field->field_id] = $field->field_fmt;
+					}
+				}
+				
+				$entry_data['title'] = $title;
+				
 				$data[$entry[$settings['group_by']]] = array(
-					'settings_id' => $this->EE->input->post('id'),
-					'status'	  => 'pending',
-					'gmt_date'    => $this->EE->localize->now,
-					'geocode'	  => trim($geocode),
-					'data'        => json_encode($entry),
-					'categories'  => $categories[$entry[$settings['category_column']]]->cat_id
+					'schema_id'  => $this->EE->input->post('id'),
+					'status'     => 'pending',
+					'gmt_date'   => $this->EE->localize->now,
+					'geocode'    => trim($geocode),
+					'data'       => json_encode($entry_data),
+					'categories' => $categories[$entry[$settings['category_column']]]->cat_id
 				);	
 			}
 			else
@@ -74,16 +230,24 @@ class Gmap_mcp {
 			}
 		}
 		
-		$this->EE->db->insert_batch('gmap_upload_pool', $data);
+		if(count($data) > 0)
+		{
+			$this->EE->db->insert_batch('gmap_import_pool', $data);	
+		}
 		
-		exit();
+		$this->EE->data_import->reset_stat_count($this->EE->input->post('id'));
+		$this->EE->functions->redirect($this->EE->input->post('return'));
 	}
 	
-	function settings()
-	{
+	public function settings()
+	{	
+		$this->EE->cp->set_right_nav(array(
+			'&larr; Back to Schemas' => $this->cp_url('schemas'), 
+		));
+		
 		$fields = array(
 			'settings' => array(
-				'title' => 'Upload Settings',
+				'title' => 'Import Settings',
 				'attributes'  => array(
 					'class' => 'mainTable padTable',
 					'border' => 0,
@@ -99,7 +263,7 @@ class Gmap_mcp {
 					),
 					'channel' => array(
 						'label'       => 'Channel',
-						'description' => 'This is the channel where your data will be uploaded.',
+						'description' => 'This is the channel where your data will be imported.',
 						'type'        => 'select',
 						'settings' => array(
 							'options' => 'CHANNEL_DROPDOWN'
@@ -134,7 +298,7 @@ class Gmap_mcp {
 					),
 					'author_id' => array(
 						'label'       => 'Author ID',
-						'description' => 'This is the author id that will be assigned to the uploaded entries.',
+						'description' => 'This is the author id that will be assigned to the imported entries.',
 						'type'        => 'input'
 					),
 					'channel_fields' => array(
@@ -166,6 +330,16 @@ class Gmap_mcp {
 						'description' => 'This is the unique identifier for each row that will group your entries together. If there are duplicate rows, define the column in the .csv that stores the ID.',
 						'type'        => 'input'
 					),
+					'status' => array(
+						'label'       => 'Status',
+						'description' => 'This is the status that is assigned to each entry that is imported.',
+						'type'        => 'input'
+					),
+					'title' => array(
+						'label'       => 'Title',
+						'description' => 'This is the title assigned to each entry. It can be a combination of channel fields, or a static string.',
+						'type'        => 'input'
+					),
 					'category_column' => array(
 						'label'       => 'Category Column',
 						'description' => 'This is the name of the column that stores the category.',
@@ -187,16 +361,28 @@ class Gmap_mcp {
 			)
 		);
 		
-		$data = (array) $this->EE->data_import->get_setting($this->EE->input->get('id'));
+		
+		$id   = $this->EE->input->get('id');
+		
+		if($id)
+		{
+			$data = (array) $this->EE->data_import->get_setting($id);
+		}
+		else
+		{
+			$data = array();
+		}
 		
 		$this->EE->interface_builder->data = $data;
 		$this->EE->interface_builder->add_fieldsets($fields);
 
 		$vars = array(
-			'return'   => $this->EE->google_maps->current_url(TRUE, TRUE, config_item('cp_url')),
+			'return'   => $this->cp_url(),
+			'header'   => $this->EE->input->get('id') ? 'Edit' : 'New',
 			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'gmap_import_csv_save_settings_action'),
 			'interface_builder' => $this->EE->theme_loader->theme_url().'third_party/gmap/javascript/InterfaceBuilder.js',
-			'settings' => $this->EE->interface_builder->fieldsets()
+			'settings' => $this->EE->interface_builder->fieldsets(),
+			'schema_id' => $this->EE->input->get('id') ? $this->EE->input->get('id') : NULL
 		);
 		
 		return $this->EE->load->view('csv_import', $vars, TRUE);
@@ -208,7 +394,8 @@ class Gmap_mcp {
 		
 		unset($_POST['return']);
 		
-		$this->EE->data_import->save_settings($this->EE->input->post('id'), json_encode($_POST));
+		$this->EE->data_import->save_settings($this->EE->input->post('schema_id'), json_encode($_POST));
+				
 		$this->EE->functions->redirect($return);
 	}
 	
@@ -221,6 +408,26 @@ class Gmap_mcp {
 	{
 		$update = new Gmap_upd();
 		$update->update();
+	}
+	
+	private function cp_url($method = 'index', $useAmp = FALSE)
+	{
+		$amp  = !$useAmp ? AMP : '&';
+
+		$file = substr(BASE, 0, strpos(BASE, '?'));
+		$file = str_replace($file, '', $_SERVER['PHP_SELF']) . BASE;
+
+		$url  = $file .$amp. '&C=addons_modules' .$amp . 'M=show_module_cp' . $amp . 'module=gmap' . $amp . 'method=' . $method;
+
+		return str_replace(AMP, $amp, $url);
+	}
+	
+	private function json($data)
+	{
+		header('Content-type: application/json');
+		
+		echo json_encode($data);
+		exit();
 	}
 }
 // END CLASS

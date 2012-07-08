@@ -75,6 +75,56 @@ class Gmap_upd {
 				'type'				=> 'int',
 				'constraint'		=> 50
 			)
+		),
+		'gmap_import_pool' => array(
+			'id' => array(
+				'type' 				=> 'int',
+				'constraint' 		=> 50,
+				'primary_key' 		=> TRUE,
+	            'auto_increment' 	=> TRUE
+			),
+			'schema_id' => array(
+				'type' 				=> 'varchar',
+				'constraint'		=> 100
+			),
+			'gmt_date' => array(
+				'type' 				=> 'int',
+				'constraint'		=> 100
+			),
+			'status' => array(
+				'type' 				=> 'varchar',
+				'constraint'		=> 50
+			),
+			'date' => array(
+				'type'				=> 'longtext'
+			),
+			'geocode' => array(
+				'type'				=> 'text'
+			),
+			'categories' => array(
+				'type'				=> 'text'
+			)
+		),
+		'gmap_import_stats' => array(
+			'schema_id' => array(
+				'type' 				=> 'int',
+				'constraint' 		=> 50,
+				'primary_key' 		=> TRUE
+			),
+			/*'items_in_pool' => array(
+				'type' 				=> 'float',
+			),*/
+			'total_entries_imported' => array(
+				'type' 				=> 'float',
+			),
+			'importer_last_ran' => array(
+				'type'				=> 'int',
+				'constraint'		=> 50
+			),
+			'importer_total_runs' => array(
+				'type'				=> 'int',
+				'constraint'		=> 50
+			)
 		)
 	);
 	

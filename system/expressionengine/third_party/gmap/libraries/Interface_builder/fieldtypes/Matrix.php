@@ -59,18 +59,16 @@ class Matrix_IBField extends IBFieldtype {
 					$html[] = '<td><input type="text" name="'.$this->name.'['.$index.']['.$column['name'].']" value="'.(isset($data[$index][$column['name']]) ? $data[$index][$column['name']] : NULL).'" class="ib-cell" /></td>';
 				}
 				
-				$html[] = '<tr><td><a href="#'+$index+'" class="ib-delete-row">Delete</a></td>';
+				$html[] = '<td><a href="#'.$index.'" class="ib-delete-row">Delete</a></td>';
 				$html[] = '</tr>';
 			}
 		}
 		
 		$html[] = '</tbody>';
 		$html[] = '</table>
-
-		<a href="#" class="ib-add-row">Add Row</a>
-
+			<a href="#" class="ib-add-row">Add Row</a>
 		</div>';
-
+		
 		return implode(NULL, $html);
 	}
 }

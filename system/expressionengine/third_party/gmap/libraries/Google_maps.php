@@ -8,8 +8,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		1.1.13
- * @build		20120328
+ * @version		1.1.14
+ * @build		20120704
  */
  
 class Google_maps {
@@ -24,6 +24,47 @@ class Google_maps {
 
 		$this->EE->load->config('gmap_config');
 	}	
+	
+	public function build_response($data)
+	{
+		$response = array(
+			'markers' => array(
+				'total' => 0,
+				'results' => array()
+			),
+			'waypoints' => array(
+				'total' => 0,
+				'results' => array()
+			),
+			'regions' => array(
+				'total' => 0,
+				'results' => array()
+			)
+		);
+		
+		if(is_array($data))
+		{
+			$data = (object) $data;
+		}
+		
+		foreach(array('markers', 'waypoints', 'regions') as $type)
+		{		
+			if(is_array($data))
+			{
+				$data = (object) $data;
+			}
+			
+			if(isset($data->$type))
+			{
+				$response[$type]['results'] = $data->$type;			
+				$response[$type]['total'] 	= count($data->$type);
+			}	
+		}
+		
+		$response = (object) $response;
+		
+		return json_encode($response);
+	}
 	
 	public function center($map_id, $latitude, $longitude, $script = TRUE)
 	{
@@ -443,7 +484,7 @@ class Google_maps {
 							
 							if($params['extend_bounds'])
 							{
-								if(isset($params['exclude_single_marker']) && $param['exclude_single_marker'])
+								if(isset($params['exclude_single_marker']) && $params['exclude_single_marker'])
 								{
 									$js .= 
 									$params['id'].'_bounds.extend('.$options['position'].');' . 

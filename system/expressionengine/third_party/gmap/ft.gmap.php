@@ -283,6 +283,33 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		return $this->EE->load->view('fieldtype', $vars, TRUE);
 	}
+	
+	public function post_save($data)
+	{
+		$save_data = array();
+		$post_data = json_decode($data);
+		
+		if(!empty($this->settings['gmap_latitude_field']))
+		{
+			$save_data[$this->settings['gmap_latitude_field']] = $post_data->markers->results[0]->geometry->location->lat;
+		}
+		
+		if(!empty($this->settings['gmap_longitude_field']))
+		{
+			$save_data[$this->settings['gmap_longitude_field']] = $post_data->markers->results[0]->geometry->location->lng;
+		}
+		
+		if(count($save_data))
+		{
+			$this->EE->db->where('entry_id', $this->settings['entry_id']);
+			$this->EE->db->update('channel_data', $save_data);	
+		}	
+	}
+	
+	public function save($data)
+	{
+		return $data;
+	}
 		
 	/**
 	 * Displays the fieldtype settings

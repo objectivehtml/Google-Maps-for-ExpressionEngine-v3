@@ -8,7 +8,7 @@
 		<label for="id">Settings Schema</label><br>
 		<select name="id" id="id">
 		<? foreach($settings->result() as $setting): ?>
-			<option value="<? echo $setting->id?>"><? echo $setting->id?></option>
+			<option value="<? echo $setting->schema_id?>"><? echo json_decode($setting->settings)->id?></option>
 		<? endforeach; ?>
 		</select>
 	</p>
@@ -17,6 +17,8 @@
 		<label for="file">File</label><br>
 		<input type="file" name="file" id="file" />
 	</p>
+	
+	<input type="hidden" name="return" value="<? echo $return?>" />
 	
 	<button type="submit" class="submit">Add to Pool</button>
 	
@@ -30,7 +32,8 @@
 	<thead>
 		<tr>
 			<th>ID</th>
-			<th>Items in Pools</th>
+			<th>Name</th>
+			<th>Items in Pool</th>
 			<th>Total Entries Imported</th>
 			<th>Importer Last Ran</th>
 			<th>Total Import Attempts</th>
@@ -38,13 +41,22 @@
 		</tr>
 	</thead>
 	<tbody>
+	<? if($stats->num_rows() == 0): ?>
 		<tr>
-			<td> </td>
-			<td> </td>
-			<td> </td>
-			<td> </td>
-			<td> </td>
-			<td><a href="#">Run Geocoder</a></td>
+			<td colspan="7">There are no items in the pool.</td>
 		</tr>
+	<? else: ?>
+		<? foreach($stats->result() as $item): ?>
+			<tr>
+				<td><? echo $item->schema_id?></td>
+				<td><? echo $item->schema_name?></td>
+				<td><? echo $item->items_in_pool?></td>
+				<td><? echo $item->total_entries_imported?></td>
+				<td><? echo date('Y-m-d h:i A', $item->importer_last_ran)?></td>
+				<td><? echo $item->importer_total_runs?></td>
+				<td><a href="<? echo $import_url . '&id='. $item->schema_id?>">Run Geocoder</a></td>
+			</tr>
+		<? endforeach; ?>
+	<? endif; ?>
 	</tbody>
 </table>

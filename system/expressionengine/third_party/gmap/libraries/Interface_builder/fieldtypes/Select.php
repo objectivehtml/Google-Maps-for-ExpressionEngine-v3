@@ -72,25 +72,24 @@ class Select_IBField extends IBFieldtype {
 		{
 			if(is_object($option_value))
 			{
-				$option = $option_value;
+				$option = (array) $option_value;
 			}
 			else
 			{
-				$options = (object) array();
+				$option = array();
 			}
-
-			if(!isset($option->$index_field))
+			
+			if(!isset($option[$index_field]))
 			{
-				$option->$index_field = $index;
+				$option[$index_field] = $index;
 			}
 
-			if(!isset($option->$value_field))
+			if(!isset($option[$value_field]))
 			{
-				$option->$value_field = $option_value;
+				$option[$value_field] = $option_value;
 			}
 
-
-			$dropdown[$option->$index_field] = $option->$value_field;
+			$dropdown[$option[$index_field]] = $option[$value_field];
 		}
 
 		return $dropdown;
