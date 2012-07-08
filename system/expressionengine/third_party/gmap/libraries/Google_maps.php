@@ -8,15 +8,15 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		1.1.14
- * @build		20120704
+ * @version		1.2.0
+ * @build		20120708
  */
  
 class Google_maps {
 	
 	public $default_marker  = array();
 	public $default_options = array();
-	public $reserved_terms 	= array('', '_min', '_max', '_like');
+	public $reserved_terms 	= array('', '_min', '_max', '_like', '_day');
 	
 	public function __construct()
 	{
@@ -1011,23 +1011,37 @@ class Google_maps {
 		return rtrim($id, '|');
 	}
 	
-	public function prep_value($field_name, $value)
+	public function prep_value($field_name, $value, $field_id = FALSE)
 	{
 		if(is_string($value))
 		{
 			$value = '\''.$value.'\'';
 		}
-		
+			
 		//Preps conditional statement by testing the field_name for keywords
 		if(strpos($field_name, '_min'))
-			$operator = ' >= '.$value.'';
+		{
+			$operator = ' >= \''.$value.'\'';
+		}
 		else if(strpos($field_name, '_max'))
-			$operator = ' <= '.$value.'';
+		{
+			$operator = ' <= \''.$value.'\'';
+		}
 		else if(strpos($field_name, '_like'))
-			$operator = ' LIKE \'%'.str_replace('\'', '', $value).'%\'';
+		{
+			$operator = ' LIKE \'%'.$value.'%\'';
+		}
+		else if(strpos($field_name, '_day') && $field_id)
+		{
+			$value = str_replace('\'', '', $value);
+			$date = strtotime(date('Ymd 23:59:59', $value).'+1 day');
+			$operator = ' >= '.$value.' AND `field_id_'.$field_id.'` <= '.$date;
+		}
 		else
-			$operator = ' = '.$value.' ';
-	
+		{
+			$operator = ' = \''.$value.'\'';
+		}		
+		
 		return $operator;
 	}
 		
