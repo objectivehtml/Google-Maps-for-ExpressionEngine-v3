@@ -125,6 +125,16 @@ class Gmap_upd {
 				'type'				=> 'int',
 				'constraint'		=> 50
 			)
+		),
+		'gmap_import_settings' => array(
+			'schema_id' => array(
+				'type' 				=> 'int',
+				'constraint' 		=> 50,
+				'primary_key' 		=> TRUE
+			),
+			'settings' => array(
+				'type' 				=> 'longtext',
+			)
 		)
 	);
 	
@@ -136,6 +146,22 @@ class Gmap_upd {
 		array(
 		    'class'     => 'Gmap_mcp',
 		    'method'    => 'import_csv_action'
+		),
+		array(
+			'class' 	=> 'Gmap_mcp',
+			'method'	=> 'import_csv_save_settings_action'
+		),
+		array(
+			'class' 	=> 'Gmap_mcp',
+			'method'	=> 'import_data_action'
+		),
+		array(
+			'class' 	=> 'Gmap_mcp',
+			'method'	=> 'import_item_action'
+		),
+		array(
+			'class' 	=> 'Gmap_mcp',
+			'method'	=> 'import_start_action'
 		)
 	);
 	

@@ -3,30 +3,27 @@
 
 <script type="text/javascript">
 	
-	var id        = '<? echo $id ?>';
-	var items     = <? echo $items?>;
-	var stop      = false;
-	var lastIndex = 0;
+	var id         = <? echo $id ?>;
+	var totalItems = <? echo $total_items?>;
+	var stop       = false;
+	var lastIndex  = 0;
 	var $bar;
 	
 	function geocode(index) {
-		if(items && index < items.length && !stop) {
-			var item = items[index];
-			
-			$('.geocoding p').html(item.geocode);
+		if(totalItems > 0 && index < totalItems && !stop) {
 				
-			$.get('<? echo $import_item_url?>', item, function(data) {
+			$.get('<? echo $import_item_url?>', {schema_id: id}, function(data) {
+		
+				$('.geocoding p').html(data.geocode);
 				$('.success').html(data.total_entries_imported);
 				$('.failed').html(data.total_entries_failed);
 				$('.items').html(data.items_in_pool);
-				$bar.progressbar({value: index / items.length * 100});
 				
-				items[index] = false;
-				
+				$bar.progressbar({value: index / totalItems * 100});				
 				geocode(index+1);				
 			});
 		}
-		else if(index == items.length) {
+		else if(index == totalItems) {
 			$('.start').hide();
 			$('.success').html(parseInt($('.success').html())+1);
 			$('.items').html(parseInt($('.items').html())-1);
