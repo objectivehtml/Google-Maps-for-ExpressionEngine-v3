@@ -22,7 +22,6 @@ class Gmap_mcp {
 		$this->EE->load->driver('Interface_builder');
 		$this->EE->load->driver('Channel_data');
 		$this->EE->load->library('Data_import');
-		
 	}
 	
 	public function index()
@@ -104,7 +103,7 @@ class Gmap_mcp {
 		
 		foreach(explode('|', $this->EE->input->get_post('categories')) as $category)
 		{
-			$data->categories[] = $category;
+			$data->category[] = $category;
 		}	
 		
 		$data = (array) $data;
@@ -221,12 +220,15 @@ class Gmap_mcp {
 					'gmt_date'   => $this->EE->localize->now,
 					'geocode'    => trim($geocode),
 					'data'       => json_encode($entry_data),
-					'categories' => $categories[$entry[$settings['category_column']]]->cat_id
+					'categories' => isset($categories[$entry[$settings['category_column']]]) ? $categories[$entry[$settings['category_column']]]->cat_id : NULL
 				);	
 			}
 			else
 			{
-				$data[$entry[$settings['group_by']]]['categories'] .= '|'.$categories[$entry[$settings['category_column']]]->cat_id;
+				if(isset($categories[$entry[$settings['category_column']]]))
+				{
+					$data[$entry[$settings['group_by']]]['categories'] .= '|'.$categories[$entry[$settings['category_column']]]->cat_id;
+				}
 			}
 		}
 		
