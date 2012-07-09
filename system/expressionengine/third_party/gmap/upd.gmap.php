@@ -95,7 +95,7 @@ class Gmap_upd {
 				'type' 				=> 'varchar',
 				'constraint'		=> 50
 			),
-			'date' => array(
+			'data' => array(
 				'type'				=> 'longtext'
 			),
 			'geocode' => array(
