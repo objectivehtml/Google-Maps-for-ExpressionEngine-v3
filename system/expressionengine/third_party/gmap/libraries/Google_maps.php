@@ -971,7 +971,7 @@ class Google_maps {
 						//Loops through the values array and creates the SQL conditions
 						foreach($values as $value)
 						{
-							$operator = $this->prep_value($field_name, $value);
+							$operator = $this->prep_value($field_name, $value, $field_data->row('field_id'));
 		
 							if($in_array)
 							{
@@ -1034,8 +1034,8 @@ class Google_maps {
 		else if(strpos($field_name, '_day') && $field_id)
 		{
 			$value = str_replace('\'', '', $value);
-			$date = strtotime(date('Ymd 23:59:59', $value).'+1 day');
-			$operator = ' >= '.$value.' AND `field_id_'.$field_id.'` <= '.$date;
+			$date = $this->EE->localize->convert_human_date_to_gmt(date('Y-m-d 23:59:59', $value));
+			$operator = ' >= '.$this->EE->localize->convert_human_date_to_gmt(date('Y-m-d 00:00:00', $value)).' AND `field_id_'.$field_id.'` <= '.$date;
 		}
 		else
 		{

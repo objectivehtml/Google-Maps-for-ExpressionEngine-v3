@@ -1613,7 +1613,7 @@ Class Gmap {
 					
 					if(count($lng_field_name) == 0)
 					{
-						return $this->EE->output->show_user_error('error', 'The latitude field \''.$lng_field.'\' is not valid.');
+						return $this->EE->output->show_user_error('error', 'The longitude field \''.$lng_field.'\' is not valid.');
 					}
 
 					$lng_field_name = $lng_field_name[0];
