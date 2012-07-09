@@ -235,21 +235,46 @@ class Gmap_upd {
 	
 	public function update($current = '')
 	{	
-		$this->EE->data_forge = new Data_forge();		
+		$this->EE->data_forge = new Data_forge();
 		$this->EE->data_forge->update_tables($this->tables);
+
+		foreach($this->actions as $action)
+		{
+			$this->EE->db->where($action);
+			$existing = $this->EE->db->get('actions');
+
+			if($existing->num_rows() == 0)
+			{
+				$this->EE->db->insert('actions', $action);
+			}
+		}
 		
-		/* Update the version numbers */
-		$this->EE->db->where('name', strtolower($this->mod_name));
-		$this->EE->db->update('fieldtypes', array(
-			'version' => $this->version
-		));
-				
-		$this->EE->db->where('module_name', strtolower($this->mod_name));
-		$this->EE->db->update('modules', array(
-			'module_version' => $this->version
-		));
-		
-		/* Do other updates */
+		foreach($this->hooks as $row)
+		{
+			$this->EE->db->where(array(
+				'class'  => $this->ext_name,
+				'method'  => $row[0],
+				'hook' => $row[1]
+			));
+			
+			$existing = $this->EE->db->get('extensions');
+
+			if($existing->num_rows() == 0)
+			{
+				$this->EE->db->insert(
+					'extensions',
+					array(
+						'class' 	=> $this->ext_name,
+						'method' 	=> $row[0],
+						'hook' 		=> ( ! isset($row[1])) ? $row[0] : $row[1],
+						'settings' 	=> ( ! isset($row[2])) ? '' : $row[2],
+						'priority' 	=> ( ! isset($row[3])) ? 10 : $row[3],
+						'version' 	=> $this->version,
+						'enabled' 	=> 'y',
+					)
+				);
+			}
+		}
 		
 	    return TRUE;
 	}
