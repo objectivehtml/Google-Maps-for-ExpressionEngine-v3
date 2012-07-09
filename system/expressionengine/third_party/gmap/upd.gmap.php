@@ -111,10 +111,17 @@ class Gmap_upd {
 				'constraint' 		=> 50,
 				'primary_key' 		=> TRUE
 			),
+			'schema_name' => array(
+				'type' 				=> 'varchar',
+				'constraint' 		=> 100,
+			),
 			/*'items_in_pool' => array(
 				'type' 				=> 'float',
 			),*/
 			'total_entries_imported' => array(
+				'type' 				=> 'float',
+			),
+			'total_entries_failed' => array(
 				'type' 				=> 'float',
 			),
 			'importer_last_ran' => array(
@@ -130,7 +137,8 @@ class Gmap_upd {
 			'schema_id' => array(
 				'type' 				=> 'int',
 				'constraint' 		=> 50,
-				'primary_key' 		=> TRUE
+				'primary_key' 		=> TRUE,
+	            'auto_increment' 	=> TRUE
 			),
 			'settings' => array(
 				'type' 				=> 'longtext',
