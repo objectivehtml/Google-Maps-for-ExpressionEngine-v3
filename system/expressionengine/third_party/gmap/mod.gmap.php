@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.185
- * @build		20120709
+ * @version		3.0.186
+ * @build		20120711
  */
 
 Class Gmap {
@@ -72,6 +72,8 @@ Class Gmap {
 		
 	public function init()
 	{
+		//echo 'init';exit();
+		
 		$map_id      = $this->param('id', 'map');
 		$map_type    = $this->param('map_type', 'google.maps.MapTypeId.ROADMAP');
 		$map_type    = $this->param('mapTypeId', $map_type);
@@ -162,7 +164,7 @@ Class Gmap {
 		
 		$return			= $center ? $return . $center : $return;
 		
-		$return 		.= $this->marker();
+		//$return 		.= $this->marker();
 		
 		if($styles = $this->param('styles') || $this->param('style_var'))
 		{
@@ -230,7 +232,9 @@ Class Gmap {
 	}
 	
 	public function marker()
-	{			
+	{		
+		//echo 'marker';exit();
+			
 		$return		= NULL; 
 		$zoomfit	= TRUE;
 		$map_id 	= $this->param('id', 'map');
@@ -1235,6 +1239,8 @@ Class Gmap {
 	
 	public function search()
 	{		
+		//echo 'search';exit();
+		
 		$this->EE->load->driver('channel_data');
 		$this->EE->load->library('base_form');
 		
@@ -1498,6 +1504,8 @@ Class Gmap {
 	
 	public function results()
 	{		
+		//echo 'results';exit();
+		
 		$this->EE->load->library('base_form');
 		
 		$method = strtolower($this->param('method', 'post'));
@@ -1876,7 +1884,7 @@ Class Gmap {
 				return $this->EE->TMPL->no_results();
 			}		
 			
-			return $this->parse($vars);
+			return $this->EE->google_maps->parse_fields($vars, $tagdata, $this->param('parse_tags', FALSE, TRUE));
 		}
 		else
 		{

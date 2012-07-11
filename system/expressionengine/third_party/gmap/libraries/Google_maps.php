@@ -9,7 +9,7 @@
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/google-maps
  * @version		1.2.0
- * @build		20120708
+ * @build		20120711
  */
  
 class Google_maps {
@@ -374,9 +374,9 @@ class Google_maps {
 		
 		$js     = NULL;
 		
-		$limit  = isset($param['limit']) && $params['limit'] !== FALSE ? (int) $params['limit'] : FALSE;
+		$limit  = isset($params['limit']) && $params['limit'] !== FALSE ? (int) $params['limit'] : FALSE;
 		
-		$offset = isset($param['offset']) ? (int) $params['offset'] : FALSE;
+		$offset = isset($params['offset']) ? (int) $params['offset'] : FALSE;
 
 		$data_count = 0;
 
@@ -1015,7 +1015,7 @@ class Google_maps {
 	{
 		if(is_string($value))
 		{
-			$value = '\''.$value.'\'';
+			$value = ltrim(rtrim($value, '\''), '\'');
 		}
 			
 		//Preps conditional statement by testing the field_name for keywords
@@ -1100,6 +1100,57 @@ class Google_maps {
 		}
 
 		return $str;
+	}
+	
+	public function parse_fields($vars, $tagdata = FALSE, $parse_tags = FALSE)
+	{
+	
+		if($tagdata === FALSE)
+		{
+			$tagdata = $this->EE->TMPL->tagdata;
+		}
+		
+		$return = NULL;
+		
+		if($parse_tags)
+		{
+			$channels = $this->EE->channel_data->get_channels()->result_array();
+			$channels = $this->EE->channel_data->utility->reindex($channels, 'channel_id');
+			
+			$fields = $this->EE->channel_data->get_fields()->result_array();
+			$fields = $this->EE->channel_data->utility->reindex($fields, 'field_name');
+			
+			$count = 0;
+			
+			$global_vars = $vars[0];
+			unset($global_vars['results']);
+			
+			$TMPL = $this->EE->channel_data->tmpl->init();
+			
+			foreach($vars[0]['results'] as $index => $var)
+			{		
+				$count++;
+				
+				$var = array_merge($global_vars, $var);
+				$var['result_index'] = $index;
+				$var['result_count'] = $index + 1;
+				
+				$row_tagdata = $this->EE->TMPL->parse_variables_row($tagdata, array('results' => $vars[0]['results']));
+			
+				$row_tagdata = $this->EE->channel_data->tmpl->parse_entry($var, $channels, $fields, $row_tagdata);
+				
+				$row_tagdata = $this->EE->channel_data->tmpl->parse_switch($row_tagdata, $count);
+				
+				$return .= $row_tagdata;
+			}
+		}
+		else
+		{
+			$return = $this->EE->TMPL->parse_variables($tagdata, $vars);
+		}
+		
+				
+		return $return;
 	}
 	
 	public function prep_field_options($options, $field)
