@@ -1137,9 +1137,7 @@ class Google_maps {
 				
 				$row_tagdata = $this->EE->TMPL->parse_variables_row($tagdata, array('results' => $vars[0]['results']));
 			
-				$row_tagdata = $this->EE->channel_data->tmpl->parse_entry($var, $channels, $fields, $row_tagdata);
-				
-				$row_tagdata = $this->EE->channel_data->tmpl->parse_switch($row_tagdata, $count);
+				$row_tagdata = $this->EE->channel_data->tmpl->parse_entry($var, $channels, $fields, $row_tagdata, $count);
 				
 				$return .= $row_tagdata;
 			}
