@@ -1842,7 +1842,7 @@ $(document).ready(function() {
 				element.src = url;
 				element.type = 'text/javascript';
 				
-				$(element).insertAfter($t.parents('form'));
+				$('body').append(element);
 		    });
 		    
 		    GmapPluginsLoaded = true;

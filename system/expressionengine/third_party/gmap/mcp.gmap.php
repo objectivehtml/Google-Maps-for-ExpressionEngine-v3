@@ -131,8 +131,6 @@ class Gmap_mcp {
 		$this->EE->api->instantiate('channel_entries');
 		$this->EE->api->instantiate('channel_fields');
 		
-		$this->EE->session->userdata['group_id'] = 1;
-		
 		$this->EE->api_channel_fields->setup_entry_settings($settings->channel, $data);
 		$this->EE->api_channel_entries->submit_new_entry($settings->channel, $data);
 		

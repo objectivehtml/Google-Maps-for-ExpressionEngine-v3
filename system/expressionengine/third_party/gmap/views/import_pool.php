@@ -9,30 +9,32 @@
 	var lastIndex  = 0;
 	var $bar;
 	
-	function geocode(index) {
-		if(totalItems > 0 && index < totalItems && !stop) {
-				
-			$.get('<? echo $import_item_url?>', {schema_id: id}, function(data) {
-		
-				$('.geocoding p').html(data.geocode);
-				$('.success').html(data.total_entries_imported);
-				$('.failed').html(data.total_entries_failed);
-				$('.items').html(data.items_in_pool);
-				
-				$bar.progressbar({value: index / totalItems * 100});				
-				geocode(index+1);				
-			});
-		}
-		else if(index == totalItems) {
-			$('.start').hide();
-			$('.success').html(parseInt($('.success').html())+1);
-			$('.items').html(parseInt($('.items').html())-1);
-			$('.geocoding p').html('<i>The geocoder has finished</i>');
-			$bar.progressbar({value: 100});
-		}
-		
-		lastIndex = index;
+function geocode(index) {
+	if(totalItems > 0 && index < totalItems && !stop) {
+			
+		$.get('<? echo $import_item_url?>', {schema_id: id}, function(data) {
+			
+			alert(data);
+			
+			$('.geocoding p').html(data.geocode);
+			$('.success').html(data.total_entries_imported);
+			$('.failed').html(data.total_entries_failed);
+			$('.items').html(data.items_in_pool);
+			
+			$bar.progressbar({value: index / totalItems * 100});				
+			geocode(index+1);				
+		});
 	}
+	else if(index == totalItems) {
+		$('.start').hide();
+		$('.success').html(parseInt($('.success').html())+1);
+		$('.items').html(parseInt($('.items').html())-1);
+		$('.geocoding p').html('<i>The geocoder has finished</i>');
+		$bar.progressbar({value: 100});
+	}
+	
+	lastIndex = index;
+}
 		
 	$(document).ready(function() {
 		
