@@ -351,7 +351,7 @@ class Google_maps {
 			'clustering' 		=> FALSE,
 			'window_trigger' 	=> 'click',
 			'redirect'			=> FALSE,
-			'category'			=> FALSE
+			'category'			=> FALSE,
 		);
 		
 		$params = array_merge($default_params, $params);
@@ -424,7 +424,12 @@ class Google_maps {
 							{
 								unset($options['map']);
 							}
-
+							
+							if(isset($result->title) && !isset($options['title']))
+							{
+								$options['title'] = '\''.$result->title.'\'';
+							}
+							
 							if(!$params['duplicate_markers'])
 							{
 								$js .= '
