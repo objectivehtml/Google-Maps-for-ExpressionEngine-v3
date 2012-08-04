@@ -294,7 +294,7 @@ class Gmap_ft extends EE_Fieldtype {
 			$save_data[$this->settings['gmap_latitude_field']] = $post_data->markers->results[0]->geometry->location->lat;
 		}
 		
-		if(!empty($this->settings['gmap_longitude_field']) && isset($post_data->markers->results[0]->geometry->location->lng))
+		if(!empty($this->settings['gmap_latitude_field']) && isset($post_data->markers->results[0]->geometry->location->lng))
 		{
 			$save_data[$this->settings['gmap_longitude_field']] = $post_data->markers->results[0]->geometry->location->lng;
 		}
