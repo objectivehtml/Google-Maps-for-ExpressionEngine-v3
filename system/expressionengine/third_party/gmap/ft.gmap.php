@@ -785,7 +785,7 @@ class Gmap_ft extends EE_Fieldtype {
 		$this->EE->load->library('google_maps');
 		$this->EE->load->driver('channel_data');
 
-		if(isset($params['parse']))
+		if(isset($params['parse']) && $params['parse'] != 'inward')
 		{
 			$data 	= json_decode($data);
 			$limit	= isset($params['limit']) ? (int) $params['limit'] : FALSE;
