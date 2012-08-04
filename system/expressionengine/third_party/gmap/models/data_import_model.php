@@ -8,6 +8,11 @@ class Data_import_model extends CI_Model {
 	{
 		parent::__construct();
 	}
+	
+	public function clear_pool()
+	{
+		$this->db->query('DELETE FROM exp_gmap_import_pool');
+	}
 		
 	public function start_import($id)
 	{

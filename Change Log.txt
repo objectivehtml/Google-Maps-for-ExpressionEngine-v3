@@ -12,6 +12,7 @@
 v3.0.186 - 06/09/2012
 ---------------------
 - (Feature) Added parse_tag parameter to exp:gmap:results which makes it a looping tag that runs the FT parses instead of replace the tags with the raw data.
+- (Bug Fix) Added the missing title property to the marker object on the front-end.
 
 v3.0.185 - 06/09/2012
 ---------------------

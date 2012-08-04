@@ -103,6 +103,9 @@ class Gmap_upd {
 			),
 			'categories' => array(
 				'type'				=> 'text'
+			),
+			'group_by' => array(
+				'type'				=> 'text'
 			)
 		),
 		'gmap_import_stats' => array(
@@ -170,6 +173,14 @@ class Gmap_upd {
 		array(
 			'class' 	=> 'Gmap_mcp',
 			'method'	=> 'import_start_action'
+		),
+		array(
+			'class' 	=> 'Gmap_mcp',
+			'method'	=> 'change_statuses'
+		),
+		array(
+			'class' 	=> 'Gmap_mcp',
+			'method'	=> 'clear_pool'
 		)
 	);
 	

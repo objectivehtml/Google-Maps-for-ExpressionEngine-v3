@@ -289,12 +289,12 @@ class Gmap_ft extends EE_Fieldtype {
 		$save_data = array();
 		$post_data = json_decode($data);
 		
-		if(!empty($this->settings['gmap_latitude_field']))
+		if(!empty($this->settings['gmap_latitude_field']) && isset($post_data->markers->results[0]->geometry->location->lat))
 		{
 			$save_data[$this->settings['gmap_latitude_field']] = $post_data->markers->results[0]->geometry->location->lat;
 		}
 		
-		if(!empty($this->settings['gmap_longitude_field']))
+		if(!empty($this->settings['gmap_longitude_field']) && isset($post_data->markers->results[0]->geometry->location->lng))
 		{
 			$save_data[$this->settings['gmap_longitude_field']] = $post_data->markers->results[0]->geometry->location->lng;
 		}
@@ -785,7 +785,7 @@ class Gmap_ft extends EE_Fieldtype {
 		$this->EE->load->library('google_maps');
 		$this->EE->load->driver('channel_data');
 
-		if(isset($params['parse']) && $params['parse'] != 'inward')
+		if(isset($params['parse']))
 		{
 			$data 	= json_decode($data);
 			$limit	= isset($params['limit']) ? (int) $params['limit'] : FALSE;

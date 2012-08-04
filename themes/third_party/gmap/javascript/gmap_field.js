@@ -104,6 +104,7 @@ $(document).ready(function() {
 				editRegion: $t.find('.edit-region'),
 				geocoder: $t.find('.geocoder input'),
 				input: $t.find('.gmap-output'),
+				upload: $t.find('.gmap-upload'),
 				lists: $t.find('.lists ul'),
 				markerPanel: $t.find('.marker.side-panel'),
 				markerCancelButton: $t.find('.marker.side-panel button.cancel-marker'),
@@ -1786,6 +1787,13 @@ $(document).ready(function() {
 			var index = parseInt($t.attr('data-index'));
 			
 			Gmap.removeMarker('regions', index);
+			
+			return false;
+		});
+		
+		Gmap.ui.upload.click(function() {
+			
+			alert('test');
 			
 			return false;
 		});
