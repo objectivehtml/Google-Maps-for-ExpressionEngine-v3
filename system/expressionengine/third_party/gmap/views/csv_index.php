@@ -38,7 +38,7 @@
 			<th>Importer Last Ran</th>
 			<th>Total Import Attempts</th>
 			<th style="width:65px;"></th>
-			<th style="width:95px;"></th>
+			<th style="width:100px;"></th>
 			<th style="width:85px;"></th>
 		</tr>
 	</thead>
