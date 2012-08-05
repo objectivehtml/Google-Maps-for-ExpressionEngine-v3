@@ -30,7 +30,7 @@
 		<div class="geocoder">
 			<label for="gmap_geocoder"><?php echo (isset($settings['geocoder_field_label']) && !empty($settings['geocoder_field_label'])) ? $settings['geocoder_field_label'] : lang('gmap_geocoder')?></label>
 			<input type="text" name="gmap_geocoder" id="gmap_geocoder" value="" placeholder="<?php echo (isset($settings['geocoder_field_place']) && !empty($settings['geocoder_field_place'])) ? $settings['geocoder_field_place'] : lang('gmap_geocoder_placeholder') ?>" />
-			<a href="#" class="gmap-upload">Upload</a>
+			<a href="#" class="gmap-upload"></a>
 			<button type="button" class="submit"><?php echo (isset($settings['geocoder_button']) && !empty($settings['geocoder_button'])) ? $settings['geocoder_button'] : 'Plot Location'?></button>
 		</div>
 		
@@ -53,6 +53,22 @@
 			
 			<textarea name="side-content-text"></textarea>			
 		</div>
+		
+		<input type="hidden" name="import_url" value="<?=$import_url?>" />
+			
+		<!-- 	
+		<div class="gmap-import-panel gmap-flyout">			
+			
+			<form action="<?=$import_url?>" method="post" enctype="multipart/form-data">
+				<h4>Import .CSV</h4>
+				
+				<input type="file" name="file" value="" />
+				
+				<button type="submit">Import</button>
+			</form>
+			
+		</div>		
+		-->
 				
 		<div class="marker side-panel gmap-flyout">
 			<!--<a href="#" class="close"><span class="times">&times;</span> Close</a>-->

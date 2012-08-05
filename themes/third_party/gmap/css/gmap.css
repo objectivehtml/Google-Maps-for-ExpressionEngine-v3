@@ -319,7 +319,8 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 				color: rgb(255, 255, 255);
 				text-decoration: underline !important;
 				}
-						
+				
+				/*		
 			.gmap-wrapper .gmap-popup-window .arrow {
 				background: url(/-/media/black-arrows.png) 0 -18px no-repeat;
 				width: 28px;
@@ -327,7 +328,7 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 				position: absolute;
 				top: -12px;
 				}
-			
+			*/
 			.gmap-wrapper .gmap-popup-window .title {
 				font-size: 1.5em !important;
 				padding: 0 0 .6em !important;
@@ -345,23 +346,12 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 				margin: 0 !important;
 				}
 				
-		.gmap-wrapper .gmap-popup-window.step-4 {
-			left: 17px;
-			}	
-			
-			.gmap-wrapper .gmap-popup-window.step-4 .arrow {
-				background: url("/-/media/black-arrows.png") 0 -64px no-repeat;
-				height: 25px;
-				left: -17px;
-				top: 11px;
-				}
-				
 		.gmap-wrapper .map.column .geocoder {
 			position: absolute;
 			top: 0;
 			left: 95px;
 			z-index: 1000;
-			padding: .5em 1em 1em 1em;
+			padding: 5px 10px;
 			background: rgb(50, 50, 50);
 			background: rgba(0, 0, 0, .8);
 			border-bottom: 1px solid rgb(22, 22, 22);
@@ -384,8 +374,9 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 		.gmap-wrapper .map.column .geocoder input {
 			display: inline-block;
 			float: left;
-			width: 70%;
+			width: 98%;
 			margin-right: 2%;
+			margin-bottom: 10px;
 			}
 		
 		.gmap-wrapper .suggestions {
@@ -410,6 +401,7 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 	top: 10%;
 	right: 190px;
 	padding: 1em;
+	z-index: 500;
 	}
 	
 	.gmap-flyout ol[role="presentation"],
@@ -423,6 +415,64 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 		width: 300px;
 		margin-bottom: 1em;
 		}
+
+.tags {
+		margin: 5px 0;
+		}
+		
+	.tag {
+		padding: 0 0 0 7px;
+		margin: 2px 7px 2px 0;
+		background: rgb(193, 223, 244);
+		display: inline-block;
+		float: left;
+		-moz-border-radius: 3px;
+		-webkit-border-radius: 3px;
+		border-radius: 3px;
+		color: rgb(53, 61, 67) !important;
+		}
+	
+	.tag a {
+		display: inline-block;
+		padding: 5px 3px 5px 3px;
+		color: rgb(53, 61, 67) !important;
+		}
+	 
+	.tag a:hover {
+		color: rgb(53, 61, 67);
+		text-decoration: none;
+		background: rgb(169, 195, 214);
+		-moz-border-radius: 0 3px 3px 0;
+		-webkit-border-radius: 0 3px 3px 0;
+		border-radius: 0 3px 3px 0;
+		}
+
+.gmap-upload {
+	background: url('images/import.png') 0 0 no-repeat;
+	display: inline-block;
+	width: 26px;
+	height: 26px;
+	position: absolute;
+	bottom: 5px;
+	left: 10px;
+}
+
+
+.gmap-flyout h3 { margin-bottom: 10px; font-size: 1.4em; }
+
+.gmap-flyout .step-2 label {
+	width: 80px;
+	display: inline-block;
+}
+
+.gmap-flyout .step-3 p {
+	font-size: 1.2em;
+	line-height: 1.5em;
+}
+
+.gmap-flyout .progress-bar {
+	margin-bottom: 10px;
+}
 
 .gmap-wrapper .side-panel {
 	width: 170px;
@@ -454,8 +504,8 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 				
 			.gmap-wrapper .side-panel .gmap-icons li a,
 			.gmap-wrapper .side-panel .gmap-icons li img {
-				width: 24px;
-				height: 28px;
+				width: 22px;
+				height: 22px;
 				}
 				
 	.gmap-wrapper .side-panel p {
@@ -496,6 +546,9 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 		height: 351px;
 		}
 		
+.gmap-wrapper .gmap-import-panel {
+	top: 100px;
+}
 		
 .gmap-wrapper .suggestions {
 	position: absolute;

@@ -104,6 +104,7 @@ $(document).ready(function() {
 				editRegion: $t.find('.edit-region'),
 				geocoder: $t.find('.geocoder input'),
 				input: $t.find('.gmap-output'),
+				importPanel: $t.find('.gmap-import-panel'),
 				upload: $t.find('.gmap-upload'),
 				lists: $t.find('.lists ul'),
 				markerPanel: $t.find('.marker.side-panel'),
@@ -1533,6 +1534,244 @@ $(document).ready(function() {
 		if(Gmap.settings.defer_init == 'no')
 			Gmap.ui.deferer.click();
 		
+		var importPanel = [
+			'<div class="gmap-import-panel gmap-flyout">',
+				'<form method="post" enctype="multipart/form-data" class="step-1">',
+					'<h3>1. Import .CSV</h3>',
+					'<input type="file" name="file" value="" />',
+					'<button type="submit">Import</button>',
+				'</form>',
+				'<form class="step-2" style="display:none">',
+					'<h3>2. Setup Geocoder</h3>',
+					'<p>You can select multiple columns that will be join with a space.</p>',
+					'<div class="title">',
+						'<label for="title">Title</label>',
+						'<select name="title" class="create-tags"></select>',
+						'<div class="tags group"></div>',		
+					'</div>',
+					'<div class="content">',
+						'<label for="content">Content</label>',
+						'<select name="content" class="create-tags"></select>',	
+						'<div class="tags group"></div>',	
+					'</div>',
+					'<div class="geocode">',
+						'<label for="geocode">Geocode</label>',
+						'<select name="geocode" class="create-tags"></select>',
+						'<div class="tags group"></div>',	
+					'</div>',
+					/* '<div class="latitude">',
+						'<label for="latitude">Latitude</label>',
+						'<select name="latitude"></select>',	
+					'</div>',
+					'<div class="longitude">',
+						'<label for="longitude">Longitude</label>',
+						'<select name="longitude"></select>',
+					'</div>',*/
+					'<button type="submit">Run Geocoder</button>',
+				'</form>',
+				'<div class="step-3" style="display:none">',
+					'<h3>3. Run Import</h3>',
+					'<p>',
+						'Total Markers: <span class="total-markers"></span><br>',
+						'Total Imported: <span class="total-imported"></span><br>',
+						'Total Failed: <span class="total-failed"></span><br>',
+						'Geocoding: <span class="geocoding"></span>',
+					'</p>',
+					'<div class="progress-bar"></div>',
+					'<button type="button">Close</button>',
+				'</div>',
+			'</div>'
+		].join('');
+		
+		$('body').append(importPanel);
+		
+		var action = $('input[name="import_url"]').val();		
+		
+		var importData;
+		var importMarkers;
+		
+		function importArray(array, count) {
+		
+			var marker = array[count];
+			
+			$imported = Gmap.ui.importPanel.find('.step-3 .total-imported');
+			$failed = Gmap.ui.importPanel.find('.step-3 .total-failed');
+			
+			Gmap.geocode(marker.location, function(results, status) {
+				if(status == 'OK' && results) {
+					var lat = results[0].geometry.location.lat();
+					var lng = results[0].geometry.location.lng();
+								
+					results = Gmap.saveResponse(results[0], lat, lng);
+					results.geometry.location.lat = lat;
+					results.geometry.location.lng = lng;
+					
+					Gmap.addMarker(results);
+				
+					var index = Gmap.markers.length - 1;
+					
+					
+					if(marker.title != "") {
+						Gmap.response.markers.results[index].title = marker.title;
+					}
+					
+					if(marker.content != "") {
+						content = Gmap.buildInfoWindow(index, true, marker.content);
+									
+						Gmap.markers[index].content = marker.content;					
+						Gmap.windows[index].setContent(content);
+					}
+					
+					var progress = Math.ceil(count / array.length * 100);
+					
+					Gmap.ui.importPanel.find('.step-3 .progress-bar').progressbar({value: progress});
+					
+					$imported.html(parseInt($imported.html())+1);
+				}
+				else {
+				
+					$failed.html(parseInt($failed.html())+1);					
+				}
+				
+				if(count < array.length - 1) {
+					setTimeout(function() {
+						importArray(array, count + 1);
+					}, 500);										
+				}
+				else {
+					Gmap.ui.importPanel.find('.step-3 .progress-bar').progressbar({value: 100});
+				}
+				
+				Gmap.refresh(Gmap.response.markers.results, 'markers');
+			});
+		}
+		
+		Gmap.ui.importPanel = $('.gmap-import-panel');		
+		Gmap.ui.importPanel.find('.step-1').attr('action', action).ajaxForm({
+			//dataType: 'json',
+			success: function(response) {
+			
+				importData = response;
+				
+				var options = ['<option value="">--</option>'];
+				
+				$.each(response.columns, function(i, column) {
+					options.push('<option value="'+column+'">'+column+'</option>');	
+				});
+				
+				Gmap.ui.importPanel.find('.step-1, .step-3').hide();
+				Gmap.ui.importPanel.find('.step-2').show();
+				Gmap.ui.importPanel.find('.step-2 select').show().html(options.join(''));
+			}
+		});
+		
+		Gmap.ui.importPanel.find('form .create-tags').change(function() {
+			var $t    = $(this);
+			var tags  = $t.next('.tags');
+			var value = $t.val();
+			var name  = $t.attr('name');
+						
+			tags.append('<div class="tag">'+value+'<a href="#">&times;</a><input type="hidden" value="'+value+'" name="'+name+'" /></div>');
+			
+			$t.val('');
+		});
+		
+		Gmap.ui.importPanel.find('.tag a').live('click', function(e) {
+			var $t = $(this);
+			
+			$t.parent().fadeOut(function() {
+				$(this).remove();	
+			});
+			
+			e.preventDefault();
+		});
+		
+		Gmap.ui.importPanel.find('.step-2').submit(function(e) {
+			
+			var markers = [];
+			
+			$.each(importData.rows, function(i, row) {
+			
+				var title   = '';
+				var content = '';
+				var location = '';
+				
+				Gmap.ui.importPanel.find('.step-2 .title input').each(function() {
+					if($(this).val() != "") {
+						title += row[$(this).val()] + ' ';
+					}
+				});
+				
+				Gmap.ui.importPanel.find('.step-2 .content input').each(function() {
+					if($(this).val() != "") {
+						content += row[$(this).val()] + ' ';
+					}
+				});				
+				
+				Gmap.ui.importPanel.find('.step-2 .geocode input').each(function() {
+					if($(this).val() != "") {
+						location += row[$(this).val()] + ' ';
+					}
+				});
+				
+				var lat = Gmap.ui.importPanel.find('.step-2 .latitude select').val();
+				var lng = Gmap.ui.importPanel.find('.step-2 .longitude select').val();
+								
+				markers.push({
+					title: $.trim(title),
+					content: $.trim(content),
+					location: $.trim(location),
+					latitude: (lat != '' ? row[lat] : false),
+					longitude: (lng != '' ? row[lng] : false)
+				});				
+	
+			});
+			
+			Gmap.ui.importPanel.find('.step-3 .total-markers').html(markers.length);
+			Gmap.ui.importPanel.find('.step-3 .total-imported').html(0);
+			Gmap.ui.importPanel.find('.step-3 .total-failed').html(0);
+			Gmap.ui.importPanel.find('.step-3 .progress-bar').progressbar({value: 0});
+			
+			Gmap.ui.importPanel.find('.step-2, .step-1').hide();
+			Gmap.ui.importPanel.find('.step-3').show();
+			
+			importArray(markers, 0);
+			
+			/*
+			Gmap.geocode(markers[0].location, function(data) {
+				
+			});
+			
+			$.each(markers, function(i, marker) {
+				if(!marker.latitude || !marker.longitude) {
+					alert(marker.location);
+					Gmap.geocode(marker.location, function(data) {
+						alert(data);	
+					});
+				}
+			});
+			
+			p.each(function() {
+				var tags = $(this).find('.tags');
+				
+				if(tags.length > 0) {
+						
+				}							
+			});
+			*/
+			
+			//console.log(importData);
+			
+			return false;
+		});
+		
+		
+		Gmap.ui.importPanel.find('.step-3 button').click(function(e) {
+			Gmap.ui.importPanel.fadeOut();
+			
+			e.preventDefault();
+		});
+		
 		Gmap.ui.suggestion.live('click', function() {
 			var $t = $(this);
 			var index = parseInt($t.attr('data-index'));
@@ -1793,7 +2032,17 @@ $(document).ready(function() {
 		
 		Gmap.ui.upload.click(function() {
 			
-			alert('test');
+			Gmap.ui.importPanel.find('.step-1').show();
+			Gmap.ui.importPanel.find('.step-2, .step-3').hide();
+			
+			Gmap.ui.importPanel.fadeIn('fast');
+			
+			Gmap.ui.importPanel.position({
+				my: 'left top',
+				at: 'left bottom',
+				of: $(this).parent(),
+				offset: "0 10"
+			});
 			
 			return false;
 		});

@@ -181,6 +181,10 @@ class Gmap_upd {
 		array(
 			'class' 	=> 'Gmap_mcp',
 			'method'	=> 'clear_pool'
+		),
+		array(
+			'class' 	=> 'Gmap_mcp',
+			'method'	=> 'import_csv_ft_action'
 		)
 	);
 	

@@ -112,6 +112,20 @@ class Gmap_mcp {
 		return $this->EE->load->view('import_pool', $vars, TRUE);
 	}
 	
+	public function import_csv_ft_action()
+	{
+		$entries    = $this->EE->data_import->load_file($_FILES["file"]['tmp_name']);
+		
+		$response = array(
+			'columns' => array_keys($entries[0]),
+			'rows'    => $entries
+		);
+		
+		header('Content-type: application/json');
+		echo json_encode($response);
+		exit();
+	}
+	
 	public function import_start_action()
 	{
 		$id 	  = $this->EE->input->get_post('id');

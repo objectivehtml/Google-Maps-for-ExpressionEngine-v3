@@ -268,20 +268,27 @@ class Gmap_ft extends EE_Fieldtype {
 		$this->EE->theme_loader->javascript('selectToUISlider');
 		$this->EE->theme_loader->javascript('farbtastic');
 		$this->EE->theme_loader->javascript('json2');
-		$this->EE->theme_loader->javascript('jquery.qtip.min');
+		$this->EE->theme_loader->javascript('jquery.form');
+		//$this->EE->theme_loader->javascript('jquery.qtip.min');
 		$this->EE->theme_loader->css('gmap');
 		$this->EE->theme_loader->css('ui.slider.extras');
 		$this->EE->theme_loader->css('farbtastic');
-		$this->EE->theme_loader->css('jquery.qtip');
+		//$this->EE->theme_loader->css('jquery.qtip');
 		
 		$vars = array(
 			'settings'		=> $this->settings,
 			'saved_value'	=> $data,
 			'safecracker'	=> $this->safecracker,
-			'field_name'	=> $this->field_name
+			'field_name'	=> $this->field_name,
+			'import_url' 	=> $this->_current_url() . '?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_csv_ft_action')
 		);
 		
 		return $this->EE->load->view('fieldtype', $vars, TRUE);
+	}
+	
+	public function import_csv()
+	{
+		echo '{ "message": "test" }';
 	}
 	
 	public function post_save($data)
