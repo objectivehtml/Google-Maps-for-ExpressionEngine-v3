@@ -2032,10 +2032,15 @@ $(document).ready(function() {
 		
 		Gmap.ui.upload.click(function() {
 			
-			Gmap.ui.importPanel.find('.step-1').show();
-			Gmap.ui.importPanel.find('.step-2, .step-3').hide();
-			
-			Gmap.ui.importPanel.fadeIn('fast');
+			if(Gmap.ui.importPanel.css('display') == 'block') {
+				Gmap.ui.importPanel.fadeOut('fast');	
+			}
+			else {
+				Gmap.ui.importPanel.find('.step-1').show();
+				Gmap.ui.importPanel.find('.step-2, .step-3').hide();
+				
+				Gmap.ui.importPanel.fadeIn('fast');
+			}
 			
 			Gmap.ui.importPanel.position({
 				my: 'left top',
