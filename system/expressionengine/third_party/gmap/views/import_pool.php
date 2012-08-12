@@ -86,6 +86,54 @@
 		}, interval);
 	}
 	
+	function save(id, index, data, markers, status) {
+		
+		$.post('<? echo $import_item_url?>', {
+				schema_id: id, 
+				markers: JSON.stringify(markers),
+				valid_address: data.valid_address,
+				existing_entry: JSON.stringify(data.existing_entry),
+				status: status
+			}, function(data) {
+				
+				console.log(data);
+				
+				$('.geocoding p').html(data.geocode);
+				$('.success').html(data.total_entries_imported);
+				$('.failed').html(data.total_entries_failed);
+				$('.items').html(data.items_in_pool);
+			
+				if(data.errors) {
+					
+					var errors = '';
+					
+					$.each(data.errors, function(name, value) {
+						if(value) {
+							if(value == "The following field is required:") {
+								errors += value + ' ' + name + '<br>';
+							}
+							else {
+								errors += value + '<br>';
+							}
+						}
+					});
+										
+					$('dd.error').html(errors);
+					$('dl .error').show();
+				}
+				
+				totalImported++;
+				itemsRemaining--;
+				
+				$bar.progressbar({value: index / totalItems * 100});				
+				
+				calculateStats();
+				
+				geocode(index+1);				
+			}
+		);
+	}
+	
 	function geocode(index) {
 	
 		if(totalItems > 0 && index < totalItems && !stop) {
@@ -100,65 +148,21 @@
 					var geocoder = new google.maps.Geocoder();
 									
 					geocoder.geocode({address: data.item.geocode}, function(results, status) {
-						if(status == 'OK' || 'ZERO_RESULTS') {
-							
-							if(typeof results == "array") {							
-								$.each(results, function(i, result) {
-									result.geometry.location.lat = result.geometry.location.lat();
-									result.geometry.location.lng = result.geometry.location.lng();
-									
-									markers.push(result);
-								});								
-							}
-							
-							$.post('<? echo $import_item_url?>', {
-									schema_id: id, 
-									markers: JSON.stringify(markers),
-									valid_address: data.valid_address
-								}, function(data) {
-									
-									$('.geocoding p').html(data.geocode);
-									$('.success').html(data.total_entries_imported);
-									$('.failed').html(data.total_entries_failed);
-									$('.items').html(data.items_in_pool);
+										
+						if(typeof results == "array") {							
+							$.each(results, function(i, result) {
+								result.geometry.location.lat = result.geometry.location.lat();
+								result.geometry.location.lng = result.geometry.location.lng();
 								
-									if(data.errors) {
-										
-										var errors = '';
-										
-										$.each(data.errors, function(name, value) {
-											if(value) {
-												if(value == "The following field is required:") {
-													errors += value + ' ' + name + '<br>';
-												}
-												else {
-													errors += value + '<br>';
-												}
-											}
-										});
-															
-										$('dd.error').html(errors);
-										$('dl .error').show();
-									}
-									
-									totalImported++;
-									itemsRemaining--;
-									
-									$bar.progressbar({value: index / totalItems * 100});				
-									
-									calculateStats();
-									
-									geocode(index+1);				
-								}
-							);
-							
+								markers.push(result);
+							});							
 						}
-						else {
-							geocodeError = status;
-							
-							alert(geocodeError);
-						}
+						
+						save(id, index, data, markers, status);
 					});
+				}
+				else {
+					save(id, index, data, markers, 'open');
 				}
 			});
 		}
@@ -235,11 +239,11 @@
 	<dt>Importer Total Runs</dt>
 	<dd class="total-runs"><? echo isset($stats->importer_total_runs) ? $stats->importer_total_runs : 'N/A'?></dd>
 	<dt>Avg Entries per Second</dt>
-	<dd class="average"></dd>
+	<dd class="average">N/A</dd>
 	<dt>Time Remaining</dt>
-	<dd class="time-remaining"></dd>
+	<dd class="time-remaining"N/A></dd>
 	<dt>Total Run Time</dt>
-	<dd class="run-time"></dd>
+	<dd class="run-time">N/A</dd>
 	<dt>Importer Last Ran</dt>
 	<dd class="last-ran"><? echo isset($stats->importer_last_ran) ? date('Y-m-d h:i A', $stats->importer_last_ran) : 'N/A'?></dd>
 </dl>

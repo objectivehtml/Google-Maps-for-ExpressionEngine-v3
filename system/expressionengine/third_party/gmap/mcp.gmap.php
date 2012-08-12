@@ -130,8 +130,9 @@ class Gmap_mcp {
 				
 		$settings = $this->EE->data_import_model->get_setting($this->EE->input->get_post('schema_id'));
 		
-		$valid_address = FALSE;
-		$saved_address = FALSE;
+		$valid_address  = FALSE;
+		$saved_address  = FALSE;
+		$existing_entry = FALSE;
 		
 		if(isset($settings->duplicate_fields) && !empty($settings->duplicate_fields))
 		{
@@ -162,7 +163,6 @@ class Gmap_mcp {
 					foreach($settings->geocode_fields as $field)
 					{
 						$saved_address .= isset($existing_entry[$field->field_name]) ? $existing_entry[$field->field_name] . ' ' : NULL;
-						
 					}	
 					
 					$saved_address = trim($saved_address);
@@ -176,9 +176,10 @@ class Gmap_mcp {
 		}
 		
 		$response = array(
-			'valid_address' => $valid_address,
-			'saved_address' => $saved_address,
-			'item' => $item
+			'valid_address'  => $valid_address,
+			'saved_address'  => $saved_address,
+			'item'           => $item,
+			'existing_entry' => $existing_entry
 		);
 		
 		$this->json($response);
@@ -319,13 +320,24 @@ class Gmap_mcp {
 				}	
 			}*/
 			
-			$markers  = json_decode($this->EE->input->post('markers'));
-			
+			$markers  = json_decode($this->EE->input->get_post('markers'));
 			$map_data = $this->EE->google_maps->build_response(array('markers' => $markers));
 		}
 		else
 		{
-			$map_data = $existing_entry[$item->map_field_name];			
+			$existing_entry = json_decode($this->EE->input->get_post('existing_entry'));
+			$new_entry = FALSE;
+			$map_data = $existing_entry->{$item->map_field_name};	
+		}
+		
+		if($this->EE->input->get_post('status') == 'OK')
+		{
+			$data['status'] = 'open';
+		}
+		
+		if($data['status'] != 'open')
+		{
+			$data['status'] = 'closed';
 		}
 		
 		$data['field_id_'.$settings->gmap_field] = $map_data;
@@ -340,14 +352,14 @@ class Gmap_mcp {
 		if(!$geocode_error)
 		{
 			$this->EE->api_channel_fields->setup_entry_settings($settings->channel, $data);
+			
 			if($new_entry)
 			{
 				$this->EE->api_channel_entries->submit_new_entry($settings->channel, $data);
 			}
 			else
 			{
-				$this->EE->channel_data->utility->update_entry($settings->channel, $existing_entry['entry_id'], $data);
-				
+				$this->EE->channel_data->utility->update_entry($settings->channel, $existing_entry->entry_id, $data);				
 			}
 		}
 		

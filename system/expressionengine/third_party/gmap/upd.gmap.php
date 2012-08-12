@@ -98,6 +98,9 @@ class Gmap_upd {
 			'data' => array(
 				'type'				=> 'longtext'
 			),
+			'entry' => array(
+				'type'				=> 'longtext'
+			),
 			'geocode' => array(
 				'type'				=> 'text'
 			),
@@ -105,6 +108,12 @@ class Gmap_upd {
 				'type'				=> 'text'
 			),
 			'group_by' => array(
+				'type'				=> 'text'
+			),
+			'group_by_field_name' => array(
+				'type'				=> 'text'
+			),
+			'map_field_name' => array(
 				'type'				=> 'text'
 			)
 		),
