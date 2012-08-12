@@ -1,6 +1,3 @@
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-
 <script type="text/javascript">
 	    
 	var id         = <? echo $id ?>;
@@ -10,38 +7,136 @@
 	var $bar;
 	
 	function geocode(index) {
+	
 		if(totalItems > 0 && index < totalItems && !stop) {
-				
-			$.get('<? echo $import_item_url?>', {schema_id: id}, function(data) {
 			
-				//alert(data);
-				
-				$('.geocoding p').html(data.geocode);
-				$('.success').html(data.total_entries_imported);
-				$('.failed').html(data.total_entries_failed);
-				$('.items').html(data.items_in_pool);
+			$.post('<? echo $import_check_url?>', {scheme_id: id}, function(data) {
 			
-				if(data.errors) {
-					
-					var errors = '';
-					
-					$.each(data.errors, function(name, value) {
-						if(value) {
-							if(value == "The following field is required:") {
-								errors += value + ' ' + name + '<br>';
-							}
-							else {
-								errors += value + '<br>';
-							}
+				var geocodeError = false;
+				var markers = [];
+				
+				if(!data.valid_address)
+				{
+					var geocoder = new google.maps.Geocoder();
+									
+					geocoder.geocode({address: data.item.geocode}, function(results, status) {
+						if(status == 'OK' || 'ZERO_RESULTS') {
+							$.each(results, function(i, result) {
+								result.geometry.location.lat = result.geometry.location.lat();
+								result.geometry.location.lng = result.geometry.location.lng();
+								
+								markers.push(result);
+							});
+							
+							$.post('<? echo $import_item_url?>', {
+									schema_id: id, 
+									markers: JSON.stringify(markers),
+									valid_address: data.valid_address
+								}, function(data) {
+				
+								console.log(data);
+								
+								$('.geocoding p').html(data.geocode);
+								$('.success').html(data.total_entries_imported);
+								$('.failed').html(data.total_entries_failed);
+								$('.items').html(data.items_in_pool);
+							
+								if(data.errors) {
+									
+									var errors = '';
+									
+									$.each(data.errors, function(name, value) {
+										if(value) {
+											if(value == "The following field is required:") {
+												errors += value + ' ' + name + '<br>';
+											}
+											else {
+												errors += value + '<br>';
+											}
+										}
+									});
+														
+									$('dd.error').html(errors);
+									$('dl .error').show();
+								}
+								
+								$bar.progressbar({value: index / totalItems * 100});				
+								
+								geocode(index+1);				
+							});
+							
+						}
+						else {
+							geocodeError = status;
+							
+							alert(geocodeError);
 						}
 					});
-										
-					$('dd.error').html(errors);
-					$('dl .error').show();
 				}
 				
-				$bar.progressbar({value: index / totalItems * 100});				
-				geocode(index+1);				
+			/*
+			
+			$geocode_error = FALSE;
+			
+			if(!$valid_address)
+			{
+				foreach($this->EE->google_maps->geocode($item->geocode) as $response)
+				{
+					if($response->status == 'OK')
+					{					
+						foreach($response->results as $result)
+						{
+							$markers[] = (object) $result;	
+						}
+					}
+					else
+					{
+						$geocode_error = $response->status;
+					}	
+				}
+				
+				$map_data = $this->EE->google_maps->build_response(array('markers' => $markers));
+			}
+			else
+			{
+				$map_data = $existing_entry[$item->map_field_name];			
+			}
+			
+			*/
+			
+				/*
+				$.get('<? echo $import_item_url?>', {schema_id: id}, function(data) {
+				
+					console.log(data);
+					
+					$('.geocoding p').html(data.geocode);
+					$('.success').html(data.total_entries_imported);
+					$('.failed').html(data.total_entries_failed);
+					$('.items').html(data.items_in_pool);
+				
+					if(data.errors) {
+						
+						var errors = '';
+						
+						$.each(data.errors, function(name, value) {
+							if(value) {
+								if(value == "The following field is required:") {
+									errors += value + ' ' + name + '<br>';
+								}
+								else {
+									errors += value + '<br>';
+								}
+							}
+						});
+											
+						$('dd.error').html(errors);
+						$('dl .error').show();
+					}
+					
+					$bar.progressbar({value: index / totalItems * 100});				
+					//geocode(index+1);				
+				});*/
+			
 			});
 		}
 		else if(index == totalItems) {

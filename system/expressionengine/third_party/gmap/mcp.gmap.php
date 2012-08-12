@@ -18,7 +18,11 @@ class Gmap_mcp {
 		$this->EE =& get_instance();
 		
 		$this->EE->load->library('Google_maps');
-		$this->EE->load->library('Theme_loader');
+		
+		$this->EE->load->library('theme_loader', array(
+			'module_name'	=> 'gmap'
+		));
+		
 		$this->EE->load->driver('Interface_builder');
 		$this->EE->load->driver('Channel_data');
 		$this->EE->load->library('Data_import');
@@ -96,13 +100,21 @@ class Gmap_mcp {
 		
 		$settings = $this->EE->data_import_model->get_setting($id);
 			
+		$this->EE->theme_loader->javascript('https://maps.google.com/maps/api/js?sensor=true');
+		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js');
+		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js');
+		$this->EE->theme_loader->javascript('json2');
+		
+		
 		$vars = array(
 			'id' => $id,
 			'total_items' => $this->EE->data_import_model->get_pools($id, 'pending')->num_rows(),
 			'stats' => $this->EE->data_import_model->get_stats($id),
 			'import_start_url' => $this->cp_url('import_start_action', TRUE),
-			'import_item_url' => $this->cp_url('import_item_action', TRUE)
+			'import_item_url' => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_item_action'),
+			'import_check_url' => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_check_existing_action'),
 		);
+		
 		/*
 		foreach($vars['items'] as $index => $item)
 		{
@@ -112,55 +124,14 @@ class Gmap_mcp {
 		return $this->EE->load->view('import_pool', $vars, TRUE);
 	}
 	
-	public function import_csv_ft_action()
+	public function import_check_existing_action()
 	{
-		$entries    = $this->EE->data_import->load_file($_FILES["file"]['tmp_name']);
-		
-		$response = array(
-			'columns' => array_keys($entries[0]),
-			'rows'    => $entries
-		);
-		
-		header('Content-type: application/json');
-		echo json_encode($response);
-		exit();
-	}
-	
-	public function import_start_action()
-	{
-		$id 	  = $this->EE->input->get_post('id');
-		
-		$start_data = $this->EE->data_import_model->start_import($id);
-		$start_data->importer_last_ran = date('Y-m-d h:i A', $start_data->importer_last_ran);
-		
-		return $this->json($start_data);		
-	}
-	
-	public function import_item_action()
-	{
-		$new_entry = TRUE;
-		
 		$item = $this->EE->data_import_model->get_item($this->EE->input->get_post('schema_id'));
 				
 		$settings = $this->EE->data_import_model->get_setting($this->EE->input->get_post('schema_id'));
 		
 		$valid_address = FALSE;
-			
-		$data = (array) json_decode($item->data);
-		
-		foreach(explode('|', $item->categories) as $category)
-		{
-			$data['category'][] = $category;
-		}	
-		
-		if(preg_match("/^\d*$/", $data['title']) && !empty($settings->title_prefix))
-		{
-			$data['title'] = $settings->title_prefix . $data['title'];
-		}
-		
-		$data['entry_date'] = $this->EE->localize->now;
-		
-		$markers = array();
+		$saved_address = FALSE;
 		
 		if(isset($settings->duplicate_fields) && !empty($settings->duplicate_fields))
 		{
@@ -204,7 +175,103 @@ class Gmap_mcp {
 			}
 		}
 		
+		$response = array(
+			'valid_address' => $valid_address,
+			'saved_address' => $saved_address,
+			'item' => $item
+		);
+		
+		$this->json($response);
+	}
+	
+	public function import_csv_ft_action()
+	{
+		$entries    = $this->EE->data_import->load_file($_FILES["file"]['tmp_name']);
+		
+		$response = array(
+			'columns' => array_keys($entries[0]),
+			'rows'    => $entries
+		);
+		
+		$this->json($response);
+	}
+	
+	public function import_start_action()
+	{
+		$id 	  = $this->EE->input->get_post('id');
+		
+		$start_data = $this->EE->data_import_model->start_import($id);
+		$start_data->importer_last_ran = date('Y-m-d h:i A', $start_data->importer_last_ran);
+		
+		return $this->json($start_data);		
+	}
+	
+	public function import_item_action()
+	{
+		$new_entry     = TRUE;
 		$geocode_error = FALSE;
+		$valid_address = FALSE;
+		
+		$item = $this->EE->data_import_model->get_item($this->EE->input->get_post('schema_id'));
+				
+		$settings = $this->EE->data_import_model->get_setting($this->EE->input->get_post('schema_id'));
+			
+		$data = (array) json_decode($item->data);
+		
+		foreach(explode('|', $item->categories) as $category)
+		{
+			$data['category'][] = $category;
+		}	
+		
+		if(preg_match("/^\d*$/", $data['title']) && !empty($settings->title_prefix))
+		{
+			$data['title'] = $settings->title_prefix . $data['title'];
+		}
+		
+		$data['entry_date'] = $this->EE->localize->now;
+		
+		/*
+		if(isset($settings->duplicate_fields) && !empty($settings->duplicate_fields))
+		{
+			$where = array();
+			
+			$csv_data = json_decode($item->entry);
+			
+			foreach($settings->duplicate_fields as $duplicate_field)
+			{
+				$where[$duplicate_field->field_name] = $csv_data->{$duplicate_field->column_name};
+			}
+			
+			$existing_entry = $this->EE->channel_data->get_channel_entries($settings->channel, array(
+				'where' => $where
+			));
+			
+			if($existing_entry->num_rows() > 0)
+			{
+				$new_entry = FALSE;
+				$existing_entry = $existing_entry->row_array();
+				
+				$entry_id = $existing_entry['entry_id'];
+				
+				if(isset($settings->geocode_fields))
+				{
+					$saved_address = NULL;
+					
+					foreach($settings->geocode_fields as $field)
+					{
+						$saved_address .= isset($existing_entry[$field->field_name]) ? $existing_entry[$field->field_name] . ' ' : NULL;
+						
+					}	
+					
+					$saved_address = trim($saved_address);
+					
+					if($saved_address == $item->geocode)
+					{
+						$valid_address = TRUE;
+					}
+				}
+			}
+		}
 		
 		if(!$valid_address)
 		{
@@ -222,6 +289,37 @@ class Gmap_mcp {
 					$geocode_error = $response->status;
 				}	
 			}
+			
+			$map_data = $this->EE->google_maps->build_response(array('markers' => $markers));
+		}
+		else
+		{
+			$map_data = $existing_entry[$item->map_field_name];			
+		}
+		
+		*/
+		
+		$valid_address = $this->EE->input->get_post('valid_address') == 'true' ? TRUE : FALSE;
+		
+		if(!$valid_address)
+		{
+			/*
+			foreach($this->EE->google_maps->geocode($item->geocode) as $response)
+			{
+				if($response->status == 'OK')
+				{					
+					foreach($response->results as $result)
+					{
+						$markers[] = (object) $result;	
+					}
+				}
+				else
+				{
+					$geocode_error = $response->status;
+				}	
+			}*/
+			
+			$markers  = json_decode($this->EE->input->post('markers'));
 			
 			$map_data = $this->EE->google_maps->build_response(array('markers' => $markers));
 		}
@@ -668,7 +766,6 @@ class Gmap_mcp {
 	private function json($data)
 	{
 		header('Content-type: application/json');
-		
 		echo json_encode($data);
 		exit();
 	}

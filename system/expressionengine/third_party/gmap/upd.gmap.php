@@ -88,7 +88,7 @@ class Gmap_upd {
 				'constraint'		=> 100
 			),
 			'gmt_date' => array(
-				'type' 				=> 'int',
+				'type' 					=> 'int',
 				'constraint'		=> 100
 			),
 			'status' => array(
@@ -185,6 +185,10 @@ class Gmap_upd {
 		array(
 			'class' 	=> 'Gmap_mcp',
 			'method'	=> 'import_csv_ft_action'
+		),
+		array(
+			'class' 	=> 'Gmap_mcp',
+			'method'	=> 'import_check_existing_action'
 		)
 	);
 	
