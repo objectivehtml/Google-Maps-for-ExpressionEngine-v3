@@ -101,7 +101,7 @@ class Gmap_mcp {
 		$settings = $this->EE->data_import_model->get_setting($id);
 			
 		$this->EE->theme_loader->javascript('https://maps.google.com/maps/api/js?sensor=true');
-		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js');
+		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.js');
 		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js');
 		$this->EE->theme_loader->javascript('json2');
 		
