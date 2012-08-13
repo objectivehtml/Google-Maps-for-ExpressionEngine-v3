@@ -173,6 +173,10 @@ class Gmap_mcp {
 					}
 				}
 			}
+			else
+			{
+				$existing_entry = FALSE;
+			}
 		}
 		
 		$response = array(

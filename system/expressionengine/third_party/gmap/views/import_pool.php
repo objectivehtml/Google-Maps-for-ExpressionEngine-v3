@@ -1,11 +1,5 @@
 <script type="text/javascript">
-	
-	/*
-		Total Entries 1000
-		Average 1.5 entries per second
 		
-	*/
-	
 	var id         = <? echo $id ?>;
 	var totalItems = <? echo $total_items?>;
 	var stop       = false;
@@ -96,8 +90,6 @@
 				status: status
 			}, function(data) {
 				
-				console.log(data);
-				
 				$('.geocoding p').html(data.geocode);
 				$('.success').html(data.total_entries_imported);
 				$('.failed').html(data.total_entries_failed);
@@ -146,10 +138,10 @@
 				if(!data.valid_address)
 				{
 					var geocoder = new google.maps.Geocoder();
-									
-					geocoder.geocode({address: data.item.geocode}, function(results, status) {
-										
-						if(typeof results == "array") {							
+						
+					geocoder.geocode({address: data.item.geocode}, function(results, status) {		
+			
+						if(status == "OK") {					
 							$.each(results, function(i, result) {
 								result.geometry.location.lat = result.geometry.location.lat();
 								result.geometry.location.lng = result.geometry.location.lng();
@@ -172,6 +164,8 @@
 			$('.items').html(parseInt($('.items').html())-1);
 			$('.geocoding p').html('<i>The geocoder has finished</i>');
 			$bar.progressbar({value: 100});
+			stop = true;
+			clearInterval(timer);
 		}
 		
 		lastIndex = index;
