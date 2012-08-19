@@ -758,7 +758,9 @@ $(document).ready(function() {
 			},
 			
 			populateIcons: function(obj, index) {
-								
+							
+					console.log(obj.find('.gmap-icon').length);
+						
 				if(obj.find('.gmap-icon').length == 0) {
 					
 					Gmap.icons = [];
@@ -776,6 +778,8 @@ $(document).ready(function() {
 						if(Gmap.markers[Gmap.editMarker].icon == icon.path)
 							selected = 'class="selected"';
 							
+						//console.log('<li><a href="#" '+selected+' class="gmap-icon"><img src="'+icon.path+'" alt="'+icon.name+'" /></a></li>');
+						
 						obj.find('.gmap-icons ul').append('<li><a href="#" '+selected+' class="gmap-icon"><img src="'+icon.path+'" alt="'+icon.name+'" /></a></li>');
 					});
 				}
@@ -1683,6 +1687,8 @@ $(document).ready(function() {
 				Gmap.ui.importPanel.find('.step-1, .step-3').hide();
 				Gmap.ui.importPanel.find('.step-2').show();
 				Gmap.ui.importPanel.find('.step-2 select').show().html(options.join(''));
+				
+				Gmap.populateIcons(Gmap.ui.importPanel);
 			}
 		});
 		
@@ -1751,8 +1757,6 @@ $(document).ready(function() {
 				});				
 	
 			});
-			
-			Gmap.populateIcons(Gmap.ui.importPanel);
 			
 			Gmap.ui.importPanel.find('.step-3 .total-markers').html(markers.length);
 			Gmap.ui.importPanel.find('.step-3 .total-imported').html(0);
