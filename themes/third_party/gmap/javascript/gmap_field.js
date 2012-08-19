@@ -1654,7 +1654,7 @@ $(document).ready(function() {
 					importErrors++;
 					console.log(importErrors);
 					Gmap.ui.importPanel.find('.step-3 textarea').attr('rows', importErrors);
-					Gmap.ui.importPanel.find('.step-3 textarea').append('['+count+'] Error Geocoding: '+marker.location+"\r\n");
+					Gmap.ui.importPanel.find('.step-3 textarea').append('['+(count+1)+'] Error Geocoding: '+marker.location+"\r\n");
 					$failed.html(parseInt($failed.html())+1);					
 				}
 				

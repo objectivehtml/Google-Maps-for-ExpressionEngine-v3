@@ -403,6 +403,9 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 	padding: 1em;
 	z-index: 500;
 	}
+
+
+.gmap-flyout.gmap-import-panel { width: 340px; }
 	
 	.gmap-flyout ol[role="presentation"],
 	.gmap-flyout select { display: none; }
