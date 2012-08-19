@@ -235,14 +235,14 @@
 	<dt>Avg Entries per Second</dt>
 	<dd class="average">N/A</dd>
 	<dt>Time Remaining</dt>
-	<dd class="time-remaining"N/A></dd>
+	<dd class="time-remaining">N/A</dd>
 	<dt>Total Run Time</dt>
 	<dd class="run-time">N/A</dd>
 	<dt>Importer Last Ran</dt>
 	<dd class="last-ran"><? echo isset($stats->importer_last_ran) ? date('Y-m-d h:i A', $stats->importer_last_ran) : 'N/A'?></dd>
 </dl>
 
-<p class="start"><a href="#" class="submit">Start Import</a></p>
+<p class="start"><button href="#" class="submit">Start Import</button></p>
 
 <div class="geocoding">
 

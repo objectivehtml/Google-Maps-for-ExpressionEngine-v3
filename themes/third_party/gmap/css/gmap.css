@@ -474,40 +474,57 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 	margin-bottom: 10px;
 }
 
+/* -----------------------------------------
+	Marker Icons
+----------------------------------------- */
+
+.gmap-icons {
+	padding: 1em 0;
+}
+
+.gmap-icons li {
+	float: left;
+	display: inline;
+	margin: 1px;
+}
+
+.gmap-icons li a {
+	display: block;
+	text-align: center;
+	padding: 2px 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+	
+.gmap-icons li a.selected,
+.gmap-icons li a:hover {
+	background: rgb(10, 10, 10);
+}
+	
+.gmap-icons li a,
+.gmap-icons li img {
+	width: 28px;
+	height: 28px;
+}
+
+
 .gmap-wrapper .side-panel {
 	width: 170px;
 	right: 0;
 	top: 100px;
 	}
-	
-	.gmap-wrapper .side-panel .gmap-icons {}
-		
-		.gmap-wrapper .side-panel .gmap-icons li {
-			float: left;
-			display: inline;
-			margin: 1px;
-			}
-			
-			.gmap-wrapper .side-panel .gmap-icons li a {
-				display: block;
-				text-align: center;
-				padding: 2px 3px;
-				-moz-border-radius: 3px;
-				-webkit-border-radius: 3px;
-				border-radius: 3px;
-				}
-				
-			.gmap-wrapper .side-panel .gmap-icons li a.selected,
-			.gmap-wrapper .side-panel .gmap-icons li a:hover {
-				background: rgb(10, 10, 10);
-				}
-				
-			.gmap-wrapper .side-panel .gmap-icons li a,
-			.gmap-wrapper .side-panel .gmap-icons li img {
-				width: 22px;
-				height: 22px;
-				}
-				
+
+.gmap-wrapper .side-panel .gmap-icons {
+	padding: 0;
+}	
+
+.gmap-wrapper .side-panel .gmap-icons li a,
+.gmap-wrapper .side-panel .gmap-icons li img {
+	width: 22px;
+	height: 22px;	
+}
+
 	.gmap-wrapper .side-panel p {
 		color: rgb(255, 255, 255);
 		padding: 0;

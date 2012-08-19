@@ -757,6 +757,43 @@ $(document).ready(function() {
 				})();		
 			},
 			
+			populateIcons: function(obj, index) {
+								
+				if(obj.find('.gmap-icon').length == 0) {
+					
+					Gmap.icons = [];
+					
+					if(obj) {
+						obj.find('.gmap-icons').html('<ul></ul>');
+					}
+					
+					$.each(icons, function(i, icon) {
+						Gmap.icons[i] = new Image();
+						Gmap.icons[i].src = icon.path;
+						
+						var selected = '';
+						
+						if(Gmap.markers[Gmap.editMarker].icon == icon.path)
+							selected = 'class="selected"';
+							
+						obj.find('.gmap-icons ul').append('<li><a href="#" '+selected+' class="gmap-icon"><img src="'+icon.path+'" alt="'+icon.name+'" /></a></li>');
+					});
+				}
+				else {
+				
+					if(obj) {
+						obj.find('.gmap-icons li a').removeClass('selected');
+					}
+					
+					$.each(Gmap.icons, function(i, icon) {
+						if(index && Gmap.markers[index] && icon.src == Gmap.markers[index].icon) {
+							obj.find('.gmap-icons ul li').eq(i).children('a').addClass('selected');
+						}
+					});
+				}
+					
+			},
+			
 			showMarkerPanel: function(index, response) {
 			
 				if(typeof index == "object") {
@@ -785,33 +822,7 @@ $(document).ready(function() {
 					}
 				}
 				
-				if(!Gmap.icons) {
-					Gmap.icons = [];
-					
-					Gmap.ui.markerPanel.find('.gmap-icons').html('<ul></ul>');
-					
-					$.each(icons, function(i, icon) {
-						Gmap.icons[i] = new Image();
-						Gmap.icons[i].src = icon.path;
-						
-						var selected = '';
-						
-						if(Gmap.markers[Gmap.editMarker].icon == icon.path)
-							selected = 'class="selected"';
-							
-						Gmap.ui.markerPanel.find('.gmap-icons ul').append('<li><a href="#" '+selected+' class="gmap-icon"><img src="'+icon.path+'" alt="'+icon.name+'" /></a></li>');
-					});
-				}
-				else {
-				
-					Gmap.ui.markerPanel.find('.gmap-icons li a').removeClass('selected');
-					
-					$.each(Gmap.icons, function(i, icon) {
-						if(icon.src == Gmap.markers[index].icon)
-							Gmap.ui.markerPanel.find('.gmap-icons ul li').eq(i).children('a').addClass('selected');
-					});
-				}
-				
+				Gmap.populateIcons(Gmap.ui.markerPanel, index);				
 				Gmap.ui.markerPanel.show();
 				
 				$t.trigger('gmapShowMarkerPanel', [Gmap.ui.markerPanel, Gmap]);
@@ -1559,6 +1570,10 @@ $(document).ready(function() {
 						'<select name="geocode" class="create-tags"></select>',
 						'<div class="tags group"></div>',	
 					'</div>',
+					'<div>',
+						'<label for="marker-icon">Marker Icon <span class="clear-icon" style="display:none"><a href="#">clear</a></span></label>',
+						'<div class="gmap-icons group"><ul></ul></div>',
+					'</div>',
 					/* '<div class="latitude">',
 						'<label for="latitude">Latitude</label>',
 						'<select name="latitude"></select>',	
@@ -1578,6 +1593,8 @@ $(document).ready(function() {
 						'Geocoding: <span class="geocoding"></span>',
 					'</p>',
 					'<div class="progress-bar"></div>',
+					'<p>Errors</p>',
+					'<textarea readonly></textarea>',
 					'<button type="button">Close</button>',
 				'</div>',
 			'</div>'
@@ -1589,8 +1606,9 @@ $(document).ready(function() {
 		
 		var importData;
 		var importMarkers;
+		var importErrors = 0;
 		
-		function importArray(array, count) {
+		Gmap.importArray = function(array, count) {
 		
 			var marker = array[count];
 			
@@ -1603,14 +1621,14 @@ $(document).ready(function() {
 					var lng = results[0].geometry.location.lng();
 								
 					results = Gmap.saveResponse(results[0], lat, lng);
+					results.icon = marker.icon;
 					results.geometry.location.lat = lat;
 					results.geometry.location.lng = lng;
 					
 					Gmap.addMarker(results);
 				
 					var index = Gmap.markers.length - 1;
-					
-					
+										
 					if(marker.title != "") {
 						Gmap.response.markers.results[index].title = marker.title;
 					}
@@ -1629,13 +1647,16 @@ $(document).ready(function() {
 					$imported.html(parseInt($imported.html())+1);
 				}
 				else {
-				
+					importErrors++;
+					console.log(importErrors);
+					Gmap.ui.importPanel.find('.step-3 textarea').attr('rows', importErrors);
+					Gmap.ui.importPanel.find('.step-3 textarea').append('['+count+'] Error Geocoding: '+marker.location+"\r\n");
 					$failed.html(parseInt($failed.html())+1);					
 				}
 				
 				if(count < array.length - 1) {
 					setTimeout(function() {
-						importArray(array, count + 1);
+						Gmap.importArray(array, count + 1);
 					}, 500);										
 				}
 				else {
@@ -1695,6 +1716,7 @@ $(document).ready(function() {
 				var title   = '';
 				var content = '';
 				var location = '';
+				var icon = '';
 				
 				Gmap.ui.importPanel.find('.step-2 .title input').each(function() {
 					if($(this).val() != "") {
@@ -1714,6 +1736,8 @@ $(document).ready(function() {
 					}
 				});
 				
+				var icon = Gmap.ui.importPanel.find('.gmap-icon.selected img').attr('src');
+				
 				var lat = Gmap.ui.importPanel.find('.step-2 .latitude select').val();
 				var lng = Gmap.ui.importPanel.find('.step-2 .longitude select').val();
 								
@@ -1722,20 +1746,23 @@ $(document).ready(function() {
 					content: $.trim(content),
 					location: $.trim(location),
 					latitude: (lat != '' ? row[lat] : false),
-					longitude: (lng != '' ? row[lng] : false)
+					longitude: (lng != '' ? row[lng] : false),
+					icon: (icon ? icon : false)
 				});				
 	
 			});
+			
+			Gmap.populateIcons(Gmap.ui.importPanel);
 			
 			Gmap.ui.importPanel.find('.step-3 .total-markers').html(markers.length);
 			Gmap.ui.importPanel.find('.step-3 .total-imported').html(0);
 			Gmap.ui.importPanel.find('.step-3 .total-failed').html(0);
 			Gmap.ui.importPanel.find('.step-3 .progress-bar').progressbar({value: 0});
-			
+			Gmap.ui.importPanel.find('.step-3 textarea').html('');
 			Gmap.ui.importPanel.find('.step-2, .step-1').hide();
 			Gmap.ui.importPanel.find('.step-3').show();
 			
-			importArray(markers, 0);
+			Gmap.importArray(markers, 0);
 			
 			/*
 			Gmap.geocode(markers[0].location, function(data) {
@@ -1932,6 +1959,20 @@ $(document).ready(function() {
 			return false;
 		});
 		
+		Gmap.ui.importPanel.find('.gmap-icon').live('click', function() {
+			var $t = $(this);
+						
+			if(!$t.hasClass('selected')) {
+				Gmap.ui.importPanel.find('.gmap-icon').removeClass('selected');
+				$t.addClass('selected');				
+			}
+			else {
+				$t.removeClass('selected');
+			}
+			
+			return false;
+		});
+		
 		Gmap.ui.markerPanel.find('.gmap-icons a').live('click', function() {
 			var $t = $(this);
 			var index = $t.parent().index();
@@ -2038,8 +2079,21 @@ $(document).ready(function() {
 			else {
 				Gmap.ui.importPanel.find('.step-1').show();
 				Gmap.ui.importPanel.find('.step-2, .step-3').hide();
-				
 				Gmap.ui.importPanel.fadeIn('fast');
+				
+				if(!Gmap.icons) {
+					Gmap.icons = [];					
+					Gmap.ui.markerPanel.find('.gmap-icons').html('<ul></ul>');
+					
+					$.each(icons, function(i, icon) {
+						Gmap.icons[i] = new Image();
+						Gmap.icons[i].src = icon.path;						
+						Gmap.ui.importPanel.find('.gmap-icons ul').append('<li><a href="#" class="gmap-icon"><img src="'+icon.path+'" alt="'+icon.name+'" /></a></li>');
+					});
+				}
+				else {
+					Gmap.ui.importPanel.find('.gmap-icons li a').removeClass('selected');
+				}
 			}
 			
 			Gmap.ui.importPanel.position({
