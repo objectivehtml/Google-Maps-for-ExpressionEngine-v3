@@ -1654,14 +1654,14 @@ $(document).ready(function() {
 					importErrors++;
 					console.log(importErrors);
 					Gmap.ui.importPanel.find('.step-3 textarea').attr('rows', importErrors);
-					Gmap.ui.importPanel.find('.step-3 textarea').append('['+(count+1)+'] Error Geocoding: '+marker.location+"\r\n");
+					Gmap.ui.importPanel.find('.step-3 textarea').append('['+(count+2)+'] Error Geocoding: '+marker.location+"\r\n");
 					$failed.html(parseInt($failed.html())+1);					
 				}
 				
 				if(count < array.length - 1) {
 					setTimeout(function() {
 						Gmap.importArray(array, count + 1);
-					}, 500);										
+					}, 1000);										
 				}
 				else {
 					Gmap.ui.importPanel.find('.step-3 .progress-bar').progressbar({value: 100});
@@ -1748,7 +1748,7 @@ $(document).ready(function() {
 				var lng = Gmap.ui.importPanel.find('.step-2 .longitude select').val();
 								
 				markers.push({
-					title: $.trim(title),
+					title: $.trim(title).replace(/\s*/g, " "),
 					content: $.trim(content),
 					location: $.trim(location),
 					latitude: (lat != '' ? row[lat] : false),
