@@ -1626,6 +1626,7 @@ $(document).ready(function() {
 								
 					results = Gmap.saveResponse(results[0], lat, lng);
 					results.icon = marker.icon;
+					results.content = marker.content;
 					results.geometry.location.lat = lat;
 					results.geometry.location.lng = lng;
 					
@@ -1748,13 +1749,15 @@ $(document).ready(function() {
 				var lng = Gmap.ui.importPanel.find('.step-2 .longitude select').val();
 								
 				markers.push({
-					title: $.trim(title).replace(/\s*/g, " "),
-					content: $.trim(content),
-					location: $.trim(location),
+					title: $.trim(title).replace(/\s/g, " "),
+					content: $.trim(content).replace(/\s/g, " "),
+					location: $.trim(location).replace(/\s/g, " "),
 					latitude: (lat != '' ? row[lat] : false),
 					longitude: (lng != '' ? row[lng] : false),
 					icon: (icon ? icon : false)
-				});				
+				});	
+				
+				console.log(markers[markers.length - 1]);			
 	
 			});
 			
