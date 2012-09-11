@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.7.0
- * @build		20120801
+ * @version		0.8.2
+ * @build		20120828
  */
  
 class Channel_data_utility extends Channel_data_lib {
@@ -31,20 +31,28 @@ class Channel_data_utility extends Channel_data_lib {
 	 {
 	 	$new_data = array();
 	 	
+	 	
 	 	if(!empty($prefix))
 	 	{
 		 	foreach($data as $data_index => $data_value)
 		 	{
 		 		if(is_array($data_value))
 		 		{
-		 			$new_row = array();
-		 			
-		 			foreach($data_value as $inner_index => $inner_value)
+		 			if(isset($data_value[0]) && !is_array($data_value[0]))
 		 			{
-		 				$new_row[$prefix . $delimeter . $inner_index] = $inner_value;
+			 			$new_row = array();
+			 			
+			 			foreach($data_value as $inner_index => $inner_value)
+			 			{
+			 				$new_row[$prefix . $delimeter . $inner_index] = $inner_value;
+			 			}
+			 			
+			 			$new_data[$data_index] = $new_row;
 		 			}
-		 			
-		 			$new_data[$data_index] = $new_row;
+		 			else
+		 			{
+		 				$new_data[$prefix . $delimeter . $data_index] = $data_value;
+		 			}
 		 		}
 		 		else
 		 		{
@@ -110,47 +118,39 @@ class Channel_data_utility extends Channel_data_lib {
 
 		$fields = $this->EE->channel_data->get_channel_fields($channel_id);
 
-		if(is_array($data))
+		if(is_object($data))
 		{
-			$data = (object) $data;
+			$data = (array) $data;
 		}
 		
-		if(!isset($data->{($prefix.'entry_date')}))
-		{
-			$data->{($prefix.'entry_date')} = $this->EE->localize->now;
-		}
-		
-		if(!isset($data->{($prefix.'url_title')}))
-		{
-			$this->EE->load->helper('url');
-			
-			$data->{($prefix.'url_title')} = url_title($data->{($prefix.'title')});
-		}
-		
-		if(!isset($data->{($prefix.'expiration_date')}))
-		{
-			$data->{($prefix.'expiration_date')} = NULL;
-		}
-		
-		if(!isset($data->{($prefix.'author_id')}))
-		{
-			$data->{($prefix.'author_id')} = $this->EE->session->userdata['member_id'];
-		}
-		
-		if(!isset($data->{($prefix.'status')}))
-		{
-			$data->{($prefix.'status')} = 'open';
-		}
-		
-		$post   = array(
-			'title'           => $data->{($prefix.'title')},
-			'url_title'       => $data->{($prefix.'url_title')},
-			'entry_date'      => $data->{($prefix.'entry_date')},
-			'expiration_date' => $data->{($prefix.'expiration_date')},
-			'author_id'		  => $data->{($prefix.'author_id')},
-			'status'          => $data->{($prefix.'status')}
+		$required_fields = array(
+			'entry_date'          => $this->EE->localize->now,
+			'url_title'           => url_title($data[$prefix.'title']),
+			'expiration_date'     => NULL,
+			'author_id'           => $this->EE->session->userdata['member_id'],
+			'status'              => 'open',
+			'sticky'              => 'n',
+			'allow_comments'      => 'n',
+			'recent_comment_date' => 0
 		);
-
+				
+		foreach($required_fields as $key => $value)
+		{
+			if(!isset($data[$prefix.$key]))
+			{
+				$data[$prefix.$key] = $value;
+			}
+		}
+		
+		$post   = array_merge($data, array(
+			'title'           => $data[$prefix.'title'],
+			'url_title'       => $data[$prefix.'url_title'],
+			'entry_date'      => $data[$prefix.'entry_date'],
+			'expiration_date' => $data[$prefix.'expiration_date'],
+			'author_id'		  => $data[$prefix.'author_id'],
+			'status'          => $data[$prefix.'status']
+		));
+		
 		foreach($fields->result() as $field)
 		{
 			$post_value = $this->EE->input->post($field->field_name);

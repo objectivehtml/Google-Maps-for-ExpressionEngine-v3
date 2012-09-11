@@ -11,7 +11,7 @@
  * @build		20120812
  */
 
-require 'config/gmap_config.php';
+require PATH_THIRD . 'gmap/config/gmap_config.php';
 
 if(!defined('GMAP_VERSION'))
 {	
@@ -132,11 +132,17 @@ class Gmap_ft extends EE_Fieldtype {
 			'module_name'	=> 'gmap'
 		));
 		
-		$field	 		= $this->EE->channel_data->get_field($this->settings['field_id'])->row();
-		$field_group	= $this->EE->channel_data->get_field_group($field->group_id)->row();
-		//$channel		= $this->EE->channel_data->get_channel($field_group->channel_id);
+		$field	 		= $this->EE->channel_data->get_field($this->settings['field_id'], array(
+			'select' => 'field_id, field_name, field_label, field_type, group_id'
 		
-		$fields			= $this->EE->channel_data->get_channel_fields($field->group_id)->result();
+		))->row();
+				
+		$fields			= $this->EE->channel_data->get_fields(array(
+			'select' => 'field_id, field_name, field_label, field_type, group_id',
+			'where'  => array(
+				'group_id' => $field->group_id
+			)
+		))->result();
 		
 		$fields_array	= array();
 		
@@ -153,8 +159,12 @@ class Gmap_ft extends EE_Fieldtype {
 		$this->settings['field_name'] = $this->field_name;
 		$this->settings['theme_url']  = $this->EE->theme_loader->theme_url();
 		
-		$req_fields		= $this->EE->channel_data->get_channel_fields($field->group_id, '*', array(
-			'field_required'	=> 'y'
+		$req_fields		= $this->EE->channel_data->get_fields(array(
+			'select' => 'field_id, field_name, field_label, field_type, group_id',
+			'where'  => array(
+				'group_id'       => $field->group_id,
+				'field_required' => 'y'
+			)
 		))->result();
 		
 		$data	 		= empty($data) ? 'false' : html_entity_decode($data);
@@ -914,7 +924,6 @@ class Gmap_ft extends EE_Fieldtype {
 
 				if($data->markers->total > 0 && in_array('markers', $params['render']))
 				{
-				
 					$markers 	= array($data->markers);
 					$options	= array(
 						'id' 			=> $params['id'],
