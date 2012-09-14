@@ -510,11 +510,8 @@ class Google_maps {
 								
 								$geocoded_response = $this->parse_geocoder_response(array((object) array('results' => array($result))));
 
-								foreach($geocoded_response as $index => $response)
-								{
-									$geocoded_response[$index] = $this->EE->channel_data->utility->add_prefix('marker', $response);
-								}
-								
+								$geocoded_response = $this->EE->channel_data->utility->add_prefix('marker', $geocoded_response);
+
 								$content = isset($params['infowindow']['content']) ? $params['infowindow']['content'] : NULL;
 								$content = $content == NULL && isset($result->content) ? $this->EE->google_maps->clean_js($result->content) : $content;
 								

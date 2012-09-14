@@ -1422,15 +1422,16 @@ Class Gmap {
 		
 		$attributes    = array();
 		$hidden_fields = array(
-			'init_gmap_search' 	=> 'y',
-			'channel'		   	=> $channels,
-			'distance'		   	=> $distance,
-			'metric'		   	=> $metric,
-			'geocode_field'	   	=> implode('|', $geocode_fields),
-			'distance_field'	=> $this->param('distance_field', 'distance'),
-			'location'		  	=> $location,
-			'latitude_field'	=> $this->param('latitude_field', FALSE, FALSE),
-			'longitude_field'	=> $this->param('longitude_field', FALSE, FALSE)
+			'init_gmap_search'   => 'y',
+			'channel'            => $channels,
+			'distance'           => $distance,
+			'metric'             => $metric,
+			'geocode_field'      => implode('|', $geocode_fields),
+			'distance_field'     => $this->param('distance_field', 'distance'),
+			'location'           => $location,
+			'latitude_field'     => $this->param('latitude_field', FALSE, FALSE),
+			'longitude_field'    => $this->param('longitude_field', FALSE, FALSE),
+			'multiple_locations' => $this->param('multiple_locations', FALSE, FALSE)
 		);
 		
 		$vars[0]['has_searched']     = $this->EE->input->post('init_gmap_search') == 'y' ? TRUE : FALSE;
@@ -1544,7 +1545,7 @@ Class Gmap {
 		$geocode_fields		 = explode('|', $this->EE->input->post('geocode_field'));
 		
 		$location = '';
-		
+		$location_array = array();
 		foreach($geocode_fields as $geocode_field)
 		{	
 			$post = $this->EE->input->post($geocode_field);
@@ -1555,6 +1556,7 @@ Class Gmap {
 			}
 			
 			$location .= $post;
+			$location_array[] = trim($post);
 			$vars[0][$geocode_field] = trim($post);
 		}
 		
@@ -1577,62 +1579,77 @@ Class Gmap {
 			//$vars = $this->EE->base_form->validate_required_fields($vars);
 		}
 		
-		if($location !== FALSE && !empty($location))
+		if($this->EE->input->post('multiple_locations'))
 		{
-			$response = $this->EE->google_maps->geocode($location);
-			
-			if($response[0]->status == 'OVER_QUERY_LIMIT' && $this->EE->session->userdata['group_id'] == 1)
+			$locations = $location_array;
+		}
+		else
+		{
+			$locations = array($location);
+		}
+		
+		foreach($locations as $index => $location)
+		{
+			if($location !== FALSE && !empty($location))
 			{
-				return $this->EE->output->show_user_error('general', 'You are over your query limit for the Google\'s Geocoding services. If you are on a shared IP, it\'s advised you upgrade to a dedicated IP so you don\t have to share your requests with other sites. For more information on Geocoding limits, go to <a href="https://developers.google.com/maps/documentation/geocoding/#Limits">https://developers.google.com/maps/documentation/geocoding/#Limits</a>');
-			}
-			
-			if($response[0]->status == "OK")
-			{			
-				$response = $this->EE->google_maps->parse_geocoder_response($response, FALSE, 0);
-														
-				$vars[0] = array_merge($vars[0], $response[0]);
+				$response = $this->EE->google_maps->geocode($location);
 				
-				unset($vars[0]['title']);
-				unset($vars[0]['content']);
-				
-				$lat = $vars[0]['latitude'];
-				$lng = $vars[0]['longitude'];
-				
-				if($lat !== FALSE && $lng !== FALSE)
+				if($response[0]->status == 'OVER_QUERY_LIMIT' && $this->EE->session->userdata['group_id'] == 1)
 				{
-					if($distance === FALSE)
-					{
-						$this->EE->output->show_user_error('error', 'The distance field is not defined in the template tag. The distance_field parameter value should be the same as the name of your distance field in the DOM.');
-					}				
-					
-					$lat_field = $this->EE->input->post('latitude_field');
-					$lng_field = $this->EE->input->post('longitude_field');
-					
-					$lat_field_name = $this->EE->google_maps->prep_sql_fieldname($lat_field, FALSE, FALSE);		
-
-					if(count($lat_field_name) == 0)
-					{
-						return $this->EE->output->show_user_error('error', 'The latitude field \''.$lat_field.'\' is not valid.');
-					}
-					
-					$lat_field_name = $lat_field_name[0];
-									
-					$lng_field_name = $this->EE->google_maps->prep_sql_fieldname($lng_field, FALSE, FALSE);
-					
-					if(count($lng_field_name) == 0)
-					{
-						return $this->EE->output->show_user_error('error', 'The longitude field \''.$lng_field.'\' is not valid.');
-					}
-
-					$lng_field_name = $lng_field_name[0];
-					
-					$vars[0]['search_distance'] = $distance;
-					$vars[0]['metric'] = $metric;
+					return $this->EE->output->show_user_error('general', 'You are over your query limit for the Google\'s Geocoding services. If you are on a shared IP, it\'s advised you upgrade to a dedicated IP so you don\t have to share your requests with other sites. For more information on Geocoding limits, go to <a href="https://developers.google.com/maps/documentation/geocoding/#Limits">https://developers.google.com/maps/documentation/geocoding/#Limits</a>');
 				}
-				else
-				{
-					$vars[0]['metric'] = '';
-					$vars[0]['search_distance'] = 'any distance';
+		
+				$lat_field = explode('|', $this->EE->input->post('latitude_field'));
+				$lng_field = explode('|', $this->EE->input->post('longitude_field'));
+				
+				if($response[0]->status == "OK")
+				{			
+					$response = $this->EE->google_maps->parse_geocoder_response($response, FALSE, 0);
+							
+					if($index == 0)
+					{					
+						$vars[0] = array_merge($vars[0], $response[0]);
+					}
+					
+					unset($vars[0]['title']);
+					unset($vars[0]['content']);
+					
+					$lat = $response[0]['latitude'];
+					$lng = $response[0]['longitude'];
+					
+					if($lat !== FALSE && $lng !== FALSE)
+					{
+						if($distance === FALSE)
+						{
+							$this->EE->output->show_user_error('error', 'The distance field is not defined in the template tag. The distance_field parameter value should be the same as the name of your distance field in the DOM.');
+						}				
+						
+						$lat_field_name = $this->EE->google_maps->prep_sql_fieldname($lat_field[$index], FALSE, FALSE);		
+	
+						if(count($lat_field_name) == 0)
+						{
+							return $this->EE->output->show_user_error('error', 'The latitude field \''.$lat_field[$index].'\' is not valid.');
+						}
+						
+						$lat_field_name = $lat_field_name[0];
+										
+						$lng_field_name = $this->EE->google_maps->prep_sql_fieldname($lng_field[$index], FALSE, FALSE);
+						
+						if(count($lng_field_name) == 0)
+						{
+							return $this->EE->output->show_user_error('error', 'The longitude field \''.$lng_field[$index].'\' is not valid.');
+						}
+	
+						$lng_field_name = $lng_field_name[0];
+						
+						$vars[0]['search_distance'] = $distance;
+						$vars[0]['metric'] = $metric;
+					}
+					else
+					{
+						$vars[0]['metric'] = '';
+						$vars[0]['search_distance'] = 'any distance';
+					}
 				}
 			}
 		}
@@ -1829,6 +1846,8 @@ Class Gmap {
 		/* -------------------------------------------*/
 		
 		$vars[0]['sql'] = $sql;
+		
+		//var_dump($sql);exit();
 		
 		if($this->param('show_sql')) echo $sql;
 		
