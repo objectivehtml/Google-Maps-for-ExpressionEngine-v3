@@ -1838,7 +1838,7 @@ Class Gmap {
 		/*  - Modify the SQL statement before the query is executed
 		/*  - Added v3.0
 		*/
-			$edata = $this->EE->extensions->call('gmap_results_sql', $sql, $vars);			
+			$sql = $this->EE->extensions->call('gmap_results_sql', $sql, $vars);			
 			if($edata !== NULL) $sql = $edata;
 			
 			if ($this->EE->extensions->end_script === TRUE) return;
