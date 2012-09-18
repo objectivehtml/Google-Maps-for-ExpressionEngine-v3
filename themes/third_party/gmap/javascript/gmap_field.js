@@ -57,6 +57,7 @@ $(document).ready(function() {
 			map: {},
 			markers: [],
 			newRegion: false,
+			override: false,
 			overlimit: {
 				markers: false,
 				route: false,
@@ -979,7 +980,7 @@ $(document).ready(function() {
 					}
 				}
 				else if(type == 'waypoints') {
-					if(Gmap.response.waypoints.total > 2) {
+					if(Gmap.response.waypoints.total > 2 || Gmap.override) {
 						Gmap.response.waypoints.results[index] = false;
 						Gmap.response.waypoints.total--;
 						Gmap.route();
