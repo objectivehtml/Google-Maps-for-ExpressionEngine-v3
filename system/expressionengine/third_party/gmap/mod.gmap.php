@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.188
- * @build		20120812
+ * @version		3.0.189
+ * @build		20120916
  */
 
 Class Gmap {
@@ -1560,11 +1560,15 @@ Class Gmap {
 			$vars[0][$geocode_field] = trim($post);
 		}
 		
-		$location 				= trim($location);
-		$channels			 	= $this->EE->input->post('channel');
-		$distance_field 	 	= $this->EE->input->post('distance_field');
-		$distance			 	= $this->EE->input->post($distance_field);		
-		$categories			 	= $this->EE->input->post('categories');
+		$location       = trim($location);
+		$channels       = $this->EE->input->post('channel');
+		$distance_field = $this->EE->input->post('distance_field');
+		$distance       = $this->EE->input->post($distance_field);	
+		$distance_index = '';	
+		$categories     = $this->EE->input->post('categories');
+		$select         = array();
+		$having         = array();
+		$where   	    = array();
 		
 		foreach($_POST as $field => $value)
 		{
@@ -1579,13 +1583,22 @@ Class Gmap {
 			//$vars = $this->EE->base_form->validate_required_fields($vars);
 		}
 		
+		$no_locations = FALSE;
+		
 		if($this->EE->input->post('multiple_locations'))
 		{
 			$locations = $location_array;
 		}
 		else
 		{
-			$locations = array($location);
+			if(!empty($location))
+			{
+				$locations = array($location);
+			}
+			else
+			{
+				$locations = array();
+			}
 		}
 		
 		foreach($locations as $index => $location)
@@ -1616,7 +1629,7 @@ Class Gmap {
 					
 					$lat = $response[0]['latitude'];
 					$lng = $response[0]['longitude'];
-					
+
 					if($lat !== FALSE && $lng !== FALSE)
 					{
 						if($distance === FALSE)
@@ -1642,6 +1655,13 @@ Class Gmap {
 	
 						$lng_field_name = $lng_field_name[0];
 						
+						if(count($locations) > 1)
+						{
+							$distance_index = '_'.$index;
+						}
+									
+						$select[] = 'ROUND((((ACOS(SIN('.$lat.' * PI() / 180) * SIN('.$lat_field_name.' * PI() / 180) + COS('.$lat.' * PI() / 180) * COS('.$lat_field_name.' * PI() / 180) * COS(('.$lng.' - '.$lng_field_name.') * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * '.$this->EE->google_maps->convert_metric($metric).'), 1) AS distance'.$distance_index;
+												
 						$vars[0]['search_distance'] = $distance;
 						$vars[0]['metric'] = $metric;
 					}
@@ -1650,36 +1670,29 @@ Class Gmap {
 						$vars[0]['metric'] = '';
 						$vars[0]['search_distance'] = 'any distance';
 					}
+					
+					if($distance)
+					{
+						$having[] = '`distance'.$distance_index.'` '.$this->EE->google_maps->prep_value($distance_field, (float) $distance);
+					}
+
 				}
 			}
 		}
 
-		$prep_fields = $this->EE->google_maps->prep_sql_fieldname($_POST, FALSE);
-	
-		$select   	= array(
-			'`exp_channel_titles`.*',
-			'`exp_channel_data`.`entry_id`'
-		);
-
-		$where   	= array();
-		$cat_where  = array();
-		$having  	= array();
-		$loc_sql 	= ', 0 as `distance`';
-		 
-		if($location && isset($lat) && isset($lng))
-		{
-			$select[] = 'ROUND((((ACOS(SIN('.$lat.' * PI() / 180) * SIN('.$lat_field_name.' * PI() / 180) + COS('.$lat.' * PI() / 180) * COS('.$lat_field_name.' * PI() / 180) * COS(('.$lng.' - '.$lng_field_name.') * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * '.$this->EE->google_maps->convert_metric($metric).'), 1) AS distance';
-		}
-		else
-		{
+		if(count($locations) == 0)
+		{	
 			$select[] = '0 AS distance';
 		}
 		
-		if($distance)
-		{
-			$having[] = '`distance` '.$this->EE->google_maps->prep_value($distance_field, (float) $distance);
-		}
-		
+		$prep_fields = $this->EE->google_maps->prep_sql_fieldname($_POST, FALSE);
+	
+		$select[] = '`exp_channel_titles`.*';
+		$select[] = '`exp_channel_data`.`entry_id`';
+
+		$cat_where  = array();
+		$loc_sql 	= ', 0 as `distance`';
+		 
 		if($channels)
 		{									
 			//Loops through the defined channels
@@ -1825,7 +1838,7 @@ Class Gmap {
 			'.$table.'
 		INNER JOIN `exp_channel_titles` USING (entry_id)
 		'.(count($where) > 0 ? ' WHERE ' . ltrim(implode(' ', $where), 'OR') : NULL).' 
-		'.(count($having) > 0 ? ' HAVING '.implode(' ', $having) : NULL);
+		'.(count($having) > 0 ? ' HAVING '.implode(' AND ', $having) : NULL);
 		
 		$grand_total_results = $this->EE->db->query($base_sql)->num_rows();
 
@@ -1833,12 +1846,14 @@ Class Gmap {
 		ORDER BY `'.$order_by.'` '.$sort.'
 		'.($limit ? 'LIMIT '.$offset.','.$limit : NULL);
 		
+	//	var_dump($sql);exit();
+		
 		/* -------------------------------------------
 		/* 'gmap_results_sql' hook.
 		/*  - Modify the SQL statement before the query is executed
 		/*  - Added v3.0
 		*/
-			$sql = $this->EE->extensions->call('gmap_results_sql', $sql, $vars);			
+			$edata = $this->EE->extensions->call('gmap_results_sql', $sql, $vars);			
 			if($edata !== NULL) $sql = $edata;
 			
 			if ($this->EE->extensions->end_script === TRUE) return;
@@ -1847,7 +1862,7 @@ Class Gmap {
 		
 		$vars[0]['sql'] = $sql;
 		
-		//var_dump($sql);exit();
+		// var_dump($sql);exit();
 		
 		if($this->param('show_sql')) echo $sql;
 		
