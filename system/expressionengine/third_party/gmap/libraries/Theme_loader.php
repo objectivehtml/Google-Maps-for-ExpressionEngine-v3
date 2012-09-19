@@ -12,16 +12,69 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		1.1.0
- * @build		20120801
+ * @version		1.2.1
+ * @build		20120919
  */
  
 if(!class_exists('Theme_loader'))
 {
 	class Theme_loader {
 		
+		/*
+		 * Module name
+		*/
+		
 		public $module_name;
+		
+		/*
+		 * Loaded files
+		*/
+		
 		public $loaded_files = array();
+		
+		/*
+		 * Javascript directory name
+		*/
+		 
+		public $js_directory = 'javascript';
+		
+		/*
+		 * Javascript file extension
+		*/
+		
+		public $js_ext = '.js';
+		
+		/*
+		 * CSS directory name
+		*/
+		
+		public $css_directory = 'css';
+		
+		/*
+		 * CSS file extension
+		*/
+		
+		public $css_ext  = '.css';
+		
+		/*
+		 * Localhost URL
+		*/
+		
+		public $localhost = 'http://localhost';
+		
+		/*
+		 * Regex pattern that validates URL's
+		*/
+		
+		public $url_format;
+		
+		/**
+		 * Construct
+		 *
+		 * @access	public
+		 * @param	array	Pass a module name to define 
+		 * @return	void
+		 */
 		
 		public function __construct($data = array())
 		{
@@ -31,7 +84,7 @@ if(!class_exists('Theme_loader'))
 			{
 				$this->module_name = $data['module_name'];
 			}
-			else
+			else if(isset($data[0]))
 			{
 				$this->module_name = strtolower(str_replace(array('_mcp', '_upd'), '', $data[0]));
 			}
@@ -56,9 +109,20 @@ if(!class_exists('Theme_loader'))
 			
 		}
 		
+		/**
+		 * Get the theme file path
+		 *
+		 * @access	public
+		 * @return	string
+		 */
+		
 		public function theme_path()
 		{
-			if(defined('PATH_THIRD_THEMES'))
+			if($config = config_item('path_third_themes'))
+			{
+				return $config;
+			}
+			else if(defined('PATH_THIRD_THEMES'))
 			{
 				return PATH_THIRD_THEMES;
 			}
@@ -68,9 +132,20 @@ if(!class_exists('Theme_loader'))
 			}
 		}
 		
+		/**
+		 * Get the theme URL
+		 *
+		 * @access	public
+		 * @return	string
+		 */
+		
 		public function theme_url()
 		{
-			if(defined('URL_THIRD_THEMES'))
+			if($config = config_item('url_third_themes'))
+			{
+				return $config;
+			}
+			else if(defined('URL_THIRD_THEMES'))
 			{
 				return URL_THIRD_THEMES;
 			}
@@ -80,21 +155,38 @@ if(!class_exists('Theme_loader'))
 			}
 		}	
 		
+		/**
+		 * Add a javascript file to the document head
+		 *
+		 * @access	public
+		 * @param   string	A valid file name, no ext necessary
+		 * @return	string
+		 */
+		
 		public function javascript($file)
 		{
-			$file = $this->_prep_url('javascript', $file, '.js');
+			$file = $this->prep_url($this->js_directory, $file, $this->js_ext);
 			
+				var_dump($file);exit();
 			if(!in_array($file, $this->loaded_files))
 			{
 				$this->loaded_files[] = $file;
-			
+				
 				$this->EE->cp->add_to_head('<script type="text/javascript" src="'.$file.'"></script>');
 			}
 		}
 		
+		/**
+		 * Add a css file to the document head
+		 *
+		 * @access	public
+		 * @param   string	A valid file name, no ext necessary
+		 * @return	string
+		 */
+		
 		public function css($file)
 		{	
-			$file = $this->_prep_url('css', $file, '.css');
+			$file = $this->prep_url($this->css_directory, $file, $this->css_ext);
 			
 			if(!in_array($file, $this->loaded_files))
 			{
@@ -104,11 +196,21 @@ if(!class_exists('Theme_loader'))
 			}
 		}
 		
-		private function _prep_url($directory, $file, $ext)
+		/**
+		 * Add a javascript file to the document head
+		 *
+		 * @access	private
+		 * @param   string	A valid directory name, no ext necessary
+		 * @param   string	A valid file name, no ext necessary
+		 * @param   string	A valid file extension (.css|.js)
+		 * @return	string
+		 */
+		
+		private function prep_url($directory, $file, $ext)
 		{
 			if(!$this->is_valid_url($file))
 			{
-				$file 	= str_replace('.js', '', $file);
+				$file 	= str_replace(array($this->js_ext, $this->css_ext), '', $file);
 				$file 	= $this->theme_url() . $this->module_name . '/' . $directory . '/' . $file . $ext;
 			}
 			
@@ -123,7 +225,7 @@ if(!class_exists('Theme_loader'))
 		 * @return boolean
 		 */
 		private function is_valid_url($url) {
-		  if ($this->str_starts_with(strtolower($url), 'http://localhost')) {
+		  if ($this->str_starts_with(strtolower($url), $this->localhost)) {
 		    return true;
 		  }
 		  return preg_match($this->url_format, $url);
@@ -141,8 +243,6 @@ if(!class_exists('Theme_loader'))
 		 */
 		private function str_starts_with($string, $niddle) {
 		      return substr($string, 0, strlen($niddle)) == $niddle;
-		}
-	
-		
+		}		
 	}
 }
