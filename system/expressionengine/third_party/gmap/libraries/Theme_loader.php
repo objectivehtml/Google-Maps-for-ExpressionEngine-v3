@@ -167,11 +167,10 @@ if(!class_exists('Theme_loader'))
 		{
 			$file = $this->prep_url($this->js_directory, $file, $this->js_ext);
 			
-				var_dump($file);exit();
 			if(!in_array($file, $this->loaded_files))
 			{
 				$this->loaded_files[] = $file;
-				
+			
 				$this->EE->cp->add_to_head('<script type="text/javascript" src="'.$file.'"></script>');
 			}
 		}

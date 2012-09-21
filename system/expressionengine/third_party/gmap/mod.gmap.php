@@ -187,11 +187,11 @@ Class Gmap {
 			$url = rtrim($this->EE->theme_loader->theme_url(), '/') . '/';
 
 			$return = '
-			<link rel="stylesheet" href="'.$url.'/gmap/css/infobox.css" media="screen, projection">
+			<link rel="stylesheet" href="'.$url.'third_party/gmap/css/infobox.css" media="screen, projection">
 		
 			<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor='.$sensor.'&key='.$key.'&language='.$lang.'"></script>
-			<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/infobox.js"></script>
-			<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/markerclusterer.js"></script>
+			<script type="text/javascript" src="'.rtrim($url, '/').'/third_party/gmap/javascript/infobox.js"></script>
+			<script type="text/javascript" src="'.rtrim($url, '/').'/third_party/gmap/javascript/markerclusterer.js"></script>
 			' . $return;
 		}
 		
