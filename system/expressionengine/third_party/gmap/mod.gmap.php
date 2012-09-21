@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.189
- * @build		20120916
+ * @version		3.0.190
+ * @build		20120921
  */
 
 Class Gmap {
@@ -1504,9 +1504,7 @@ Class Gmap {
 	}
 	
 	public function results()
-	{		
-		//echo 'results';exit();
-		
+	{
 		$this->EE->load->library('base_form');
 		
 		$method = strtolower($this->param('method', 'post'));
@@ -1540,7 +1538,19 @@ Class Gmap {
 			}
 		}
 		
+	// Check for a no_results prefix to avoid no_results parse conflicts
+		if($no_results_prefix = $this->param('no_results_prefix'))
+		{
+			if(preg_match('/\\'.LD.'if '.$no_results_prefix.'no_results\\'.RD.'.*\\'.LD.'\\/if\\'.RD.'/us', $this->EE->TMPL->tagdata, $matches))
+			{
+				$this->EE->TMPL->no_results = $this->EE->TMPL->parse_variables_row($matches[0], array(
+					$no_results_prefix.'no_results' => 1
+				));
+			}
+		}
+		
 		$tagdata			 = empty($this->EE->TMPL->tagdata) ? FALSE : $this->EE->TMPL->tagdata;
+		
 		$metric		   		 = $this->EE->input->$method('metric');
 		$geocode_fields		 = explode('|', $this->EE->input->post('geocode_field'));
 		
@@ -1915,7 +1925,7 @@ Class Gmap {
 			
 			if($vars[0]['has_searched'] && $total_results == 0)
 			{
-				return $this->EE->TMPL->no_results();
+				return $this->EE->TMPL->no_results(TRUE);
 			}		
 			
 			return $this->EE->google_maps->parse_fields($vars, $tagdata, $this->param('parse_tags', FALSE, TRUE));
