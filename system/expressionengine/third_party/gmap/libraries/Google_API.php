@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-require_once 'Gmap_curl.php';
+require_once PATH_THIRD.'gmap/libraries/Gmap_curl.php';
 
 /**
  * Base Google API Class

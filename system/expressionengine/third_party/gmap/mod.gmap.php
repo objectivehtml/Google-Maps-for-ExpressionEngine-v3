@@ -187,11 +187,11 @@ Class Gmap {
 			$url = rtrim($this->EE->theme_loader->theme_url(), '/') . '/';
 
 			$return = '
-			<link rel="stylesheet" href="'.$url.'third_party/gmap/css/infobox.css" media="screen, projection">
+			<link rel="stylesheet" href="'.$url.'gmap/css/infobox.css" media="screen, projection">
 		
 			<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor='.$sensor.'&key='.$key.'&language='.$lang.'"></script>
-			<script type="text/javascript" src="'.rtrim($url, '/').'/third_party/gmap/javascript/infobox.js"></script>
-			<script type="text/javascript" src="'.rtrim($url, '/').'/third_party/gmap/javascript/markerclusterer.js"></script>
+			<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/infobox.js"></script>
+			<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/markerclusterer.js"></script>
 			' . $return;
 		}
 		
@@ -1587,7 +1587,8 @@ Class Gmap {
 		
 		$vars[0]['has_searched']     = $this->EE->input->post('init_gmap_search') == 'y' ? TRUE : FALSE;
 		$vars[0]['has_not_searched'] = $vars[0]['has_searched'] ? FALSE : TRUE;
-
+		$vars[0]['formatted_address_string']  = NULL;
+		
 		if($vars[0]['has_searched'])
 		{
 			//$vars = $this->EE->base_form->validate_required_fields($vars);
@@ -1628,12 +1629,24 @@ Class Gmap {
 				if($response[0]->status == "OK")
 				{			
 					$response = $this->EE->google_maps->parse_geocoder_response($response, FALSE, 0);
-							
-					if($index == 0)
-					{					
-						$vars[0] = array_merge($vars[0], $response[0]);
+
+					if(!empty($response[0]['formatted_address']))
+					{
+						$vars[0]['formatted_address_string'] .= $response[0]['formatted_address'] . $this->param('location_delimeter', ' - ');
 					}
 					
+					if($index == 0)
+					{
+						$vars[0] = array_merge($vars[0], $response[0]);
+					}
+					else
+					{
+						if(empty($vars[0]['formatted_address']))
+						{
+							$vars[0]['formatted_address'] = $response[0]['formatted_address'];
+						}
+					}
+						
 					unset($vars[0]['title']);
 					unset($vars[0]['content']);
 					
@@ -1669,7 +1682,7 @@ Class Gmap {
 						{
 							$distance_index = '_'.$index;
 						}
-									
+							
 						$select[] = 'ROUND((((ACOS(SIN('.$lat.' * PI() / 180) * SIN('.$lat_field_name.' * PI() / 180) + COS('.$lat.' * PI() / 180) * COS('.$lat_field_name.' * PI() / 180) * COS(('.$lng.' - '.$lng_field_name.') * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * '.$this->EE->google_maps->convert_metric($metric).'), 1) AS distance'.$distance_index;
 												
 						$vars[0]['search_distance'] = $distance;
@@ -1689,7 +1702,9 @@ Class Gmap {
 				}
 			}
 		}
-
+		
+		$vars[0]['formatted_address_string'] = rtrim($vars[0]['formatted_address_string'], ' '.$this->param('location_delimiter', ' - '));
+		
 		if(count($locations) == 0)
 		{	
 			$select[] = '0 AS distance';
