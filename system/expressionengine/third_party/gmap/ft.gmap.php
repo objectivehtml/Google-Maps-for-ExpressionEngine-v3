@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.190
- * @build		20120921
+ * @version		3.0.191
+ * @build		20120923
  */
 
 require PATH_THIRD . 'gmap/config/gmap_config.php';
@@ -128,9 +128,13 @@ class Gmap_ft extends EE_Fieldtype {
 		$this->EE->load->driver('channel_data');
 		
 		$this->EE->lang->loadfile('gmap');		
-		$this->EE->load->library('theme_loader', array(
-			'module_name'	=> 'gmap'
-		));
+		
+		if(!isset($this->EE->theme_loader))
+		{
+			$this->EE->load->library('theme_loader');
+		}
+		
+		$this->EE->theme_loader->module_name = 'gmap';
 		
 		$field	 		= $this->EE->channel_data->get_field($this->settings['field_id'])->row();
 		$field_group	= $this->EE->channel_data->get_field_group($field->group_id)->row();
