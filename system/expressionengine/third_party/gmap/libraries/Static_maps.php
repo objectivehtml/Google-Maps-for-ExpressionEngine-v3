@@ -12,7 +12,7 @@
  * @build		20120220
  */
 
-require_once PATH_THIRD.'gmap/libraries/Google_API.php.php';
+require_once PATH_THIRD.'gmap/libraries/Google_API.php';
 
 class Static_maps extends Google_API {
 	
