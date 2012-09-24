@@ -211,17 +211,17 @@ class Gmap_ft extends EE_Fieldtype {
 				
 		$this->EE->load->helper('directory');
 		
-		$directory 		 = $this->EE->theme_loader->theme_path().'third_party/gmap/plugins/';
+		$directory 		 = $this->EE->theme_loader->theme_path().'gmap/plugins/';
 		$third_party_js  = directory_map($directory.'javascript/enabled/');
 		
 		if($third_party_js)
 		{
 			foreach($third_party_js as $index => $file)
 			{
-				$third_party_js[$index] = $this->EE->theme_loader->theme_url().'third_party/gmap/plugins/javascript/enabled/'.$file;
+				$third_party_js[$index] = $this->EE->theme_loader->theme_url().'gmap/plugins/javascript/enabled/'.$file;
 			}
 		}
-
+		
 		$settings_js 	= '
 		<script type="text/javascript">
 			if(typeof GmapPluginsLoaded == "undefined") {
