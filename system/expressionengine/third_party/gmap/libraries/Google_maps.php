@@ -1101,7 +1101,7 @@ class Google_maps {
 		return $str;
 	}
 	
-	public function parse_fields($vars, $tagdata = FALSE, $parse_tags = FALSE)
+	public function parse_fields($vars, $tagdata = FALSE, $parse_tags = FALSE, $prefix = '')
 	{
 	
 		if($tagdata === FALSE)
@@ -1121,10 +1121,20 @@ class Google_maps {
 			
 			$count = 0;
 			
+			if(!isset($vars[0]))
+			{
+				$vars = array($vars);
+			}
+			
 			$global_vars = $vars[0];
 			unset($global_vars['results']);
 			
 			$TMPL = $this->EE->channel_data->tmpl->init();
+			
+			if(!isset($vars[0]['results']))
+			{
+				$vars[0]['results'] = $vars;	
+			}
 			
 			foreach($vars[0]['results'] as $index => $var)
 			{		
@@ -1136,7 +1146,7 @@ class Google_maps {
 				
 				$row_tagdata = $this->EE->TMPL->parse_variables_row($tagdata, array('results' => $vars[0]['results']));
 			
-				$row_tagdata = $this->EE->channel_data->tmpl->parse_entry($var, $channels, $fields, $row_tagdata, $count);
+				$row_tagdata = $this->EE->channel_data->tmpl->parse_fieldtypes($var, $channels, $fields, $row_tagdata, $prefix, $count);
 				
 				$return .= $row_tagdata;
 			}
@@ -1146,7 +1156,6 @@ class Google_maps {
 			$return = $this->EE->TMPL->parse_variables($tagdata, $vars);
 		}
 		
-				
 		return $return;
 	}
 	

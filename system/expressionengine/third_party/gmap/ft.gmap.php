@@ -603,6 +603,39 @@ class Gmap_ft extends EE_Fieldtype {
 		return FALSE;
 	}
 	
+	public function replace_formatted_address($data, $params, $tagdata = FALSE)
+	{
+		$data = json_decode($data);
+
+		$default_vars = array(
+			'limit'   => FALSE,
+			'offset'  => 0,
+			'process' => 'markers|wapoints|regions'
+		);
+		
+		$params = array_merge($default_vars, $params);
+		
+		$params['process'] = explode('|', $params['process']);
+		
+		$formatted_address = array();
+		
+		foreach($data as $index => $obj)
+		{
+			if(in_array($index, $params['process']))
+			{
+				foreach($obj->results as $index => $row)
+				{	
+					if($params['limit'] === FALSE || ($param['limit'] > $index && $index >= $params['offset']))
+					{
+						$formatted_address[] = $row->formatted_address;
+					}	
+				}			
+			}
+		}
+		
+		return implode("\n", $formatted_address);
+	}
+	
 	public function replace_total_markers($data, $params, $tagdata = FALSE)
 	{
 		$data = json_decode($data);

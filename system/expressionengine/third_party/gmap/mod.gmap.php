@@ -1953,6 +1953,16 @@ Class Gmap {
 		return NULL;
 	}
 	
+	public function has_searched()
+	{
+		 return $this->EE->input->post($this->param('var', 'init_gmap_search')) == 'y' ? TRUE : FALSE;
+	}
+	
+	public function has_not_searched()
+	{
+		 return $this->EE->input->post($this->param('var', 'init_gmap_search')) == 'y' ? FALSE : TRUE;
+	}
+	
 	public function zoom()
 	{
 		$map_id		= $this->param('id', 'map');

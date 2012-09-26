@@ -62,7 +62,7 @@ class Gmap_ext {
 	 * @return string
 	 */
 	 
-	public function channel_entries_tagdata_end($tagdata, $row, &$obj)
+	public function channel_entries_tagdata_end($tagdata, $row, $obj)
 	{
 		if(isset($obj->categories[$row['entry_id']]))
 		{
