@@ -633,6 +633,17 @@ class Gmap_ft extends EE_Fieldtype {
 			}
 		}
 		
+		if($format = isset($params['format']) ? $this->bool_param($params['format']) : FALSE)
+		{
+			foreach($formatted_address as $index => $address)
+			{
+				$part_1 = preg_replace('/,.*/', '$1', $address);
+				$part_2 = trim(ltrim(trim(preg_replace('/(^[^,]*)/', '', $address)), ','));
+								
+				$formatted_address[$index] = $part_1.'<br>'.$part_2;
+			}
+		}
+		
 		return implode("\n", $formatted_address);
 	}
 	

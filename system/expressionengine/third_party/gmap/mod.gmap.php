@@ -233,8 +233,6 @@ Class Gmap {
 	
 	public function marker()
 	{		
-		//echo 'marker';exit();
-			
 		$return		= NULL; 
 		$zoomfit	= TRUE;
 		$map_id 	= $this->param('id', 'map');
@@ -260,10 +258,10 @@ Class Gmap {
 			if ($this->EE->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
-		
+			
 		//Since the marker method is called with every init() method, it must 
 		//return NULL if no valid parameters exist.
-		if(!$this->param('latitude') && !$this->param('longitude') && !$this->param('address'))
+		if($this->param('latitude') === FALSE && $this->param('longitude') === FALSE && $this->param('address') === FALSE)
 		{
 			return NULL;
 		}

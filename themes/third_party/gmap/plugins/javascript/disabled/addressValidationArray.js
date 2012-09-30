@@ -31,28 +31,19 @@
 		
 		// Change this to your desired field name or remove the if statement
 		// all together if you want to apply to all the Gmap fields
-		var fieldNames = ['request_location', 'request_recipient_location'];
+		var fieldNames = ['venue_location'];
 		
 		//Define the required fields
 		var fieldSet = {
 			//Field Name
-			'request_location': {
+			'venue_location': {
 				'zoom'  : 15,
 				'fields': [
 					//Required Fields
-					'input[name="request_address"]',
-					'input[name="request_city"]',
-					'input[name="request_state"]',
-					'input[name="request_zip"]'
-				]
-			},
-			'request_recipient_location': {
-				'zoom'  : 15,
-				'fields': [
-					'input[name="request_recipient_address"]',
-					'input[name="request_recipient_city"]',
-					'input[name="request_recipient_state"]',
-					'input[name="request_recipient_zip"]'
+					'textarea[name="venue_address"]',
+					'input[name="venue_city"]',
+					'select[name="venue_province"]',
+					'input[name="venue_postal_code"]'
 				]
 			}
 		}
@@ -103,6 +94,7 @@
 						
 						// Performs the actual plotting action
 						function bind() {
+							
 							if(!areFieldsEmpty()) {
 								var location = compileAddress();
 								
