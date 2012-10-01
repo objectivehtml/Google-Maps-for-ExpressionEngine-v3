@@ -12,7 +12,13 @@
  */
 
 class Gmap_mcp {
-
+	
+	public $fields;
+	public $fields_by_id;
+	public $entry;
+	public $settings;
+	public $categories;
+	
 	function __construct()
 	{
 		$this->EE =& get_instance();
@@ -205,6 +211,8 @@ class Gmap_mcp {
 	{
 		$id 	  = $this->EE->input->get_post('id');
 		
+		var_dump($start_data->importer_last_ran);exit();
+		
 		$start_data = $this->EE->data_import_model->start_import($id);
 		$start_data->importer_last_ran = date('Y-m-d h:i A', $start_data->importer_last_ran);
 		
@@ -396,8 +404,17 @@ class Gmap_mcp {
 		$group_field  = FALSE;
 		$entry_id     = FALSE;
 		$fields       = $this->EE->channel_data->utility->reindex($channel_fields, 'field_name');
+		
+		$this->fields = $fields;
+		
 		$fields_by_id = $this->EE->channel_data->utility->reindex($channel_fields, 'field_id');
+		
+		$this->fields_by_id = $fields_by_id;
+		
 		$settings     = (array) $this->EE->data_import_model->get_setting($this->EE->input->post('id'));
+		
+		$this->settings = $settings
+		;
 		$categories   = array();
 		
 		foreach($this->EE->channel_data->get_categories()->result() as $category)
@@ -409,6 +426,7 @@ class Gmap_mcp {
 		
 		foreach($entries as $entry)
 		{
+			$this->entry   = $entry;
 			$geocode       = FALSE;
 			
 			if(isset($settings['geocode_fields']))
@@ -419,7 +437,9 @@ class Gmap_mcp {
 				}
 			}
 			
-			if(isset($settings['create_category']) && (bool) $settings['create_category'])
+			$this->geocode = $geocode;
+				
+			if(isset($settings['create_category']) && $settings['create_category'] == 'true')
 			{
 				if(!isset($categories[$entry[$settings['category_column']]]))
 				{
@@ -455,93 +475,30 @@ class Gmap_mcp {
 				}
 			}
 			
+			$this->categories = $categories;
+			
 			$geocode = trim($geocode);
 			
-			if(!isset($data[$entry[$settings['group_by']]]))
-			{
-				$title = $settings['title'];
-				
-				$entry_data = array(
-					'status' 	=> $settings['status'],
-					'author_id' => $settings['author_id']
-				);
-				
-				foreach($settings['channel_fields'] as $channel_field)
+			if(!empty($settings['group_by']))
+			{				
+				if(!isset($data[$entry[$settings['group_by']]]))
 				{
-					if($channel_field->column_name == $settings['group_by'])
-					{
-						$group_field = $channel_field->field_name;	
-					}
+					$data[$entry[$settings['group_by']]] = $this->build_entry_data();	
 					
-					if(!empty($channel_field->field_name) && !empty($channel_field->column_name))
+				}
+				else
+				{
+					if(isset($categories[$entry[$settings['category_column']]]))
 					{
-						$title = str_replace(LD.$field->field_name.RD, $entry[$channel_field->column_name], $title);
-						
-						$field = $fields[$channel_field->field_name];
-						$entry_data['field_id_'.$field->field_id] = $entry[$channel_field->column_name];
-						$entry_data['field_ft_'.$field->field_id] = $field->field_fmt;
+						$data[$entry[$settings['group_by']]]['categories'] .= '|'.$categories[$entry[$settings['category_column']]]->cat_id;
 					}
 				}
-				
-				$entry_data['title'] = $title;
-				
-				$data[$entry[$settings['group_by']]] = array(
-					'schema_id'     => $this->EE->input->post('id'),
-					'status'        => 'pending',
-					'gmt_date'      => $this->EE->localize->now,
-					'group_by'      => !empty($settings['group_by']) ? $entry[$settings['group_by']] : FALSE,
-					'group_by_field_name' => $group_field,
-					'map_field_name'	=> $fields_by_id[$settings['gmap_field']]->field_name,
-					'geocode'       => trim($geocode),
-					'data'          => json_encode($entry_data),
-					'entry'			=> json_encode($entry),
-					'categories'    => isset($categories[$entry[$settings['category_column']]]) ? $categories[$entry[$settings['category_column']]]->cat_id : NULL
-				);	
-				
-				/*
-				
-				Create categories 
-				
-				if(isset($settings->create_category) && $settings->create_category == 'true')
-			{
-				$cat_data = array();
-				
-				if($settings->category_column_type == 'cat_name')
-				{
-					$this->EE->load->helper('url');
-					
-					$cat_data['site_id']       = $this->EE->config->item('site_id');
-					$cat_data['cat_name']      = $category;
-					$cat_data['cat_url_title'] = strtolower(url_title($category));
-					$cat_data['group_id']      = $settings->category_group_id;
-					
-					$existing_categories = $this->EE->db->get_where('categories', $cat_data);
-					
-					var_dump($cat_data);exit();
-					
-					if($existing_categories->num_rows() == 0)
-					{						
-						$total_categories = $this->EE->db->get_where('categories', array(
-							'group_id' => $settings->category_group_id
-						))->num_rows();
-						
-						$cat_data['cat_order'] = $total_categories + 1;
-						
-						$this->EE->db->insert('categories', $cat_data);
-					}
-				}
-			}
-			
-			
-			*/
 			}
 			else
-			{
-				if(isset($categories[$entry[$settings['category_column']]]))
-				{
-					$data[$entry[$settings['group_by']]]['categories'] .= '|'.$categories[$entry[$settings['category_column']]]->cat_id;
-				}
+			{	
+				$data[] = $this->build_entry_data();		
 			}
+			
 		}
 		
 		if(count($data) > 0)
@@ -551,6 +508,58 @@ class Gmap_mcp {
 		
 		$this->EE->data_import_model->reset_stat_count($this->EE->input->post('id'));
 		$this->EE->functions->redirect($this->EE->input->post('return'));
+	}
+	
+	private function build_entry_data()
+	{
+		$entry        = $this->entry;
+		$fields       = $this->fields;
+		$settings     = $this->settings; 
+		$fields_by_id = $this->fields_by_id;
+		$geocode      = $this->geocode;
+		$categories   = $this->categories;
+		
+		$title = $settings['title'];
+					
+		$entry_data = array(
+			'status' 	=> $settings['status'],
+			'author_id' => $settings['author_id']
+		);
+		
+		foreach($settings['channel_fields'] as $channel_field)
+		{
+			if($channel_field->column_name == $settings['group_by'])
+			{
+				$group_field = $channel_field->field_name;	
+			}
+			
+			if(!empty($channel_field->field_name) && !empty($channel_field->column_name))
+			{
+				$field = $fields[$channel_field->field_name];
+				$title = str_replace(LD.$field->field_name.RD, $entry[$channel_field->column_name], $title);
+				
+				$entry_data['field_id_'.$field->field_id] = $entry[$channel_field->column_name];
+				$entry_data['field_ft_'.$field->field_id] = $field->field_fmt;
+			}
+		}
+		
+		$entry_data['title'] = $title;
+		
+		$categories = !empty($settings['category_column']) ? (isset($categories[$entry[$settings['category_column']]]) ? $categories[$entry[$settings['category_column']]]->cat_id : NULL) : NULL;
+		
+		return array(
+			'schema_id'           => $this->EE->input->post('id'),
+			'status'              => 'pending',
+			'gmt_date'            => $this->EE->localize->now,
+			'group_by'            => !empty($settings['group_by']) ? $entry[$settings['group_by']] : FALSE,
+			'group_by_field_name' => isset($group_field) ? $group_field : NULL,
+			'map_field_name'      => $fields_by_id[$settings['gmap_field']]->field_name,
+			'geocode'             => trim($geocode),
+			'data'                => json_encode($entry_data),
+			'entry'               => json_encode($entry),
+			'categories'          => $categories
+		);	
+
 	}
 	
 	public function settings()
@@ -742,7 +751,7 @@ class Gmap_mcp {
 			'return'   => $this->cp_url('schemas'),
 			'header'   => $this->EE->input->get('id') ? 'Edit' : 'New',
 			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_csv_save_settings_action'),
-			'interface_builder' => $this->EE->theme_loader->theme_url().'third_party/gmap/javascript/InterfaceBuilder.js',
+			'interface_builder' => $this->EE->theme_loader->theme_url().'/gmap/javascript/InterfaceBuilder.js',
 			'settings' => $this->EE->interface_builder->fieldsets(),
 			'schema_id' => $this->EE->input->get('id') ? $this->EE->input->get('id') : NULL
 		);
