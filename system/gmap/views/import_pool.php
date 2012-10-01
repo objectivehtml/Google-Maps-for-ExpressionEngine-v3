@@ -130,8 +130,10 @@
 	
 		if(totalItems > 0 && index < totalItems && !stop) {
 			
-			$.post('<? echo $import_check_url?>', {scheme_id: id}, function(data) {
+			$.post('<? echo $import_check_url?>', {schema_id: id}, function(data) {
 			
+						console.log(data);
+						
 				var geocodeError = false;
 				var markers = [];
 				

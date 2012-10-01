@@ -133,7 +133,7 @@ class Gmap_mcp {
 	public function import_check_existing_action()
 	{
 		$item = $this->EE->data_import_model->get_item($this->EE->input->get_post('schema_id'));
-				
+						
 		$settings = $this->EE->data_import_model->get_setting($this->EE->input->get_post('schema_id'));
 		
 		$valid_address  = FALSE;
@@ -210,8 +210,6 @@ class Gmap_mcp {
 	public function import_start_action()
 	{
 		$id 	  = $this->EE->input->get_post('id');
-		
-		var_dump($start_data->importer_last_ran);exit();
 		
 		$start_data = $this->EE->data_import_model->start_import($id);
 		$start_data->importer_last_ran = date('Y-m-d h:i A', $start_data->importer_last_ran);
