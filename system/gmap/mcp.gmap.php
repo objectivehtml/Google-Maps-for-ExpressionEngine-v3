@@ -136,9 +136,14 @@ class Gmap_mcp {
 						
 		$settings = $this->EE->data_import_model->get_setting($this->EE->input->get_post('schema_id'));
 		
+		$channel_fields = $this->EE->channel_data->get_fields()->result();
+		$fields         = $this->EE->channel_data->utility->reindex($channel_fields, 'field_name');
+		
 		$valid_address  = FALSE;
 		$saved_address  = FALSE;
 		$existing_entry = FALSE;
+		$errors		    = array();
+		$success	    = TRUE;
 		
 		if(isset($settings->duplicate_fields) && !empty($settings->duplicate_fields))
 		{
@@ -148,40 +153,54 @@ class Gmap_mcp {
 			
 			foreach($settings->duplicate_fields as $duplicate_field)
 			{
-				$where[$duplicate_field->field_name] = $csv_data->{$duplicate_field->column_name};
+				if(!isset($fields[$duplicate_field->field_name]))
+				{
+					$errors[] = '<i>'.$duplicate_field->field_name.'</i> is not a valid channel field name. Check the duplicate fields setting in your schema to make sure it\'s 100% correct.';
+				}
+				else
+				{
+					$where[$duplicate_field->field_name] = $csv_data->{$duplicate_field->column_name};
+				}
 			}
 			
-			$existing_entry = $this->EE->channel_data->get_channel_entries($settings->channel, array(
-				'where' => $where
-			));
-			
-			if($existing_entry->num_rows() > 0)
+			if(count($errors) == 0)
 			{
-				$new_entry = FALSE;
-				$existing_entry = $existing_entry->row_array();
+				$existing_entry = $this->EE->channel_data->get_channel_entries($settings->channel, array(
+					'where' => $where
+				));
 				
-				$entry_id = $existing_entry['entry_id'];
-				
-				if(isset($settings->geocode_fields))
+				if($existing_entry->num_rows() > 0)
 				{
-					$saved_address = NULL;
+					$new_entry = FALSE;
+					$existing_entry = $existing_entry->row_array();
 					
-					foreach($settings->geocode_fields as $field)
+					$entry_id = $existing_entry['entry_id'];
+					
+					if(isset($settings->geocode_fields))
 					{
-						$saved_address .= isset($existing_entry[$field->field_name]) ? $existing_entry[$field->field_name] . ' ' : NULL;
-					}	
-					
-					$saved_address = trim($saved_address);
-					
-					if($saved_address == $item->geocode)
-					{
-						$valid_address = TRUE;
+						$saved_address = NULL;
+						
+						foreach($settings->geocode_fields as $field)
+						{
+							$saved_address .= isset($existing_entry[$field->field_name]) && !empty($existing_entry[$field->field_name]) ? $existing_entry[$field->field_name] . ' ' : NULL;
+						}	
+						
+						$saved_address = trim($saved_address);
+						
+						if($saved_address == $item->geocode)
+						{
+							$valid_address = TRUE;
+						}
 					}
+				}
+				else
+				{
+					$existing_entry = FALSE;
 				}
 			}
 			else
 			{
-				$existing_entry = FALSE;
+				$success = FALSE;
 			}
 		}
 		
@@ -189,7 +208,9 @@ class Gmap_mcp {
 			'valid_address'  => $valid_address,
 			'saved_address'  => $saved_address,
 			'item'           => $item,
-			'existing_entry' => $existing_entry
+			'existing_entry' => $existing_entry,
+			'success'		 => $success,
+			'errors'		 => $errors,
 		);
 		
 		$this->json($response);
@@ -431,7 +452,10 @@ class Gmap_mcp {
 			{
 				foreach($settings['geocode_fields'] as $field)
 				{
-					$geocode .= isset($entry[$field->column_name]) ? $entry[$field->column_name] . ' ' : NULL;
+					if(!empty($entry[$field->column_name]))
+					{
+						$geocode .= isset($entry[$field->column_name]) ? $entry[$field->column_name] . ' ' : NULL;
+					}
 				}
 			}
 			
@@ -467,7 +491,7 @@ class Gmap_mcp {
 							
 							$cat_id = $this->EE->db->insert_id();
 							
-							$categories[$entry[$settings['category_column']]] = $this->EE->channel_data->get_category($cat_id)->row();
+							$categories[trim($entry[$settings['category_column']])] = $this->EE->channel_data->get_category($cat_id)->row();
 						}						
 					}
 				}
@@ -533,7 +557,18 @@ class Gmap_mcp {
 			
 			if(!empty($channel_field->field_name) && !empty($channel_field->column_name))
 			{
+				if(!isset($entry[$channel_field->column_name]))
+				{
+					show_error('<i>'.$channel_field->column_name.'</i> is does not exist within your data schema. Ensure that the column names match 100%, they are case-sensitive.');
+				}
+				
+				if(!isset($fields[$channel_field->field_name]))
+				{
+					show_error('<i>'.$channel_field->field_name.'</i> is not a valid field name. Ensure that the field names match 100%, they are case-sensitive.');
+				}
+				
 				$field = $fields[$channel_field->field_name];
+				
 				$title = str_replace(LD.$field->field_name.RD, $entry[$channel_field->column_name], $title);
 				
 				$entry_data['field_id_'.$field->field_id] = $entry[$channel_field->column_name];
@@ -543,7 +578,52 @@ class Gmap_mcp {
 		
 		$entry_data['title'] = $title;
 		
-		$categories = !empty($settings['category_column']) ? (isset($categories[$entry[$settings['category_column']]]) ? $categories[$entry[$settings['category_column']]]->cat_id : NULL) : NULL;
+		/* Maintain backwards compatibility with previous settings */
+		
+		if(is_string($settings['category_column']))
+		{
+			$settings['category_column'] = array($settings['category_column']);	
+		}
+		
+		$entry_categories = array();
+		
+		if(isset($settings['category_column']) && count($settings['category_column']) > 0)
+		{
+			foreach($settings['category_column'] as $cat_index => $cat)
+			{
+				if(empty($settings['category_boolean_value']))
+				{
+					$save_value = !empty($settings['category_column']) ? (isset($categories[$entry[$cat->column_name]]) ? $categories[$entry[$cat->column_name]]->cat_id : NULL) : NULL;
+					
+					if(!is_null($save_value))
+					{
+						$entry_categories[] = $save_value;
+					}
+				}
+				else
+				{
+					foreach($cat as $cat_index)
+					{
+						$cat_index = trim($cat_index);
+						
+						if(!isset($entry[$cat_index]) || empty($categories[$cat_index]))
+						{
+							show_error('<i>'.$cat_index.'</i> is not a valid category name. Be sure the names of the categories match exactly, they are case-sensitive. The categories with ExpressionEngine, the schema, <i>AND</i> the . must match.');
+						}
+						else
+						{
+							$save_value = $entry[$cat_index] == $settings['category_boolean_value'] ? (isset($categories[$cat_index]->cat_id) ? $categories[$cat_index]->cat_id : NULL) : NULL;
+							
+							if(!is_null($save_value))
+							{
+								$entry_categories[] = $save_value;
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		
 		return array(
 			'schema_id'           => $this->EE->input->post('id'),
@@ -555,7 +635,7 @@ class Gmap_mcp {
 			'geocode'             => trim($geocode),
 			'data'                => json_encode($entry_data),
 			'entry'               => json_encode($entry),
-			'categories'          => $categories
+			'categories'          => implode('|', $entry_categories)
 		);	
 
 	}
@@ -694,8 +774,27 @@ class Gmap_mcp {
 						'description' => 'This is the prefix that gets prepended to the title if the title contains only numbers.',		
 					),
 					'category_column' => array(
-						'label'       => 'Category Column',
-						'description' => 'This is the name of the column that stores the category.',
+						'label'       => 'Category Column(s)',
+						'description' => 'This is the name of the column(s) that stores the category. You can have a data file with categories stored in multiple columns, or just one.',
+						'type'        => 'matrix',
+						'settings' => array(
+							'columns' => array(
+								0  => array(
+									'name'  => 'column_name',
+									'title' => 'CSV Column Name'
+								)
+							),
+							'attributes' => array(
+								'class'       => 'mainTable padTable',
+								'border'      => 0,
+								'cellpadding' => 0,
+								'cellspacing' => 0
+							)
+						)
+					),
+					'category_boolean_value' => array(
+						'label'       => 'Category Boolean Value for <i>true</i>',
+						'description' => 'If your catagories are stored in multiple columns, with the columns header being a category name, chances are the values are stored as boolean. So if "X" represents <i>true</i> what is the value of "X"? Leave the field blank if it does not apply.',
 						'type'        => 'input'
 					),
 					'category_column_type' => array(

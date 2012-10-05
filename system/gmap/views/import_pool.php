@@ -127,36 +127,74 @@
 	}
 	
 	function geocode(index) {
-	
+		var interval     = false;
+		var defaultDelay = 250;
+		var delay        = defaultDelay;
+		var timeout      = 10000;
+						
 		if(totalItems > 0 && index < totalItems && !stop) {
 			
 			$.post('<? echo $import_check_url?>', {schema_id: id}, function(data) {
 			
-						console.log(data);
-						
-				var geocodeError = false;
-				var markers = [];
-				
-				if(!data.valid_address)
-				{
-					var geocoder = new google.maps.Geocoder();
-						
-					geocoder.geocode({address: data.item.geocode}, function(results, status) {		
-			
-						if(status == "OK") {					
-							$.each(results, function(i, result) {
-								result.geometry.location.lat = result.geometry.location.lat();
-								result.geometry.location.lng = result.geometry.location.lng();
+				if(data.success) {
+					var geocodeError = false;
+					var markers = [];
+					
+					if(!data.valid_address)
+					{
+						var geocoder = new google.maps.Geocoder();
+					
+						geocoder.geocode({address: data.item.geocode}, function(results, status) {		
+							if(status == "OK") {					
+								$.each(results, function(i, result) {
+									result.geometry.location.lat = result.geometry.location.lat();
+									result.geometry.location.lng = result.geometry.location.lng();
+									
+									markers.push(result);
+								});	
+								$('dd.error').html('');	
+							}
 								
-								markers.push(result);
-							});							
-						}
+							if(status != 'OK') {
+								$('dd.error').html(status);
+								$('dl .error').show();
+							}
 						
-						save(id, index, data, markers, status);
-					});
+							if(status == 'OVER_QUERY_LIMIT') {															
+								if(!interval) {
+									delay = timeout;
+									
+									var count = delay / 1000;
+									
+									$('dd.error').html('Exceeded Query Limit - Waiting... <span>'+count+'</span>');												
+									interval = setInterval(function() {	
+										count--;				
+										$('dd.error').find('span').html(count);
+										
+										calculateStats();
+				
+										if(count == 0) {
+											clearInterval(interval);
+											interval = false;
+											delay = defaultDelay;
+										}
+									}, 1000);
+								}									
+							}
+							
+							setTimeout(function() {
+								save(id, index, data, markers, status);				
+							}, delay);											
+						});
+							
+					}
+					else {
+						save(id, index, data, markers, 'open');
+					}
 				}
-				else {
-					save(id, index, data, markers, 'open');
+				else {	
+					$('dd.error').html(data.errors[0]);
+					$('dl .error').show();
 				}
 			});
 		}

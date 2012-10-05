@@ -14,7 +14,7 @@ var InterfaceBuilder = function() {
 		
 			var $body = $wrapper.find("tbody");
 			var $head = $wrapper.find("thead tr");
-			var name = $wrapper.data('name');
+			var name  = $wrapper.data('name');
 			var columns = [];
 			
 			$head.find('th').each(function(i) {
@@ -50,9 +50,9 @@ var InterfaceBuilder = function() {
 					
 					td.each(function(i) {
 						if(i > 0 && (i + 1) < length) {
-							var name = td.find('.ib-cell').attr('name').replace(/(\[\d\]\[)/g, "\["+index+"\][");
-															
-							td.find('.ib-cell').attr('name', name);
+							var $input = $(this).find('input');
+							var name   = $input.attr('name').replace(/(\[\d\]\[)/g, "\["+index+"\][");			
+							$input.attr('name', name);
 						}	
 					});
 					
