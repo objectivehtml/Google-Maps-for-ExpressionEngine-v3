@@ -38,6 +38,7 @@ class Gmap_mcp {
 	public function index()
 	{	
 		$this->EE->cp->set_right_nav(array(
+			'Import Log' => $this->cp_url('import_log'),
 			'Manage Schemas' => $this->cp_url('schemas'),
 			'New Schema' => $this->cp_url('settings'), 
 		));
@@ -53,6 +54,25 @@ class Gmap_mcp {
 		);
 		
 		return $this->EE->load->view('csv_index', $vars, TRUE);
+	}
+	
+	public function import_log_action()
+	{
+		$id 	= $this->EE->input->get_post('id');
+		$status = $this->EE->input->get_post('status');
+		
+		$this->EE->data_import_model->clear_item($id, $status);
+	}
+	
+	public function import_log()
+	{
+		$vars = array(
+			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_log_action'),
+			'base_url' => $this->edit_url(),
+			'items' => $this->EE->data_import_model->get_log('open')
+		);
+		
+		return $this->EE->load->view('import_log', $vars, TRUE);
 	}
 	
 	public function clear_pool()
@@ -100,6 +120,7 @@ class Gmap_mcp {
 	{
 		$this->EE->cp->set_right_nav(array(
 			'&larr; Back to Pool' => $this->cp_url(), 
+			'Import Log' => $this->cp_url('import_log'),
 		));
 		
 		$id = $this->EE->input->get('id');
@@ -243,17 +264,15 @@ class Gmap_mcp {
 		$new_entry     = TRUE;
 		$geocode_error = FALSE;
 		$valid_address = FALSE;
+		$log_item      = array();
 		
 		$item = $this->EE->data_import_model->get_item($this->EE->input->get_post('schema_id'));
 				
 		$settings = $this->EE->data_import_model->get_setting($this->EE->input->get_post('schema_id'));
-			
-		$data = (array) json_decode($item->data);
+		$settings = (object) $settings;
 		
-		foreach(explode('|', $item->categories) as $category)
-		{
-			$data['category'][] = $category;
-		}	
+		$data = (array) json_decode($item->data);
+		$data['category'] = !empty($item->categories) ? explode('|', $item->categories) : array();
 		
 		if(preg_match("/^\d*$/", $data['title']) && !empty($settings->title_prefix))
 		{
@@ -262,10 +281,11 @@ class Gmap_mcp {
 		
 		$data['entry_date'] = $this->EE->localize->now;
 		
-		/*
 		if(isset($settings->duplicate_fields) && !empty($settings->duplicate_fields))
 		{
-			$where = array();
+			$where = array(
+				'channel_data.channel_id' => $settings->channel
+			);
 			
 			$csv_data = json_decode($item->entry);
 			
@@ -305,6 +325,9 @@ class Gmap_mcp {
 			}
 		}
 		
+		$markers = array();
+		
+		/*
 		if(!$valid_address)
 		{
 			foreach($this->EE->google_maps->geocode($item->geocode) as $response)
@@ -328,29 +351,44 @@ class Gmap_mcp {
 		{
 			$map_data = $existing_entry[$item->map_field_name];			
 		}
-		
 		*/
 		
 		$valid_address = $this->EE->input->get_post('valid_address') == 'true' ? TRUE : FALSE;
 		
+		
 		if(!$valid_address)
 		{
+			if(count($markers) == 0)
+			{
+				$log_item[] = 'The entry has no valid location.';
+			}
+			
+			if(count($markers) > 1)
+			{
+				$log_item[] = 'The entry has more than 1 valid location.';
+			}
 			/*
 			foreach($this->EE->google_maps->geocode($item->geocode) as $response)
 			{
 				if($response->status == 'OK')
-				{					
-					foreach($response->results as $result)
+				{	
+					if(count($markers) == 0)
 					{
-						$markers[] = (object) $result;	
+						$log_item[] = 'The entry has no valid location.';
+					}
+					
+					if(count($markers) > 1)
+					{
+						$log_item[] = 'The entry has more than 1 valid location.';
 					}
 				}
 				else
 				{
+					$log_item[] = '<i>'.$item->geocode.'</i> is not a valid location.';		
 					$geocode_error = $response->status;
 				}	
-			}*/
-			
+			}
+			*/
 			$markers  = json_decode($this->EE->input->get_post('markers'));
 			$map_data = $this->EE->google_maps->build_response(array('markers' => $markers));
 		}
@@ -358,17 +396,24 @@ class Gmap_mcp {
 		{
 			$existing_entry = json_decode($this->EE->input->get_post('existing_entry'));
 			$new_entry = FALSE;
-			$map_data = $existing_entry->{$item->map_field_name};	
+			$map_data = $existing_entry->{$item->map_field_name};
+			
+			if(empty($map_data))
+			{
+				$log_item[] = 'The entry does not have a valid location.';
+			}
 		}
 		
 		if($this->EE->input->get_post('status') == 'OK')
 		{
-			$data['status'] = 'open';
+			$data['status'] = $settings->status;
 		}
 		
-		if($data['status'] != 'open')
+		if($data['status'] != $settings->status)
 		{
 			$data['status'] = 'closed';
+			
+			$log_item[] = 'A geocoding error has occurred with this entry.';
 		}
 		
 		$data['field_id_'.$settings->gmap_field] = $map_data;
@@ -380,21 +425,26 @@ class Gmap_mcp {
 		
 		$this->EE->session->userdata['group_id'] = 1;
 		
-		if(!$geocode_error)
+		$entry_id = 0;
+				
+		$this->EE->api_channel_fields->setup_entry_settings($settings->channel, $data);
+		
+		$existing_entry = (array) $existing_entry;
+		
+		if($new_entry)
 		{
-			$this->EE->api_channel_fields->setup_entry_settings($settings->channel, $data);
-			
-			if($new_entry)
-			{
-				$this->EE->api_channel_entries->submit_new_entry($settings->channel, $data);
-			}
-			else
-			{
-				$this->EE->channel_data->utility->update_entry($settings->channel, $existing_entry->entry_id, $data);				
-			}
+			$this->EE->api_channel_entries->submit_new_entry($settings->channel, $data);				
+			$entry_id = $this->EE->api_channel_entries->entry_id;
+		}
+		else
+		{
+			$this->EE->channel_data->utility->update_entry($settings->channel, $existing_entry['entry_id'], $data);
+			$entry_id = $existing_entry['entry_id'];				
 		}
 		
-		if(!$geocode_error && count($this->EE->api_channel_entries->errors) == 0)
+		$this->EE->data_import_model->log_item($entry_id, $log_item);
+		
+		if(count($this->EE->api_channel_entries->errors) == 0)
 		{
 			$this->EE->data_import_model->delete_pool($item->id);
 			
@@ -410,7 +460,7 @@ class Gmap_mcp {
 		$return            = (array) $return;
 		$return['errors']  = count($this->EE->api_channel_entries->errors) ? $this->EE->api_channel_entries->errors : FALSE;
 		$return['geocode'] = $item->geocode;
-				
+		
 		return $this->json((object) $return);
 	}
 	
@@ -432,8 +482,8 @@ class Gmap_mcp {
 		
 		$settings     = (array) $this->EE->data_import_model->get_setting($this->EE->input->post('id'));
 		
-		$this->settings = $settings
-		;
+		$this->settings = $settings;
+		
 		$categories   = array();
 		
 		foreach($this->EE->channel_data->get_categories()->result() as $category)
@@ -463,36 +513,46 @@ class Gmap_mcp {
 				
 			if(isset($settings['create_category']) && $settings['create_category'] == 'true')
 			{
-				if(!isset($categories[$entry[$settings['category_column']]]))
+				if(!is_array($settings['category_column']))
 				{
-					$cat_data = array();
+					$settings['category_column'] = array($settings['category_column']);	
+				}
 				
-					if($settings['category_column_type'] == 'cat_name')
-					{
-						$this->EE->load->helper('url');
-						
-						$category_name = $entry[$settings['category_column']];
+				foreach($settings['category_column'] as $category_column)
+				{					
+					$category_column = trim($category_column->column_name);
 					
-						$cat_data['site_id']       = $this->EE->config->item('site_id');
-						$cat_data['cat_name']      = $category_name;
-						$cat_data['cat_url_title'] = strtolower(url_title($category_name));
-						$cat_data['group_id']      = $settings['category_group_id'];
+					if(!isset($categories[$category_column]))
+					{
+						$cat_data = array();
+					
+						if($settings['category_column_type'] == 'cat_name')
+						{
+							$this->EE->load->helper('url');
+							
+							$category_name = trim($category_column);
 						
-						$existing_categories = $this->EE->db->get_where('categories', $cat_data);
-						
-						if($existing_categories->num_rows() == 0)
-						{						
-							$total_categories = $this->EE->db->get_where('categories', array(
-								'group_id' => $settings['category_group_id']
-							))->num_rows();
+							$cat_data['site_id']       = $this->EE->config->item('site_id');
+							$cat_data['cat_name']      = $category_name;
+							$cat_data['cat_url_title'] = strtolower(url_title($category_name));
+							$cat_data['group_id']      = $settings['category_group_id'];
 							
-							$cat_data['cat_order'] = $total_categories + 1;
-							$this->EE->db->insert('categories', $cat_data);
+							$existing_categories = $this->EE->db->get_where('categories', $cat_data);
 							
-							$cat_id = $this->EE->db->insert_id();
-							
-							$categories[trim($entry[$settings['category_column']])] = $this->EE->channel_data->get_category($cat_id)->row();
-						}						
+							if($existing_categories->num_rows() == 0)
+							{	
+								$total_categories = $this->EE->db->get_where('categories', array(
+									'group_id' => $settings['category_group_id']
+								))->num_rows();
+								
+								$cat_data['cat_order'] = $total_categories + 1;
+								$this->EE->db->insert('categories', $cat_data);
+								
+								$cat_id = $this->EE->db->insert_id();
+								
+								$categories[$category_name] = $this->EE->channel_data->get_category($cat_id)->row();
+							}						
+						}
 					}
 				}
 			}
@@ -510,9 +570,19 @@ class Gmap_mcp {
 				}
 				else
 				{
-					if(isset($categories[$entry[$settings['category_column']]]))
+					if(!is_array($settings['category_column']))
 					{
-						$data[$entry[$settings['group_by']]]['categories'] .= '|'.$categories[$entry[$settings['category_column']]]->cat_id;
+						$settings['category_column'] = array($settings['category_column']);	
+					}
+					
+					foreach($settings['category_column'] as $category_column)
+					{
+						$category_column = $category_column->column_name;
+						
+						if(isset($categories[$entry[$category_column]]))
+						{
+							$data[$entry[$settings['group_by']]]['categories'] .= '|'.$categories[$entry[$category_column]]->cat_id;
+						}
 					}
 				}
 			}
@@ -881,6 +951,18 @@ class Gmap_mcp {
 		$file = str_replace($file, '', $_SERVER['PHP_SELF']) . BASE;
 
 		$url  = $file .$amp. 'C=addons_modules' .$amp . 'M=show_module_cp' . $amp . 'module=gmap' . $amp . 'method=' . $method;
+
+		return str_replace(AMP, $amp, $url);
+	}
+	
+	private function edit_url($method = 'index', $useAmp = FALSE)
+	{
+		$amp  = !$useAmp ? AMP : '&';
+
+		$file = substr(BASE, 0, strpos(BASE, '?'));
+		$file = str_replace($file, '', $_SERVER['PHP_SELF']) . BASE;
+
+		$url  = $file .$amp. 'C=content_publish&M=entry_form';
 
 		return str_replace(AMP, $amp, $url);
 	}
