@@ -1413,7 +1413,7 @@ Class Gmap {
 				}
 			}
 		}
-				
+	
 		//var_dump($vars[0]['categories']);exit();
 		
 		$return    	   = $this->EE->TMPL->fetch_param('return');
@@ -1759,9 +1759,9 @@ Class Gmap {
 					//Checks to see if the category is actually set						
 					else if($categories)	
 					{	
-						if(!empty($category))
+						if(!empty($categories))
 						{		
-							$cat_where[] = '`cat_id` = '.$category.'';
+							$cat_where[] = '`cat_id` = '.$categories.'';
 						}
 						
 						$vars[0]['category'] 	= $categories;
@@ -1862,6 +1862,8 @@ Class Gmap {
 		INNER JOIN `exp_channel_titles` USING (entry_id)
 		'.(count($where) > 0 ? ' WHERE ' . ltrim(implode(' ', $where), 'OR') : NULL).' 
 		'.(count($having) > 0 ? ' HAVING '.implode(' AND ', $having) : NULL);
+		
+		var_dump($base_sql);exit();
 		
 		$grand_total_results = $this->EE->db->query($base_sql)->num_rows();
 
