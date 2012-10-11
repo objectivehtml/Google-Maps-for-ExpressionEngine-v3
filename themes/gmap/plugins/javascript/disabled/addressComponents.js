@@ -41,9 +41,81 @@ $(document).ready(function() {
 	 *
 	 */
 	 
-	var template  = [{
+	 var template  = [{
+		type: 'street_address',
+		field: 'input[name="street_address"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'route',
+		field: 'input[name="street_address"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'intersection',
+		field: 'input[name="intersection"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'political',
+		field: 'input[name="political"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'country',
+		field: 'input[name="country"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
 		type: 'administrative_area_level_1',
-		field: 'input[name="field_id_82"]',
+		field: 'input[name="administrative_area_level_1"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'administrative_area_level_2',
+		field: 'input[name="administrative_area_level_2"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'administrative_area_level_3',
+		field: 'input[name="administrative_area_level_3"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'collequial_area',
+		field: 'input[name="collequial_area"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'locality',
+		field: 'input[name="locality"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'sublocality',
+		field: 'input[name="sublocality"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'neighborhood',
+		field: 'input[name="neighborhood"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'premise',
+		field: 'input[name="premise"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'subpremise',
+		field: 'input[name="subpremise"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'postal_code',
+		field: 'input[name="postal_code"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'natural_feature',
+		field: 'input[name="natural_feature"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'airport',
+		field: 'input[name="airport"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'park',
+		field: 'input[name="park"]',
+		fill: 'short_name' // Alternatively it could be 'long_name'
+	},{
+		type: 'point_of_interest',
+		field: 'input[name="point_of_interest"]',
 		fill: 'short_name' // Alternatively it could be 'long_name'
 	}];
 	
