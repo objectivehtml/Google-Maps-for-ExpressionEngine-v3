@@ -40,7 +40,7 @@ class Gmap_ext {
 	 * @return string
 	 */
 	 
-	public function channel_entries_tagdata($tagdata, $row, &$obj)
+	public function channel_entries_tagdata($tagdata, $row, $obj)
 	{
 		$obj->EE->TMPL->protect_javascript = FALSE;
 		
