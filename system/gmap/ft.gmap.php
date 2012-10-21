@@ -613,8 +613,7 @@ class Gmap_ft extends EE_Fieldtype {
 			'process' => 'markers|wapoints|regions'
 		);
 		
-		$params = array_merge($default_vars, $params);
-		
+		$params = array_merge($default_vars, ($params ? $params : array()));
 		$params['process'] = explode('|', $params['process']);
 		
 		$formatted_address = array();
@@ -646,7 +645,7 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		return implode("\n", $formatted_address);
 	}
-	
+		
 	public function replace_total_markers($data, $params, $tagdata = FALSE)
 	{
 		$data = json_decode($data);

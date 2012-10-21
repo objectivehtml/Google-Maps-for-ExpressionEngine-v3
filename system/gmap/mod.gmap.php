@@ -1863,8 +1863,6 @@ Class Gmap {
 		'.(count($where) > 0 ? ' WHERE ' . ltrim(implode(' ', $where), 'OR') : NULL).' 
 		'.(count($having) > 0 ? ' HAVING '.implode(' AND ', $having) : NULL);
 		
-		var_dump($base_sql);exit();
-		
 		$grand_total_results = $this->EE->db->query($base_sql)->num_rows();
 
 		$sql = $base_sql . '
