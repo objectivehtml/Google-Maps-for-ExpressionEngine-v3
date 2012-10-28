@@ -267,7 +267,7 @@ class Gmap_ft extends EE_Fieldtype {
 		}		
 		
 		$this->EE->theme_loader->javascript('https://maps.google.com/maps/api/js?sensor=true');
-		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js');
+		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js');
 		$this->EE->theme_loader->javascript('gmap_field');
 		$this->EE->theme_loader->javascript('selectToUISlider');
 		$this->EE->theme_loader->javascript('farbtastic');
