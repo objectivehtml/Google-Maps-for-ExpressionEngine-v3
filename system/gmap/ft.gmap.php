@@ -37,6 +37,7 @@ class Gmap_ft extends EE_Fieldtype {
 		'gmap_geocoder_field_label'	=> 'Geocoder',
 		'gmap_geocoder_button'	    => 'Plot Location',
 		'gmap_geocoder_field_place'	=> 'Enter an address, city, state, or coordinate',
+		'gmap_no_valid_location'	=> '',
 		'gmap_marker_field'			=> '',
 		'gmap_waypoint_lng'			=> '',
 		'gmap_zoom'					=> '12',
@@ -468,13 +469,15 @@ class Gmap_ft extends EE_Fieldtype {
 			$mode_string = implode(' ', $modes);
 			$mode_string = rtrim($mode_string, ',');
 			
+			$custom_message = !empty($settings['no_valid_location']) ? $settings['no_valid_location'] : FALSE;
+			
 			if($obj_total == 0)
 			{
-				$valid = 'You must enter at least 1 '.$mode_string;
+				$valid = !$custom_message ? 'You must enter at least 1 '.$mode_string : $custom_message;
 			}
 			else
 			{
-				$valid = 'You may only enter '.$total.' '.$mode_string;
+				$valid = !$custom_message ? 'You may only enter '.$total.' '.$mode_string : $custom_message;
 			}
 		}	
 		

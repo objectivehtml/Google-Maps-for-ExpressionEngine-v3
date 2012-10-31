@@ -77,6 +77,17 @@
 		
 		<tr>
 			<td width="40%">
+				<strong><?php echo $lang['gmap_no_valid_location']?></strong> <br>
+				<?php echo $lang['gmap_no_valid_location_description']?>
+			</td>
+			<td>
+				<input type="text" name="gmap_no_valid_location" id="gmap_no_valid_location" value="<?php echo $gmap_no_valid_location?>" />
+			</td>
+		</tr>
+		
+		
+		<tr>
+			<td width="40%">
 				<strong><?php echo $lang['gmap_scroll_wheel']?></strong> <br>
 				<?php echo $lang['gmap_scroll_wheel_description']?>
 			</td>

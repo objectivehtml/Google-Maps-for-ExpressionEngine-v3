@@ -96,10 +96,12 @@ $lang = array(
 'gmap_settings_flyout_helper'			=> 'Enter two locations for a brief demonstration of functionality. The route shown will not have anything to do with the settings or points in your channel.',
 
 'gmap_include_marker_title'				=> 'Include Marker Title field?',
-'gmap_include_marker_title_description'	=> 'The marker title field allows you to name your markers something other than the geocoded address. This field can also be used for programmatic purposes.',
+'gmap_include_marker_title_description' => 'The marker title field allows you to name your markers something other than the geocoded address. This field can also be used for programmatic purposes.',
 
+'gmap_no_valid_location'                => 'Custom Error Message',
+'gmap_no_valid_location_description'    => 'Enter a custom message that will prompt users when entries with invalid locations are submitted (overrides the default).',
 
-'gmap_starting_point'					=> 'Starting Point',
+'gmap_starting_point'                   => 'Starting Point',
 'gmap_ending_point'						=> 'Ending Point',
 'gmap_field_settings'					=> 'Field Settings',
 'gmap_click_to_activate'				=> 'Click to Activate',

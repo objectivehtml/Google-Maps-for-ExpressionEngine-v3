@@ -189,7 +189,7 @@ Class Gmap {
 			$return = '
 			<link rel="stylesheet" href="'.$url.'gmap/css/infobox.css" media="screen, projection">
 		
-			<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor='.$sensor.'&key='.$key.'&language='.$lang.'"></script>
+			<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor='.$sensor.'&amp;key='.$key.'&amp;language='.$lang.'"></script>
 			<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/infobox.js"></script>
 			<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/markerclusterer.js"></script>
 			' . $return;
