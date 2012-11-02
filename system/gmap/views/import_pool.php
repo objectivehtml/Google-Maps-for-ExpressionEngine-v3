@@ -92,7 +92,11 @@
 				
 				$('.geocoding p').html(data.geocode);
 				$('.success').html(data.total_entries_imported);
-				$('.failed').html(data.total_entries_failed);
+				
+				if(data.total_entries_failed != null) {
+					$('.failed').html(data.total_entries_failed);
+				}
+				
 				$('.items').html(data.items_in_pool);
 			
 				if(data.errors) {
@@ -152,7 +156,7 @@
 									
 									markers.push(result);
 								});	
-								$('dd.error').html('');	
+								$('dd.error').html('&nbsp;');	
 							}
 								
 							if(status != 'OK') {
@@ -269,7 +273,7 @@
 	<dt>Total Entries Failed</dt>
 	<dd class="failed"><? echo isset($stats->total_entries_failed) ? $stats->total_entries_failed : 'N/A'?></dd>
 	<dt class="error">Last Error</dt>
-	<dd class="error"></dd>
+	<dd class="error">&nbsp;</dd>
 	<dt>Importer Total Runs</dt>
 	<dd class="total-runs"><? echo isset($stats->importer_total_runs) ? $stats->importer_total_runs : 'N/A'?></dd>
 	<dt>Avg Entries per Second</dt>

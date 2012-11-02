@@ -9,6 +9,72 @@ class Data_import_model extends CI_Model {
 		parent::__construct();
 	}
 	
+	/* -----------------------------------------
+		Logs
+	----------------------------------------- */
+	
+	public function log_item($entry_id, $items = array(), $status = 'open')
+	{
+		if(count($items) > 0)
+		{
+			$this->db->insert('gmap_import_log', array(
+				'entry_id'     => $entry_id,
+				'errors'       => json_encode($items),
+				'total_errors' => count($items),
+				'status'       => $status
+			));
+		}
+	}
+	
+	public function clear_item($id, $status = 'closed', $force_delete = FALSE)
+	{
+		$this->db->where('id', $id);
+		
+		if(!$force_delete)
+		{
+			$this->db->update('gmap_import_log', array(
+				'status' => $status
+			));
+		}
+		else
+		{
+			$this->db->delete('gmap_import_log');
+		}
+	}
+	
+	public function clear_log($entry_id = FALSE, $status = 'closed', $force_delete = FALSE)
+	{
+		if($entry_id)
+		{
+			$this->db->where('entry_id', $entry_id);
+		}
+		
+		if(!$force_delete)
+		{
+			$this->db->update('gmap_import_log', array(
+				'status' => $status
+			));
+		}
+		else
+		{
+			$this->db->delete('gmap_import_log');
+		}
+	}
+	
+	public function get_log($status = FALSE)
+	{
+		if($status)
+		{
+			$this->db->where('status', $status);
+		}
+		
+		return $this->db->get('gmap_import_log');
+	}
+	
+	/* -----------------------------------------
+		Pool
+	----------------------------------------- */
+	
 	public function clear_pool()
 	{
 		$this->db->query('DELETE FROM exp_gmap_import_pool');
@@ -28,6 +94,10 @@ class Data_import_model extends CI_Model {
 			
 		return $this->get_stats($id);
 	}
+	
+	/* -----------------------------------------
+		Success/Fail
+	----------------------------------------- */
 	
 	public function import_success($id)
 	{

@@ -27,6 +27,7 @@ class Gmap_upd {
 	public $version;
 	
 	private $tables = array(
+	
 		'gmap_cache' => array(
 			'id' => array(
 				'type' 				=> 'int',
@@ -53,6 +54,7 @@ class Gmap_upd {
 				'constraint'		=> 50
 			)
 		),
+		
 		'gmap_static_maps' => array(
 			'id' => array(
 				'type' 				=> 'int',
@@ -76,6 +78,7 @@ class Gmap_upd {
 				'constraint'		=> 50
 			)
 		),
+		
 		'gmap_import_pool' => array(
 			'id' => array(
 				'type' 				=> 'int',
@@ -117,6 +120,7 @@ class Gmap_upd {
 				'type'				=> 'text'
 			)
 		),
+		
 		'gmap_import_stats' => array(
 			'schema_id' => array(
 				'type' 				=> 'int',
@@ -145,6 +149,7 @@ class Gmap_upd {
 				'constraint'		=> 50
 			)
 		),
+		
 		'gmap_import_settings' => array(
 			'schema_id' => array(
 				'type' 				=> 'int',
@@ -154,6 +159,32 @@ class Gmap_upd {
 			),
 			'settings' => array(
 				'type' 				=> 'longtext',
+			)
+		),
+		
+		'gmap_import_log' => array(
+			'id' => array(
+				'type' 				=> 'int',
+				'constraint' 		=> 50,
+				'primary_key' 		=> TRUE,
+	            'auto_increment' 	=> TRUE
+			),
+			'entry_id' => array(
+				'type' 				=> 'int',
+				'constraint' 		=> 50,
+				'primary_key' 		=> TRUE
+			),
+			'errors' => array(
+				'type' 				=> 'longtext',
+			),
+			'total_errors' => array(
+				'type' 				=> 'int',
+				'constraint' 		=> 50,
+				'primary_key' 		=> TRUE
+			),
+			'status' => array(
+				'type' 				=> 'varchar',
+				'constraint' 		=> 100,
 			)
 		)
 	);
@@ -198,6 +229,10 @@ class Gmap_upd {
 		array(
 			'class' 	=> 'Gmap_mcp',
 			'method'	=> 'import_check_existing_action'
+		),
+		array(
+			'class' 	=> 'Gmap_mcp',
+			'method'	=> 'import_log_action'
 		)
 	);
 	

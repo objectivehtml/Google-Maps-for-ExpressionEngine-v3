@@ -332,62 +332,22 @@ class Gmap_mcp {
 		
 		$markers = array();
 		
-		/*
-		if(!$valid_address)
-		{
-			foreach($this->EE->google_maps->geocode($item->geocode) as $response)
-			{
-				if($response->status == 'OK')
-				{					
-					foreach($response->results as $result)
-					{
-						$markers[] = (object) $result;	
-					}
-				}
-				else
-				{
-					$geocode_error = $response->status;
-				}	
-			}
-			
-			$map_data = $this->EE->google_maps->build_response(array('markers' => $markers));
-		}
-		else
-		{
-			$map_data = $existing_entry[$item->map_field_name];			
-		}
-		*/
-		
 		$valid_address = $this->EE->input->get_post('valid_address') == 'true' ? TRUE : FALSE;
-		
-		
+				
 		if(!$valid_address)
 		{
 			$markers  = json_decode($this->EE->input->get_post('markers'));
-			
-			
-			/*
-			foreach($this->EE->google_maps->geocode($item->geocode) as $response)
+	
+			if(count($markers) == 0)
 			{
-				if($response->status == 'OK')
-				{*/
-					if(count($markers) == 0)
-					{
-						$log_item[] = 'The entry has no valid location.';
-					}
-					
-					if(count($markers) > 1)
-					{
-						$log_item[] = 'The entry has more than 1 valid location.';
-					}
-				/*}
-				else
-				{
-					$log_item[] = '<i>'.$item->geocode.'</i> is not a valid location.';		
-					$geocode_error = $response->status;
-				}	
-			}*/
+				$log_item[] = 'The entry has no valid location.';
+			}
 			
+			if(count($markers) > 1)
+			{
+				$log_item[] = 'The entry has more than 1 valid location.';
+			}
+					
 			$map_data = $this->EE->google_maps->build_response(array('markers' => $markers));
 		}
 		else
