@@ -1136,19 +1136,26 @@ class Google_maps {
 				$vars[0]['results'] = $vars;	
 			}
 			
-			foreach($vars[0]['results'] as $index => $var)
-			{		
-				$count++;
+			if(count($vars[0]['results']) > 0)
+			{
+				foreach($vars[0]['results'] as $index => $var)
+				{		
+					$count++;
+					
+					$var = array_merge($global_vars, $var);
+					$var['result_index'] = $index;
+					$var['result_count'] = $index + 1;
+					
+					$row_tagdata = $this->EE->TMPL->parse_variables_row($tagdata, array('results' => $vars[0]['results']));
 				
-				$var = array_merge($global_vars, $var);
-				$var['result_index'] = $index;
-				$var['result_count'] = $index + 1;
-				
-				$row_tagdata = $this->EE->TMPL->parse_variables_row($tagdata, array('results' => $vars[0]['results']));
-			
-				$row_tagdata = $this->EE->channel_data->tmpl->parse_fieldtypes($var, $channels, $fields, $row_tagdata, $prefix, $count);
-				
-				$return .= $row_tagdata;
+					$row_tagdata = $this->EE->channel_data->tmpl->parse_fieldtypes($var, $channels, $fields, $row_tagdata, $prefix, $count);
+					
+					$return .= $row_tagdata;
+				}
+			}
+			else
+			{
+				$return = $this->EE->TMPL->parse_variables($tagdata, $vars);
 			}
 		}
 		else

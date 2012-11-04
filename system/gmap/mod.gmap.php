@@ -1242,6 +1242,11 @@ Class Gmap {
 		$this->EE->load->driver('channel_data');
 		$this->EE->load->library('base_form');
 		
+		if(isset($this->EE->base_form->encode_fields))
+		{
+			$this->EE->base_form->encode_fields = FALSE;
+		}
+		
 		/* -------------------------------------------
 		/* 'gmap_search_post' hook.
 		/*  - Modify the search POST variables before method executes
@@ -1504,7 +1509,7 @@ Class Gmap {
 	public function results()
 	{
 		$this->EE->load->library('base_form');
-		
+			
 		$method = strtolower($this->param('method', 'post'));
 
 		/* -------------------------------------------
@@ -1869,8 +1874,6 @@ Class Gmap {
 		ORDER BY `'.$order_by.'` '.$sort.'
 		'.($limit ? 'LIMIT '.$offset.','.$limit : NULL);
 		
-	//	var_dump($sql);exit();
-		
 		/* -------------------------------------------
 		/* 'gmap_results_sql' hook.
 		/*  - Modify the SQL statement before the query is executed
@@ -1899,10 +1902,12 @@ Class Gmap {
 			
 			foreach($result_array as $row_index => $row)
 			{
+				$row['is_first_row'] = $row_index == 0 ? TRUE : FALSE;
+				$row['is_last_row']  = $row_index == (count($result_array) - 1) ? TRUE : FALSE;
 				$row['count'] = $row_index + 1;
 				$row['index'] = $row_index;
 
-				$result_array[$row_index] = array_merge($row, $this->EE->channel_data->utility->add_prefix('result', $row));
+				$result_array[$row_index] = array_merge($row, $this->EE->channel_data->utility->add_prefix($this->param('prefix', 'result'), $row));
 			}
 			
 			$vars[0]['entry_ids'] 		= $entry_ids;
@@ -1941,7 +1946,7 @@ Class Gmap {
 				return $this->EE->TMPL->no_results(TRUE);
 			}		
 			
-			return $this->EE->google_maps->parse_fields($vars, $tagdata, $this->param('parse_tags', FALSE, TRUE));
+			return $this->EE->google_maps->parse_fields($vars, $tagdata, $this->param('parse_tags', FALSE, TRUE), $this->param('prefix', 'result').':');
 		}
 		else
 		{

@@ -137,7 +137,6 @@ class Gmap_mcp {
 		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js');
 		$this->EE->theme_loader->javascript('json2');
 		
-		
 		$vars = array(
 			'id' => $id,
 			'total_items' => $this->EE->data_import_model->get_pools($id, 'pending')->num_rows(),
@@ -606,52 +605,54 @@ class Gmap_mcp {
 		
 		$entry_data['title'] = $title;
 		
-		/* Maintain backwards compatibility with previous settings */
-		
-		if(is_string($settings['category_column']))
-		{
-			$settings['category_column'] = array($settings['category_column']);	
-		}
-		
 		$entry_categories = array();
 		
-		if(isset($settings['category_column']) && count($settings['category_column']) > 0)
-		{
-			foreach($settings['category_column'] as $cat_index => $cat)
+		if(isset($settings['category_column']))
+		{	
+			/* Maintain backwards compatibility with previous settings */
+			
+			if(is_string($settings['category_column']))
 			{
-				if(empty($settings['category_boolean_value']))
+				$settings['category_column'] = array($settings['category_column']);	
+			}
+			
+			if(isset($settings['category_column']) && count($settings['category_column']) > 0)
+			{
+				foreach($settings['category_column'] as $cat_index => $cat)
 				{
-					$save_value = !empty($settings['category_column']) ? (isset($categories[$entry[$cat->column_name]]) ? $categories[$entry[$cat->column_name]]->cat_id : NULL) : NULL;
-					
-					if(!is_null($save_value))
+					if(empty($settings['category_boolean_value']))
 					{
-						$entry_categories[] = $save_value;
-					}
-				}
-				else
-				{
-					foreach($cat as $cat_index)
-					{
-						$cat_index = trim($cat_index);
+						$save_value = !empty($settings['category_column']) ? (isset($categories[$entry[$cat->column_name]]) ? $categories[$entry[$cat->column_name]]->cat_id : NULL) : NULL;
 						
-						if(!isset($entry[$cat_index]) || empty($categories[$cat_index]))
+						if(!is_null($save_value))
 						{
-							show_error('<i>'.$cat_index.'</i> is not a valid category name. Be sure the names of the categories match exactly, they are case-sensitive. The categories with ExpressionEngine, the schema, <i>AND</i> the . must match.');
+							$entry_categories[] = $save_value;
 						}
-						else
+					}
+					else
+					{
+						foreach($cat as $cat_index)
 						{
-							$save_value = $entry[$cat_index] == $settings['category_boolean_value'] ? (isset($categories[$cat_index]->cat_id) ? $categories[$cat_index]->cat_id : NULL) : NULL;
+							$cat_index = trim($cat_index);
 							
-							if(!is_null($save_value))
+							if(!isset($entry[$cat_index]) || empty($categories[$cat_index]))
 							{
-								$entry_categories[] = $save_value;
+								show_error('<i>'.$cat_index.'</i> is not a valid category name. Be sure the names of the categories match exactly, they are case-sensitive. The categories with ExpressionEngine, the schema, <i>AND</i> the . must match.');
+							}
+							else
+							{
+								$save_value = $entry[$cat_index] == $settings['category_boolean_value'] ? (isset($categories[$cat_index]->cat_id) ? $categories[$cat_index]->cat_id : NULL) : NULL;
+								
+								if(!is_null($save_value))
+								{
+									$entry_categories[] = $save_value;
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-		
 		
 		return array(
 			'schema_id'           => $this->EE->input->post('id'),
