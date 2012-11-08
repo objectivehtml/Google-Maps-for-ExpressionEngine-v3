@@ -136,6 +136,12 @@ class Gmap_ft extends EE_Fieldtype {
 		}
 		
 		$this->EE->theme_loader->module_name = 'gmap';
+		$this->EE->theme_loader->requirejs   = FALSE;
+		
+		$this->EE->theme_loader->javascript('https://maps.google.com/maps/api/js?sensor=true');
+		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js');
+		
+		$this->EE->theme_loader->requirejs   = TRUE;
 		
 		$field	 		= $this->EE->channel_data->get_field($this->settings['field_id'])->row();
 		$field_group	= $this->EE->channel_data->get_field_group($field->group_id)->row();
@@ -225,12 +231,36 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		$settings_js 	= '
 		<script type="text/javascript">
-			if(typeof GmapPluginsLoaded == "undefined") {
-				var GmapPluginsLoaded = false;
-			}
 			
 			if(!GmapGlobal) var GmapGlobal = {};
 			
+			if(typeof GmapPluginsLoaded == "undefined") {
+				var GmapPluginsLoaded = false;
+			}
+		
+		</script>';
+		
+		$this->EE->cp->add_to_head($settings_js);
+		
+		$js = '
+			var options = {
+				settings: '.$settings.',
+				response: '.$data.',
+				markers: [],
+				windows: [],
+				field: '.$field.',
+				fields: '.$fields.',
+				reqFields: '.$req_fields.',
+				icons: '.$icons.',
+				plugins: '.json_encode($third_party_js).',
+				safecracker: '.(isset($this->EE->safecracker_lib) ? 'true' : 'false').'
+			};
+		
+			/* 
+			 * DEPRECATED since v3.1 - 11/07/2012
+			 * Going forward, use the Gmap.instance array to access the Gmap objects.
+			 */
+			 
 			if(!GmapGlobal.settings) 	GmapGlobal.settings 	= [];
 			if(!GmapGlobal.response)	GmapGlobal.response		= [];
 			if(!GmapGlobal.markers)		GmapGlobal.markers		= [];
@@ -254,10 +284,12 @@ class Gmap_ft extends EE_Fieldtype {
 			GmapGlobal.icons['.$this->settings['field_id'].']		= '.$icons.';
 			GmapGlobal.plugins['.$this->settings['field_id'].']		= '.json_encode($third_party_js).';
 			GmapGlobal.safecracker['.$this->settings['field_id'].']	= '.(isset($this->EE->safecracker_lib) ? 'true' : 'false').';
-					
-		</script>';
 				
-		$this->EE->cp->add_to_head($settings_js);		
+			$(document).ready(function() {
+				new Gmap($("#gmap-wrapper-'.$this->settings['field_id'].'"), options);
+			});';
+				
+		$this->EE->theme_loader->output($js);		
 		
 		if($third_party_css = directory_map($directory.'css'))
 		{
@@ -267,8 +299,6 @@ class Gmap_ft extends EE_Fieldtype {
 			}
 		}		
 		
-		$this->EE->theme_loader->javascript('https://maps.google.com/maps/api/js?sensor=true');
-		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js');
 		$this->EE->theme_loader->javascript('gmap_field');
 		$this->EE->theme_loader->javascript('selectToUISlider');
 		$this->EE->theme_loader->javascript('farbtastic');
@@ -338,6 +368,8 @@ class Gmap_ft extends EE_Fieldtype {
 		$this->EE->load->library('theme_loader', array(
 			'module_name'	=> 'gmap'
 		));
+				
+		// $this->EE->theme_loader->requirejs = FALSE;
 		
 		$this->settings = $data;
 		
@@ -350,21 +382,25 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		$google_maps_api_url = 'https://maps.google.com/maps/api/js?sensor=true';
 		
-		if (AJAX_REQUEST)//it's field editor!
+		// Works for FieldEditor and RequireJS
+		
+		if (AJAX_REQUEST || $this->EE->theme_loader->requirejs())
 		{
 			//set the callback to init after loading google map api asynchronously
 			$google_maps_api_url .= '&callback=GmapPreview.init';
 		}
 		else//normal EE field settings, init GmapPreview on document ready
 		{
-			$this->EE->javascript->output('GmapPreview.init();');
+			$this->EE->theme_loader->output('GmapPreview.init()');
 		}
 		
 		$this->EE->theme_loader->javascript($google_maps_api_url);
+		
 		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js');
 		$this->EE->theme_loader->javascript('gmap');
 		$this->EE->theme_loader->javascript('gmap_preview');
 		$this->EE->theme_loader->css('gmap');
+			
 				
 		// load the language file
 		$this->EE->lang->loadfile('gmap');
