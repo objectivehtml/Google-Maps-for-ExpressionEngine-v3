@@ -131,11 +131,12 @@ class Gmap_mcp {
 		$id = $this->EE->input->get('id');
 		
 		$settings = $this->EE->data_import_model->get_setting($id);
-			
-		$this->EE->theme_loader->javascript('https://maps.google.com/maps/api/js?sensor=true');
+		
+		$this->EE->theme_loader->javascript('https://maps.google.com/maps/api/js?sensor=true'.($this->EE->theme_loader->requirejs() ? '&callback=init' : NULL));
 		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.js');
 		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js');
 		$this->EE->theme_loader->javascript('json2');
+		$this->EE->theme_loader->javascript('gmap_import');
 		
 		$vars = array(
 			'id' => $id,
@@ -145,6 +146,60 @@ class Gmap_mcp {
 			'import_item_url' => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_item_action'),
 			'import_check_url' => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_check_existing_action'),
 		);
+		
+		$this->EE->cp->add_to_head('
+		<script type="text/javascript">
+			
+			var id         = '.$vars['id'].';
+			var totalItems = '.$vars['total_items'].';
+			var importItemURL = \''.$vars['import_item_url'].'\';
+			var importCheckURL = \''.$vars['import_check_url'].'\';
+			var init;
+			
+		</script>');
+		
+		$this->EE->theme_loader->output('
+				
+		init = function() {
+			$bar = $(\'.progress-bar\');
+			$bar.progressbar({value: 0});
+			
+			$(\'.start .submit\').click(function() {
+				
+				var $t = $(this);
+				
+				if($t.html() == \'Start Import\') {
+					stop = false;
+					$t.html(\'Stop Import\');
+					
+					$.get(\''.$vars['import_start_url'].'\',
+						{
+							id: id
+						},
+						function(data) {
+							
+							itemsRemaining = data.items_in_pool;
+							
+							$(\'.last-ran\').html(data.importer_last_ran);
+							$(\'.total-runs\').html(data.importer_total_runs);
+							$(\'.progress-bar, .geocoding\').show();
+							
+							startTimer();
+							geocode(lastIndex);
+						}
+					);
+				}
+				else {
+					clearInterval(timer);
+	        
+					$t.html(\'Start Import\');
+					stop = true;
+				}
+				
+				return false;
+				
+			});
+		}; '. (!$this->EE->theme_loader->requirejs() ? 'init();' : NULL));
 		
 		/*
 		foreach($vars['items'] as $index => $item)

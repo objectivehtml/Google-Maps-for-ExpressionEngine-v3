@@ -284,10 +284,8 @@ class Gmap_ft extends EE_Fieldtype {
 			GmapGlobal.icons['.$this->settings['field_id'].']		= '.$icons.';
 			GmapGlobal.plugins['.$this->settings['field_id'].']		= '.json_encode($third_party_js).';
 			GmapGlobal.safecracker['.$this->settings['field_id'].']	= '.(isset($this->EE->safecracker_lib) ? 'true' : 'false').';
-				
-			$(document).ready(function() {
-				new Gmap($("#gmap-wrapper-'.$this->settings['field_id'].'"), options);
-			});';
+			
+			new Gmap($("#gmap-wrapper-'.$this->settings['field_id'].'"), options);';
 				
 		$this->EE->theme_loader->output($js);		
 		

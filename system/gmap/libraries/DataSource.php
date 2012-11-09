@@ -73,7 +73,7 @@ class File_CSV_DataSource
         'escape' => '"'
     );
 
-    protected
+    public
 
     /**
      * imported data from csv
