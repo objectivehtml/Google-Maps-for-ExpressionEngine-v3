@@ -1,4 +1,4 @@
-<div class="gmap-wrapper group" data-gmap-id="<?php echo $settings['field_id']?>">
+<div class="gmap-wrapper group" id="gmap-wrapper-<?php echo $settings['field_id']?>" data-gmap-id="<?php echo $settings['field_id']?>">
 	
 	<div class="markers column" style="<?php if((int)$settings['total_points'] == 1) echo 'display:none;'?>">		
 		<ul class="toggle group">
