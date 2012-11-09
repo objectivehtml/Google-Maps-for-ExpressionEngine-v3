@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.190
- * @build		20120921
+ * @version		3.0.195
+ * @build		20121009
  */
  
  
@@ -1544,8 +1544,6 @@ var Gmap  = function($wrapper, options) {
 		return false;
 	});
 	
-		console.log(t.ui.deferer);
-
 	if(t.settings.defer_init == 'no')
 		t.ui.deferer.click();
 	
@@ -1653,7 +1651,6 @@ var Gmap  = function($wrapper, options) {
 			}
 			else {
 				importErrors++;
-				console.log(importErrors);
 				t.ui.importPanel.find('.step-3 textarea').attr('rows', importErrors);
 				t.ui.importPanel.find('.step-3 textarea').append('['+(count+2)+'] Error Geocoding: '+marker.location+"\r\n");
 				$failed.html(parseInt($failed.html())+1);					
@@ -1756,9 +1753,6 @@ var Gmap  = function($wrapper, options) {
 				longitude: (lng != '' ? row[lng] : false),
 				icon: (icon ? icon : false)
 			});	
-			
-			console.log(markers[markers.length - 1]);			
-
 		});
 		
 		t.ui.importPanel.find('.step-3 .total-markers').html(markers.length);

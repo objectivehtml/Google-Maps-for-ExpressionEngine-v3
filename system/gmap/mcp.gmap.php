@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.190
- * @build		20120921
+ * @version		3.0.195
+ * @build		20121009
  */
 
 class Gmap_mcp {
@@ -478,6 +478,18 @@ class Gmap_mcp {
 	
 	public function import_data_action()
 	{		
+		$settings     = (array) $this->EE->data_import_model->get_setting($this->EE->input->post('id'));
+		
+		if(isset($settings['eol']) && !empty($settings['eol']))
+		{
+			$this->EE->data_import->eol       = $settings['eol'];
+		}
+		
+		if(isset($settings['delimeter']) && !empty($settings['delimeter']))
+		{
+			$this->EE->data_import->delimeter = $settings['delimeter'];
+		}
+		
 		$entries    = $this->EE->data_import->load_file($_FILES["file"]['tmp_name']);
 		
 		$channel_fields = $this->EE->channel_data->get_fields()->result();
@@ -491,8 +503,6 @@ class Gmap_mcp {
 		$fields_by_id = $this->EE->channel_data->utility->reindex($channel_fields, 'field_id');
 		
 		$this->fields_by_id = $fields_by_id;
-		
-		$settings     = (array) $this->EE->data_import_model->get_setting($this->EE->input->post('id'));
 		
 		$this->settings = $settings;
 		
@@ -744,6 +754,16 @@ class Gmap_mcp {
 					'id' => array(
 						'label'       => 'ID',
 						'description' => 'Since you can save multiple variations of settings to import, your must give a unique identifier for these settings.',
+						'type'        => 'input'
+					),
+					'delimeter' => array(
+						'label'       => 'Delimeter',
+						'description' => 'The delimeting character used in the .csv you will be uploading. If left blank, the default value will be used (,).',
+						'type'        => 'input'
+					),
+					'eol' => array(
+						'label'       => 'EOL',
+						'description' => 'The EOL character used in the .csv you will be uploading. If left blank, the default value will be used (\n\r).',
 						'type'        => 'input'
 					),
 					'channel' => array(
