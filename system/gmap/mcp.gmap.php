@@ -441,8 +441,6 @@ class Gmap_mcp {
 				
 		$this->EE->api_channel_fields->setup_entry_settings($settings->channel, $data);
 		
-		$existing_entry = (array) $existing_entry;
-		
 		if($new_entry)
 		{
 			$this->EE->api_channel_entries->submit_new_entry($settings->channel, $data);				
@@ -450,8 +448,13 @@ class Gmap_mcp {
 		}
 		else
 		{
-			$this->EE->channel_data->utility->update_entry($settings->channel, $existing_entry['entry_id'], $data);
-			$entry_id = $existing_entry['entry_id'];				
+			if(isset($existing_entry))
+			{
+				$existing_entry = (array) $existing_entry;
+		
+				$this->EE->channel_data->utility->update_entry($settings->channel, $existing_entry['entry_id'], $data);
+				$entry_id = $existing_entry['entry_id'];
+			}			
 		}
 		
 		$this->EE->data_import_model->log_item($entry_id, $log_item);

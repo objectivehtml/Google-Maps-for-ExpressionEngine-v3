@@ -4,8 +4,8 @@ require_once PATH_THIRD . 'gmap/libraries/Google_maps.php';
 
 class Data_import extends Google_maps {
 	
-	public $delimter = ',';
-	public $eol      = '\n\r';
+	public $delimeter = ',';
+	public $eol       = '\n\r';
 	
 	public function __construct()
 	{
