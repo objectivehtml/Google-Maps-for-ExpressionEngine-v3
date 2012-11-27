@@ -5,88 +5,101 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.184
- * @build		20120601
+ * @version		3.1.0
+ * @build		2012xxxxx
  */
 
-v3.0.186 - 06/09/2012
----------------------
-- (Feature) Added parse_tag parameter to exp:gmap:results which makes it a looping tag that runs the FT parses instead of replace the tags with the raw data.
-- (Bug Fix) Added the missing title property to the marker object on the front-end.
+#### 3.1.0 
+##### xx/xx/2012
 
-v3.0.185 - 06/09/2012
----------------------
-- Added new .csv importer
-
-v3.0.184 - 06/01/2012
----------------------
+- (Feature) Added new template tags to the marker parsing(index, count, limit, offset, entry_id).
+- (Feature) Appended the marker index and entry id (if set) to the marker object in the FT and exp:gmap:marker methods.
+- (Feature) Added the count and index variables to the results array (in the exp:gmap:results tag).
+- (Feature) Implemented MarkerClusterer v3. Use the clustering="true" parameter in the fieldtype or exp:gmap:marker tag.
+- (Feature) Improved region plotting.
+- (Feature) Added a plethora of category tags to the exp:gmap:results tag (inside the results loop) without adding any additional queries.
+- (Feature) Added a categories parameter to the marker and fieldtype tag that will append categories to the marker object.
+- (Feature) Added a category_ids variable to the channel entries loop
+- (Feature) Added a new duplicate_markers parameter that prevents duplicate markers from being added to the map. Set duplicate_markers="false" on the fieldtype and/or exp:gmap:markers tag to remove duplicate markers. By default, duplicate markers will appear on the map.
+- (Feature) Added new .csv importer that geocodes entries from a .csv
+- (Feature) Added new .csv importer that geocodes markers into a single entry via the field type.
 - (Feature) Added compatibility to related channel field options in the exp:gmap:search method.
 - (Feature) Added new clear_cache() method that clears the search cache.
-- (Bug Fix) Fixed PHP 5.4 compatibility
-- (API) Updated Channel Data Library
+- (Feature) Added parse_tag parameter to exp:gmap:results which makes it a looping tag that runs the FT parses instead of replace the tags with the raw data.
+- (Feature) Added better pagination to the exp:gmap:results tag.
+- (Feature) Added new _day suffix to the search data types.
+- (Feature) Added a window_trigger parameter to the fieldtype and exp:gmap:marker tag that allows developers to change the trigger that opens info windows.
+- (Feature) Added ability to search for markers relative to multiple locations, like origins and destinations opposed to only a single location.
+- (Feature) Added new alternative fieldtype tag to product a static map instead an interactive map.
+Use the following syntax: 
 
-v3.0.183 - 05/26/2012
----------------------
-- (Feature) Added a plethora of category tags to the exp:gmap:results tag (inside the results loop) without adding any additional queries.
-- (Feature) Added a new duplicate_markers parameter that prevents duplicate markers from being added to the map. Set duplicate_markers="false" on the fieldtype and/or exp:gmap:markers tag to remove duplicate markers. By default, duplicate markers will appear on the map.
-
-v3.0.182 - 05/25/2012
----------------------
-- (Bug Fix) Fixed the same issue as v3.0.181, except the fix was in the saveResponse method.
-- (Bug Fix) Fixed an issue that caused a PHP notice if the clustering parameter is not set when using the fieldtype tag.
-
-v3.0.181 - 05/24/2012
----------------------
+	{field_name:static_map} 
+	{field_name:static_map zoom="5"}
+	
+- (Bug Fix) Added alternative cluster parameters that aren't camel cased.
+- (Bug Fix) Fixed localization search bug
+- (Bug Fix) Fixed a couple issues preventing points from being added if clicking on an existing region, or the new region itself.
 - (Bug Fix) Fixed an issue when updating a custom field, the selector would be just a '#'.
+- (Bug Fix) Fixed PHP 5.4 compatibility
+- (Bug Fix) Added the missing title property to the marker object on the front-end.
+- (Bug Fix) Fixed bug fix for PHP 5.2 that prevent FT from displaying in Safecracker.
+- (Bug Fix) Fixed issue that caused all fields to get pulled, instead of only those assigned to the parent channel
+- (Bug Fix) Fixed a bug that prevent marker content from displaying in the FT tag.
+- (Bug Fix) Added compatibility with the parse="inward" parameter
+- (Bug Fix) Fixed update bug that prevented the action_id's from being updated properly.
+- (Bug Fix) Fixed an rgba issue with IE.
+- (Bug Fix) Fixed an issue with the fieldtype not passing the redirect variable correctly.
+- (Bug Fix) Fixed an issue that caused users to always get redirected when a marker is clicked.
+- (Bug Fix) Fixed a bug that prevented users from search in multiple channels.
+- (Bug Fix) Added a new error message if a user tries to search an invalid channel.
+- (Bug Fix) Fixed an bug that caused a PHP notice to display if no path was set.
+- (Bug Fix) Fixed API inconsistencies between infobox() and infowindow() methods.
+- (Bug Fix) Added a series of default parameters to increase error tolerance.
+- (Bug Fix) Fixed a compatibility issues for EE 2.5.3
+- (Bug Fix) Fixed a vulnerability that could break the code if a malformed string was injected into the hidden fieldtype form field.
 
-v3.0.18 - 05/07/2012
---------------------
+#### 3.0.17 
+##### 05/01/2012
 
-Note, this version marks the start of the v3.1 beta. I am doing a silent roll out of many of the features so those that need them can test them.
-
-- (Feature) Added new template tags to the standed marker parsing(index, count, limit, offset, entry_id).
-- (Feature) Appended the marker index and entry id (if set) to the marker object.
-- (Feature) Added the count and index variables to the results array (in the exp:gmap:results tag).
-- (Feature) Implemented MarkerClusterer v3. Use the clustering="true" parameter in the fieldtype to exp:gmap:marker tag.
-- (Feature) Improved region plotting. 
-- (Bug Fix) Fixed a couple issues preventing points from being added if clicking on an existing region, or the new region itelf.
-
-v3.0.17 - 05/01/2012
---------------------
 - (Feature) Added a notice to the search if you are a super admin if you are over the query limit. This is mainly for people using public IP's. This error is most likely to occur during development or during high volumes of traffic.
 - (Feature) Added native pagination to the search method. Required the cache_post parameter until search is rewritten for GET (coming in v3.1).
 - (Feature) Implemented 3 new template tags for the fieldtype, {field_name:total_markers}, {field_name:total_waypoints}, {field_name:total_regions}
 - (Maintenance) Updated the Channel Data depency.
 - (Maintenance) Updated the Base Form dependency.
 
-v3.0.16 - 04/07/2012
---------------------
+#### 3.0.16 
+##### 04/07/2012
+
 - (Feature) Added a new match_categories parameter to allow people to define a number of categories the search must meet before an entry will be meet accepted criteria.
 - (Feature) Added a new plugin to customize the infowindows, called customizeInfoWindows.js.
 - (Feature) Added ability to search by status.
 - (Bug Fix) Fixed an issue that was causing the marker.index property to be set to undefined which prevented the map markers from being edited.
 - Updated the Channel Data dependency.
 
-v3.0.15 - 03/30/2012
---------------------
+#### 3.0.15 
+##### 03/30/2012
+
 - (Bug Fix) Fixed an issue causing the exp:gmap:results tag from returning entries assigned to multiple categories correctly.
 - (Bug Fix) Fixed another issue with the search not properly returning the {title} variable inside the {results} tag pair.
 - (Bug Fix) Fixed a bug that caused region points to not get added in the precise location the user adds them.
 - (Bug Fix) Fixed an issue with editting markers causing a "cyclic value" JavaScript error.
 - (Feature) Optimized the search query thanks to @adrienneleigh. Queries are much faster now and much more manageable.
 
-v3.0.14 - 03/28/2012
---------------------
+#### 3.0.14 
+##### 03/28/2012
+
 - (Bug Fix) Fixed an issue that prevented markers from displaying correctly when using the fieldtype.
 - (Bug Fix) Fixed an issue where markers didn't get cancelled properly. For instance a user adds a new marker and edits, but doesn't hit save, rather adds a new marker (thinking it had saved), which results in those changes remaining visible on the map.
 
-v3.0.13 - 03/16/2012
---------------------
+#### 3.0.13 
+##### 03/16/2012
+
 - (Bug Fix) Fixed an issue that caused entries with multiple markers on the maps not to display the correct marker icon on the front-end. If more than marker was added, the first marker in the series would become the icon for the latter markers.
 - (Bug Fix) Fixed an issue that prevented the zoom_one_marker setting from working properly.
 
-v3.0.12 - 03/14/2012
---------------------
+#### 3.0.12 
+##### 03/14/2012
+
 - (Bug Fix) Fixed usability issue with zoom being too far zoomed in when only one marker is present.
 - (Bug Fix) Added a new "append" parameter to append a string to the "id" paramter of a Google Maps variable (within a channel entries loop). This affected people plotting data using the fieldtype tag, and wanted to add the data to a new map with each row.
 - (Bug Fix) Removed plotted data from map bounds after they are deleted.
@@ -94,47 +107,58 @@ v3.0.12 - 03/14/2012
 - (Feature) Added a new setting to override the default button text. 
 - (Feature) Also started writing more in the changelog and formatting stuff in bulleted lists for your reading pleasure. ;)
 
-v3.0.11 - 03/14/2012
---------------------
+#### 3.0.11 
+##### 03/14/2012
+
 Fixed a bug that prevented pagination from working properly when parsing the fieldtype data. Also made route an alias for waypoints for convenience when parsing data. Prefix is still 'waypoint:'.
 
-v3.0.10 - 03/10/2012
---------------------
+#### 3.0.10 
+##### 03/10/2012
+
 Fixed an issue with the theme URL not initialling properly if the thmes was outside of the root. Also fixed an issue with the Geocoder button not labelled properly. It not reads, "Plot Location" which seems more appropriate.
 
-v3.0.9 - 03/04/2012
--------------------
+#### 3.0.9 
+##### 03/04/2012
+
 Fixed bug that causes coordinates to plot incorrectly if they return no results from the geocoder in fieldtype and on the front-end. Added new parsing of the fieldtype data use the "parse" attribute, documentation coming soon. More stability and general bug fixes. Fixed an issue with the Matrix sync plugin from not properly deleted rows.
 
 
-v3.0.8 - 2/29/2012
-------------------
+#### 3.0.8 
+##### 2/29/2012
+
 More bug fixes. Added ability to search by expiration data, entry data, title, and author_id. Added a default post value of null to all channel field's even if they haven't been posted. Before it required {if post:var}{post:var}{/if}. Also added limit and offset to the fieldset to have better control of plotting markers.
 
-v3.0.7 - 2/29/2012
-------------------
+#### 3.0.7 
+##### 2/29/2012
+
 Deleted .DS_Store files
 
-v3.0.6 - 2/28/2012
-------------------
+#### 3.0.6 
+##### 2/28/2012
+
 Bug fixes and added a new event, gmapSaveMarker.
 
-v3.0.5 - 2/26/2012
-------------------
+#### 3.0.5 
+##### 2/26/2012
+
 Added the index parameter to the gmapAddMarker and gmapMarkerDragEnd API events that allowed better control over the markers that were added to the map. Also created a matrix sync plugin using the new API changes.
 
-v3.0.4 - 2/26/2012
-------------------
+#### 3.0.4 
+##### 2/26/2012
+
 Implemented the new proxy for shared IP's. You can now host your own proxy or use the provided one at objectivehtml.com. Enable the proxy by defining a URL in the gmap_config.php file.
 
-v3.0.3 - 2/23/2012
-------------------
+#### 3.0.3 
+##### 2/23/2012
+
 Added ability to execute common features client side without relying on cURL (for shared IP's). Currently on the init and streetview tags are compatible with the new client_side="true" parameter. Perhaps more will come in the future if people request it.
 
-v3.0.2 - 2/22/2012
-------------------
+#### 3.0.2 
+##### 2/22/2012
+
 Added "client_side" parameter to the init and streetview tags for better compatibility with shared or busy IP's. This param deferes requests to client rather than server-side API.
 
-v3.0.1 - 2/21/2012
-------------------
+#### 3.0.1 
+##### 2/21/2012
+
 Fixed a bug that prevents the add-on from installing properly due to an improperly defined constant. Somehow this error didn't trigger before.

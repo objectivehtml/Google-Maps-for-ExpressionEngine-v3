@@ -996,7 +996,7 @@ class Gmap_ft extends EE_Fieldtype {
 				
 				$tagdata = $tagdata ? $tagdata : '';
 
-				if($data->markers->total > 0 && in_array('markers', $params['render']))
+				if(isset($data->markers) && $data->markers->total > 0 && in_array('markers', $params['render']))
 				{
 				
 					$markers 	= array($data->markers);
@@ -1030,7 +1030,7 @@ class Gmap_ft extends EE_Fieldtype {
 					$js = $js . $marker;
 				}
 				
-				if($data->waypoints->total > 0 && in_array('route', $params['render']))
+				if(isset($data->waypoints) && $data->waypoints->total > 0 && in_array('route', $params['render']))
 				{
 					$waypoints 	= array($data->waypoints);
 					
@@ -1049,7 +1049,7 @@ class Gmap_ft extends EE_Fieldtype {
 					$js			= $js . $this->EE->google_maps->route($options);
 				}
 				
-				if($data->regions->total > 0 && in_array('regions', $params['render']))
+				if(isset($data->region) && $data->regions->total > 0 && in_array('regions', $params['render']))
 				{
 					$regions		= array($data->regions);
 										

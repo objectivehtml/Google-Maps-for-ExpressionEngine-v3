@@ -53,6 +53,8 @@ class Gmap_mcp {
 			'return'   => $this->cp_url('index', TRUE)
 		);
 		
+		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
+		
 		return $this->EE->load->view('csv_index', $vars, TRUE);
 	}
 	
@@ -76,6 +78,8 @@ class Gmap_mcp {
 			'base_url' => $this->edit_url(),
 			'items' => $this->EE->data_import_model->get_log('open')
 		);
+		
+		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
 		
 		return $this->EE->load->view('import_log', $vars, TRUE);
 	}
@@ -117,6 +121,8 @@ class Gmap_mcp {
 			'settings' => $this->EE->data_import_model->get_settings(),
 			'edit_url' => $this->cp_url('settings')
 		);
+		
+		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
 		
 		return $this->EE->load->view('schemas', $vars, TRUE);		
 	}
@@ -206,6 +212,8 @@ class Gmap_mcp {
 		{
 			$item->data = json_decode($item->data);	
 		}*/
+		
+		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
 		
 		return $this->EE->load->view('import_pool', $vars, TRUE);
 	}
@@ -844,7 +852,7 @@ class Gmap_mcp {
 					),
 					'duplicate_fields' => array(
 						'label' => 'Duplicate Data',
-						'description' => 'Defines fields and columns used to check for duplicate data. If multiple fields are defined, that must all match an entry to trigger an update vs. creating a new record.',
+						'description' => 'Defines fields and columns used to check for duplicate data. If multiple fields are defined, they must all match an entry to trigger an update vs. creating a new record.',
 						'id'    => 'field_map_fields',
 						'type'	=> 'matrix',
 						'settings' => array(
@@ -906,7 +914,7 @@ class Gmap_mcp {
 					),
 					'category_column_type' => array(
 						'label'       => 'Category Column Type',
-						'description' => 'This is the type of data stored in the cateogry column.',
+						'description' => 'This is the type of data stored in the category column(s).',
 						'type'        => 'select',
 						'settings' => array(
 							'options' => array(
@@ -959,6 +967,8 @@ class Gmap_mcp {
 			'settings' => $this->EE->interface_builder->fieldsets(),
 			'schema_id' => $this->EE->input->get('id') ? $this->EE->input->get('id') : NULL
 		);
+		
+		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
 		
 		return $this->EE->load->view('csv_import', $vars, TRUE);
 	}
