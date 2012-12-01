@@ -57,6 +57,8 @@ Use the following syntax:
 - (Bug Fix) Added a series of default parameters to increase error tolerance.
 - (Bug Fix) Fixed a compatibility issues for EE 2.5.3
 - (Bug Fix) Fixed a vulnerability that could break the code if a malformed string was injected into the hidden fieldtype form field.
+- (Bug Fix) Fixed a long time CSS issues that was loading 2 images that didn't exists which results in two 404 requests.
+- (Bug Fix) Fixed a CSS issue with safecracker that caused the max-width of images to be a 100% when used within modern CSS frameworks (Foundation, Twitter Bootstrap, etc)
 
 #### 3.0.17 
 ##### 05/01/2012
