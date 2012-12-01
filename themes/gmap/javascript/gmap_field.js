@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.0.195
- * @build		20121009
+ * @version		3.1.0
+ * @build		20121201
  */
  
  
@@ -279,7 +279,7 @@ var Gmap  = function($wrapper, options) {
 
 					//t.showMarkerPanel(response);
 					
-					$t.trigger('gmapAddMarker', [marker.index, response, infoWindow, Gmap]);
+					$t.trigger('gmapAddMarker', [marker.index, response, infoWindow, t]);
 					
 					google.maps.event.addListener(markerObj, 'dragend', function(event) {
 						var lat = event.latLng.lat();
@@ -311,7 +311,7 @@ var Gmap  = function($wrapper, options) {
 							
 							//t.showMarkerPanel(response);
 					
-							$t.trigger('gmapMarkerDragEnd', [index, response, infoWindow, Gmap]);
+							$t.trigger('gmapMarkerDragEnd', [index, response, infoWindow, t]);
 					
 							t.refresh(t.response.markers.results, 'markers');
 					
@@ -389,7 +389,7 @@ var Gmap  = function($wrapper, options) {
 			
 			if(resize)	t.map.fitBounds(t.bounds);
 
-			$t.trigger('gmapAddPoint', [response, infoWindow, Gmap]);
+			$t.trigger('gmapAddPoint', [response, infoWindow, t]);
 			
 			google.maps.event.addListener(marker, 'dragend', function(event) {
 				var lat = event.latLng.lat();
@@ -398,7 +398,7 @@ var Gmap  = function($wrapper, options) {
 				t.region[marker.index].lat = lat;
 				t.region[marker.index].lng = lng;
 				
-				$t.trigger('gmapPointDragEnd', [event, marker, Gmap]);
+				$t.trigger('gmapPointDragEnd', [event, marker, t]);
 				
 				t.renderPolygon();
 			});
@@ -489,7 +489,7 @@ var Gmap  = function($wrapper, options) {
 							
 			t.totalPoints = 0;
 				
-			$t.trigger('gmapAddRegion', [response, Gmap]);
+			$t.trigger('gmapAddRegion', [response, t]);
 				
 			google.maps.event.addListener(t.response.regions.results[index], 'click', function(event) {
 				if(t.region.length == 0) {
@@ -504,7 +504,7 @@ var Gmap  = function($wrapper, options) {
 					
 					t.polyInfoWindow.open(t.map);
 					
-					$t.trigger('gmapRegionClick', [event, t.response.regions.results[index], t.polyInfoWindow, Gmap]);
+					$t.trigger('gmapRegionClick', [event, t.response.regions.results[index], t.polyInfoWindow, t]);
 				}
 			});
 
@@ -628,7 +628,7 @@ var Gmap  = function($wrapper, options) {
 		    
 		    google.maps.event.addListener(t.map, 'tilesloaded', function() {
 		    	if(!t.isLoaded) {
-				    $t.trigger('gmapInit', [Gmap]);				    
+				    $t.trigger('gmapInit', [t]);				    
 		    		
 		    		t.isLoaded = true;
 		    	}
@@ -715,7 +715,7 @@ var Gmap  = function($wrapper, options) {
 		},
 		geocode: function(address, callback) {
 			
-		    $t.trigger('gmapGeocodeStart', [address, Gmap]);
+		    $t.trigger('gmapGeocodeStart', [address, t]);
 		    
 			(function () {  
 				var geocoder = new google.maps.Geocoder();
@@ -750,7 +750,7 @@ var Gmap  = function($wrapper, options) {
 
 					t.results = results;
 					
-		   			$t.trigger('gmapGeocodeStop', [results, status, Gmap]);
+		   			$t.trigger('gmapGeocodeStop', [results, status, t]);
 		    
 					callback(results, status);
 				});
@@ -827,7 +827,7 @@ var Gmap  = function($wrapper, options) {
 			t.populateIcons(t.ui.markerPanel, index);				
 			t.ui.markerPanel.show();
 			
-			$t.trigger('gmapShowMarkerPanel', [t.ui.markerPanel, Gmap]);
+			$t.trigger('gmapShowMarkerPanel', [t.ui.markerPanel, t]);
 		},
 					
 		route: function() {
@@ -868,12 +868,12 @@ var Gmap  = function($wrapper, options) {
 				        travelMode: google.maps.DirectionsTravelMode.DRIVING
 				    }
 					
-					$t.trigger('gmapRouteStart', [request, Gmap]);
+					$t.trigger('gmapRouteStart', [request, t]);
 										
 					t.directionsService.route(request, function(response, status) {
 						if (status == google.maps.DirectionsStatus.OK) {
 						
-							$t.trigger('gmapRouteStop', [response, status, Gmap]);
+							$t.trigger('gmapRouteStop', [response, status, t]);
 							
 							t.response.waypoints.route = response;						
 							t.directionsRenderer.setDirections(response);
@@ -947,7 +947,7 @@ var Gmap  = function($wrapper, options) {
 				list.append('<li class="empty"><p>You have not added any '+list.attr('data-name')+' to this list.</p></li>');
 			}
 			
-			$t.trigger('gmapRefresh', [response, list, Gmap]);
+			$t.trigger('gmapRefresh', [response, list, t]);
 			
 			t.ui.geocoder.val('');
 			t.reorder();
@@ -971,7 +971,7 @@ var Gmap  = function($wrapper, options) {
 					
 					data = t.response.markers.results;
 						
-					$t.trigger('gmapRemoveMarker', [index, data, Gmap]);
+					$t.trigger('gmapRemoveMarker', [index, data, t]);
 					
 					t.refresh(data);
 				}
@@ -986,7 +986,7 @@ var Gmap  = function($wrapper, options) {
 					
 					t.refresh(data);
 					
-					$t.trigger('gmapRemoveWaypoint', [index, data, Gmap]);
+					$t.trigger('gmapRemoveWaypoint', [index, data, t]);
 				}
 				else {
 					alert('At least 2 points are required in waypoint mode.');
@@ -1004,7 +1004,7 @@ var Gmap  = function($wrapper, options) {
 				
 				data = t.response.regions.results;
 					
-				$t.trigger('gmapRemoveRegion', [index, data, Gmap]);
+				$t.trigger('gmapRemoveRegion', [index, data, t]);
 				
 				t.refresh(data);
 			}
@@ -1923,7 +1923,7 @@ var Gmap  = function($wrapper, options) {
 			
 		t.refresh(t.response.markers.results, 'markers');
 		
-		$t.trigger('gmapSaveMarker', [index, marker, t.windows[index], Gmap]);
+		$t.trigger('gmapSaveMarker', [index, marker, t.windows[index], t]);
 					
 		return false;
 	});
