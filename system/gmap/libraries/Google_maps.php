@@ -8,8 +8,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		1.2.0
- * @build		20120711
+ * @version		1.2.1
+ * @build		20121203
  */
  
 class Google_maps {
