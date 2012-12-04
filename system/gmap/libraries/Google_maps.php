@@ -8,8 +8,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		1.2.0
- * @build		20120711
+ * @version		1.2.1
+ * @build		20121203
  */
  
 class Google_maps {
@@ -1146,10 +1146,8 @@ class Google_maps {
 					$var['result_index'] = $index;
 					$var['result_count'] = $index + 1;
 					
-					$row_tagdata = $this->EE->TMPL->parse_variables_row($tagdata, array('results' => $vars[0]['results']));
-				
+					$row_tagdata = $this->EE->TMPL->parse_variables($tagdata, $vars[0]['results']);				
 					$row_tagdata = $this->EE->channel_data->tmpl->parse_fieldtypes($var, $channels, $fields, $row_tagdata, $prefix, $count);
-					
 					$return .= $row_tagdata;
 				}
 			}
