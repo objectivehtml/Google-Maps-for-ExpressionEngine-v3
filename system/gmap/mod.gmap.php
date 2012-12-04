@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.1.0
- * @build		20121203
+ * @version		3.1.1
+ * @build		20121204
  */
 
 Class Gmap {
@@ -1511,7 +1511,8 @@ Class Gmap {
 		$this->EE->load->library('base_form');
 			
 		$method = strtolower($this->param('method', 'post'));
-
+		$prefix = $this->param('prefix', 'result');
+		
 		/* -------------------------------------------
 		/* 'gmap_results_post' hook.
 		/*  - Modify the POST variables before method is executed
@@ -1914,7 +1915,8 @@ Class Gmap {
 			$vars[0]['total_results']   = $total_results;
 			$vars[0]['results'] 		= $vars[0]['has_searched'] && $total_results > 0 ? $result_array : array();
 
-			if($this->param('paginate', FALSE, TRUE))
+			
+			if($paginate = $this->param('paginate', FALSE, TRUE))
 			{
 				$vars[0]['total_pages'] = ceil($grand_total_results / $limit);
 				
@@ -1928,6 +1930,8 @@ Class Gmap {
 					$vars[0]['prev_page'] = FALSE;
 				}
 			}
+			
+			$vars[0]['paginate'] = $paginate;
 			
 			/* -------------------------------------------
 			/* 'gmap_results_vars' hook.
