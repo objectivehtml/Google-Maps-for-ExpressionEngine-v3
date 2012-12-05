@@ -183,8 +183,8 @@ class Gmap_ft extends EE_Fieldtype {
 				
 				$icons = array();
 				
-				$url  = $this->EE->theme_loader->theme_url() . 'gmap/icons/';
-				$path = PATH_THEMES . 'gmap/icons/';
+				$url  = $this->EE->theme_loader->theme_url() . 'gmap/icons/';				
+				$path = $this->EE->theme_loader->theme_path() . 'gmap/icons/';
 			}
 			else
 			{
