@@ -1479,8 +1479,10 @@ Class Gmap {
 		/*
 		/* -------------------------------------------*/
 		
+		$action = $this->param('action');
+		
 		$this->EE->base_form->tagdata = $tagdata;
-		$this->EE->base_form->action  = $this->param('return', $this->EE->google_maps->current_url());
+		$this->EE->base_form->action  = $action ? $action : $this->param('return', $this->EE->google_maps->current_url());
 		
 		$form = $this->EE->base_form->open($hidden_fields);
 		
