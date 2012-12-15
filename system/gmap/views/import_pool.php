@@ -2,19 +2,19 @@
 
 <dl>
 	<dt>Schema ID</dt>
-	<dd><? echo isset($stats->schema_id) ? $stats->schema_id : 'N/A'?>
+	<dd><?php echo isset($stats->schema_id) ? $stats->schema_id : 'N/A'?>
 	<dt>Schema Name</dt>
-	<dd><? echo isset($stats->schema_name) ? $stats->schema_name : 'N/A'?></dd>
+	<dd><?php echo isset($stats->schema_name) ? $stats->schema_name : 'N/A'?></dd>
 	<dt>Items in Pool</dt>
-	<dd class="items"><? echo isset($stats->items_in_pool) ? $stats->items_in_pool : 'N/A'?></dd>
+	<dd class="items"><?php echo isset($stats->items_in_pool) ? $stats->items_in_pool : 'N/A'?></dd>
 	<dt>Total Entries Imported</dt>
-	<dd class="success"><? echo isset($stats->total_entries_imported) ? $stats->total_entries_imported : 'N/A'?></dd>
+	<dd class="success"><?php echo isset($stats->total_entries_imported) ? $stats->total_entries_imported : 'N/A'?></dd>
 	<dt>Total Entries Failed</dt>
-	<dd class="failed"><? echo isset($stats->total_entries_failed) ? $stats->total_entries_failed : 'N/A'?></dd>
+	<dd class="failed"><?php echo isset($stats->total_entries_failed) ? $stats->total_entries_failed : 'N/A'?></dd>
 	<dt class="error">Last Error</dt>
 	<dd class="error">&nbsp;</dd>
 	<dt>Importer Total Runs</dt>
-	<dd class="total-runs"><? echo isset($stats->importer_total_runs) ? $stats->importer_total_runs : 'N/A'?></dd>
+	<dd class="total-runs"><?php echo isset($stats->importer_total_runs) ? $stats->importer_total_runs : 'N/A'?></dd>
 	<dt>Avg Entries per Second</dt>
 	<dd class="average">N/A</dd>
 	<dt>Time Remaining</dt>
@@ -22,7 +22,7 @@
 	<dt>Total Run Time</dt>
 	<dd class="run-time">N/A</dd>
 	<dt>Importer Last Ran</dt>
-	<dd class="last-ran"><? echo !empty($stats->importer_last_ran) ? date('Y-m-d h:i A', $stats->importer_last_ran) : 'N/A'?></dd>
+	<dd class="last-ran"><?php echo !empty($stats->importer_last_ran) ? date('Y-m-d h:i A', $stats->importer_last_ran) : 'N/A'?></dd>
 </dl>
 
 <p class="start"><button href="#" class="submit">Start Import</button></p>
