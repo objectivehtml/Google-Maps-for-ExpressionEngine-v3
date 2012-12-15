@@ -1479,10 +1479,10 @@ Class Gmap {
 		/*
 		/* -------------------------------------------*/
 		
-		$action = $this->param('action');
+		//$action = $this->param('action');
 		
 		$this->EE->base_form->tagdata = $tagdata;
-		$this->EE->base_form->action  = $action ? $action : $this->param('return', $this->EE->google_maps->current_url());
+		$this->EE->base_form->action  = $this->param('return', $this->EE->google_maps->current_url());
 		
 		$form = $this->EE->base_form->open($hidden_fields);
 		
@@ -1780,26 +1780,49 @@ Class Gmap {
 			}				
 		}
 		
-		if(count($cat_where) > 0)
+		$match_no_categories = $this->param('match_no_categories', FALSE, TRUE);
+		
+		if(count($cat_where) > 0 || $match_no_categories)
 		{
 			$select[] = 'cc.*';
 			
-			$match_categories = $this->param('match_categories');
-
-			$cat_having		  = '= '.count($cat_where);
-
-			if($match_categories !== FALSE)
+			$match_categories       = $this->param('match_categories');
+			$match_categories_exact = $this->param('match_categories_exact');
+			
+			$cat_having       = NULL;
+			
+			if(($match_categories !== FALSE || $match_categories_exact !== FALSE) && is_array($cat_where)) 
 			{
-				$cat_having   = '>= '.(int)$match_categories;
+				$match_categories = str_replace('CAT_COUNT', count($cat_where), $match_categories);
+				
+				if($this->param('match_categories_exact'))
+				{
+					$cat_where = implode($this->param('category_search_type', ' OR '), $cat_where);
+				}
+				else
+				{
+					$cat_op = $this->param('match_category_operator', '>=');
+					$cat_having	= 'HAVING cat_count '.$cat_op.' '.$match_categories;
+				}
 			}
-
+			else
+			{		
+				$cat_having	= 'HAVING cat_count = '.count($cat_where);
+				$cat_where  = NULL;
+			}
+									
+			if(!empty($cat_where))
+			{
+				$cat_where = 'WHERE '.$cat_where;	
+			}
+			
 			$table = '(
 			    SELECT distinct entry_id, COUNT(cat_id) AS cat_count, cat_id, cat_id as \'category_id\', GROUP_CONCAT(cat_id SEPARATOR \'|\') as \'cat_ids\', GROUP_CONCAT(cat_id SEPARATOR \'|\') as \'category_ids\', exp_categories.cat_name, exp_categories.cat_name as \'category_name\', exp_categories.cat_url_title, exp_categories.cat_url_title as \'category_url_title\', exp_categories.parent_id as \'cat_parent_id\', exp_categories.parent_id as \'category_parent_id\', exp_categories.site_id as \'cat_site_id\', exp_categories.site_id as \'category_site_id\', exp_categories.group_id as \'cat_group_id\', exp_categories.group_id as \'category_group_id\', exp_categories.cat_description as \'cat_description\', exp_categories.cat_description as \'category_description\', exp_categories.cat_image as \'cat_image\', exp_categories.cat_image as \'category_image\', GROUP_CONCAT(exp_categories.cat_name  SEPARATOR \'|\') as \'cat_names\', GROUP_CONCAT(exp_categories.cat_name  SEPARATOR \'|\') as \'category_names\',  GROUP_CONCAT(exp_categories.cat_url_title  SEPARATOR \'|\') as \'cat_url_titles\', GROUP_CONCAT(exp_categories.cat_url_title  SEPARATOR \'|\') as \'category_url_titles\', GROUP_CONCAT(exp_categories.parent_id  SEPARATOR \'|\') as \'cat_parent_ids\', GROUP_CONCAT(exp_categories.parent_id  SEPARATOR \'|\') as \'category_parent_ids\', GROUP_CONCAT(exp_categories.cat_description  SEPARATOR \'|\') as \'cat_descriptions\', GROUP_CONCAT(exp_categories.cat_description  SEPARATOR \'|\') as \'category_descriptions\',  GROUP_CONCAT(exp_categories.group_id SEPARATOR \'|\') as \'cat_group_ids\', GROUP_CONCAT(exp_categories.group_id SEPARATOR \'|\') as \'category_group_ids\', GROUP_CONCAT(exp_categories.site_id  SEPARATOR \'|\') as \'cat_site_ids\', GROUP_CONCAT(exp_categories.site_id  SEPARATOR \'|\') as \'category_site_ids\', GROUP_CONCAT(exp_categories.cat_image  SEPARATOR \'|\') as \'cat_images\',  GROUP_CONCAT(exp_categories.cat_image  SEPARATOR \'|\') as \'category_images\'
 			    FROM exp_category_posts 
 			    INNER JOIN exp_categories USING (cat_id)
-			    WHERE '.implode(' OR ', $cat_where).'
+			    '.$cat_where.'
 			    GROUP BY entry_id
-			    HAVING cat_count '.$cat_having.'
+			    '.$cat_having.'
 			) cc
 			INNER JOIN
 		    	exp_channel_data
