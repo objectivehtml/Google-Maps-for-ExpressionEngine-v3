@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.10
- * @build		20121028
+ * @version		0.8.11
+ * @build		20121106
  */
  
 class Channel_data_tmpl extends Channel_data_lib {
@@ -172,6 +172,8 @@ class Channel_data_tmpl extends Channel_data_lib {
 		
 		$TMPL = $this->EE->channel_data->tmpl->create_alias($tagdata);
 		
+		$this->EE->TMPL->template = $this->EE->functions->prep_conditionals($this->EE->TMPL->template, $entry_data);
+		
 		$this->EE->TMPL->template = $this->EE->TMPL->parse_variables($this->EE->TMPL->template, $parse_vars);
 		
 		$this->EE->TMPL->template = $this->parse_fieldtypes($entry_data, $channels, $channel_fields, $this->EE->TMPL->template, $prefix, $index);	
@@ -210,17 +212,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 	
 	public function parse_path_variables($vars = array(), $entry_data = array(), $tagdata = FALSE, $prefix = '')
 	{		
-		if(!isset($vars['var_single']))
-		{
-			$vars['var_single'] = $vars;
-		}
-		
-		if(!is_array($vars['var_single']))
-		{
-			$vars['var_single'] = array();	
-		}
-		
-		foreach($vars['var_single'] as $key => $value)
+		foreach($vars as $key => $value)
 		{	
 			//  parse URL title path
 			if(strncmp($key, $prefix.'url_title_path', 14) == 0)

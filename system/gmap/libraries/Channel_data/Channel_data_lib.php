@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.10
- * @build		20121028
+ * @version		0.8.12
+ * @build		20121204
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -125,7 +125,8 @@ if(!class_exists('Channel_data_lib'))
 		
 		public function build_operators($where = array(), $protect_identifiers = TRUE)
 		{			
-			$where_sql = array();
+			$where_sql = array();			
+			$concat    = NULL;
 			
 			foreach($where as $field => $values)
 			{
@@ -167,7 +168,7 @@ if(!class_exists('Channel_data_lib'))
 			
 			
 			$sql = trim(implode('', $where_sql));
-			$sql = trim(ltrim(ltrim($sql, 'AND'), 'OR'));
+			$sql = preg_replace("/^(AND|OR)|(AND|OR)$/", '', trim($sql));
 			
 			return $sql;
 		}
@@ -1103,23 +1104,24 @@ if(!class_exists('Channel_data_lib'))
 
 			// If the channel_id is not false then only the specified channel fields are
 			// appended to the query. Otherwise, all fields are appended.
-
-			$where_array = array('channel_data.channel_id' => $channel_id);
-
+			$where_array = array();
+			
 			if($channel_id !== FALSE)
 			{
+				$where_array = array('channel_data.channel_id' => $channel_id);
 				$fields	 = $this->get_channel_fields($channel_id)->result();
-
-				if(is_array($where))
-					$where_array = array_merge($where_array, $where);
-				else
-					$where_array = array();
 			}
 			else
 			{
 				$fields  = $this->get_fields()->result();
 				$select	 = array();
-			}
+			}		
+
+			if(is_array($where))
+			{
+				$where_array = array_merge($where_array, $where);
+			}	
+			
 			$field_array = array();
 			
 			foreach($fields as $field)
@@ -1792,9 +1794,22 @@ if(!class_exists('Channel_data_lib'))
 
 							if(is_array($param))
 							{
-								foreach($param as $table => $on)
+								if(count($param) == 1)
 								{
-									$this->EE->db->join($table, $on);
+									$param = array($param);
+								}
+								
+								foreach($param as $row)
+								{
+									if(!is_array($row))
+									{
+										$row = array($index => $row);
+									}
+									
+									foreach($row as $table => $on)
+									{
+										$this->EE->db->join($table, $on);
+									}
 								}
 							}
 
