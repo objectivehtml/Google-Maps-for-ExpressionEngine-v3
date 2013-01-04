@@ -1230,7 +1230,14 @@ Class Gmap {
 		$this->EE->static_maps->width	 = (int) $this->param('width', 400);	
 		$this->EE->static_maps->zoom 	 = $this->param('zoom', NULL);
 		
-		$return = $this->EE->static_maps->render();
+		if(!$this->param('return_url'))
+		{		
+			$return = $this->EE->static_maps->render();
+		}
+		else
+		{
+			$return = $this->EE->static_maps->url();
+		}
 		
 		return $return;
 	}

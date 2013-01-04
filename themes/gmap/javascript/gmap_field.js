@@ -2154,7 +2154,8 @@ var Gmap  = function($wrapper, options) {
 			$t.html('Show Details');
 		}
 	});
-	
+		
+	/*
 	$t.parents('form').submit(function() {
 		
 		var title 	= $('#title').val();
@@ -2169,6 +2170,7 @@ var Gmap  = function($wrapper, options) {
 		
 		return _return;
 	});
+	*/
 	
 	/* Load the Third-party JS plugins */
 	if(!GmapPluginsLoaded)
