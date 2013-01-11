@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.12
- * @build		20121204
+ * @version		0.8.18
+ * @build		20120104
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -37,9 +37,9 @@ if(!class_exists('Channel_data_lib'))
 
 		private $reserved_terms = array(
 			'select', 'like', 'or_like', 'or_where', 'where', 'where_in',
-			'order_by', 'sort', 'limit', 'offset', 'join', 'having', 'group_by'
+			'order_by', 'sort', 'limit', 'offset', 'join', 'left join', 'inner join', 'outer join', 'having', 'group_by'
 		);
-
+		
 		/**
 		 * Construct
 		 *
@@ -123,11 +123,11 @@ if(!class_exists('Channel_data_lib'))
 			return $concat . $this->remove_conditionals($field) . $this->assign_conditional($field) . $this->EE->db->escape($value) ;
 		}
 		
-		public function build_operators($where = array(), $protect_identifiers = TRUE)
+		public function build_operators($where = array(), $protect_identifiers = TRUE, $debug = FALSE)
 		{			
 			$where_sql = array();			
 			$concat    = NULL;
-			
+										
 			foreach($where as $field => $values)
 			{
 				$field_name = $field;
@@ -154,7 +154,6 @@ if(!class_exists('Channel_data_lib'))
 					
 					$concat = $this->build_concat($field);
 				
-			
 					foreach($value as $where_val)
 					{		
 						$field_sql[] = $this->build_operator($field, $where_val, $protect_identifiers);	
@@ -163,9 +162,9 @@ if(!class_exists('Channel_data_lib'))
 				
 				$sql = trim(implode(' ', $field_sql));
 				
+					
 				$where_sql[] = str_replace('()', '', $concat . '('.trim(ltrim(ltrim($sql, 'AND'), 'OR')).')');
 			}
-			
 			
 			$sql = trim(implode('', $where_sql));
 			$sql = preg_replace("/^(AND|OR)|(AND|OR)$/", '', trim($sql));
@@ -244,6 +243,8 @@ if(!class_exists('Channel_data_lib'))
 					{
 						if(preg_match('/^'.$word.'\s/', strtolower($index), $matches))
 						{
+							$matches[0] = trim($matches[0]);
+							
 							if($matches[0] == 'or')
 							{
 								$operator = $matches[0].' ';
@@ -262,7 +263,6 @@ if(!class_exists('Channel_data_lib'))
 						
 						//$index = trim(preg_replace('/'.$condition.'/', '', $index));
 					}
-						
 					if(isset($field_array[$index]))
 					{
 						$field_array[$index] = (object) $field_array[$index];
@@ -273,8 +273,8 @@ if(!class_exists('Channel_data_lib'))
 					}
 					else
 					{
-						$statements[$index][] = $value;
-					}				
+						$statements[$operator.$index][] = $value;
+					}					
 				}
 				
 				$where_array[] = $statements;
@@ -1128,9 +1128,9 @@ if(!class_exists('Channel_data_lib'))
 			{
 				$field_array[$field->field_name] = $field;
 			}
-
+							
 			$select = $this->build_select($fields, 'channel_titles.', 'channel_data.');	
-			$where  = $this->build_where($where_array, $field_array);
+			$where  = $this->build_where($where_array, $field_array, $debug);
 			
 			// Joins the channel_data table
 
@@ -1150,7 +1150,7 @@ if(!class_exists('Channel_data_lib'))
 				'offset'	=> $offset
 			);
 			
-			foreach(array('join', 'having', 'group_by') as $keyword)
+			foreach(array('join', 'inner join', 'left join', 'outer join', 'having', 'group_by') as $keyword)
 			{
 				if(isset($$keyword))
 				{
@@ -1232,9 +1232,13 @@ if(!class_exists('Channel_data_lib'))
 			// Selects the appropriate field name and converts where converts
 			// where parameters to their corresponding m_field_id's
 			foreach($fields as $field)
-			{
-				if(is_array($select))
-					$select[] = 'm_field_id_'.$field->m_field_id.' as \''.$field->m_field_name.'\'';
+			{			
+				if(!is_array($select))
+				{
+					$select = array($select);
+				}
+				
+				$select[] = 'm_field_id_'.$field->m_field_id.' as \''.$field->m_field_name.'\'';
 
 				foreach($where as $index => $value)
 				{
@@ -1266,41 +1270,6 @@ if(!class_exists('Channel_data_lib'))
 			$this->convert_params($params, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE);
 
 			return $this->EE->db->get('members');
-
-
-			foreach($fields as $field)
-			{
-				$field_array[$field->m_field_name] = $field;
-				$field_select[] = 'm_field_'.$field->m_field_id.' as \''.$field->m_field_name.'\'';
-			}
-
-			if($this->is_polymorphic($select))
-			{
-				if(isset($select['select']))
-				{
-					$select_array = $select['select'];
-
-					if(!is_array($select['select']))
-					{
-						$select_array = array($select['select']);
-					}
-
-					$select['select'] = array_merge($select_array, $field_select);
-				}
-			}
-			else
-			{
-				if(!is_array($select))
-				{
-					$select = array($select);
-				}
-
-				$select = array_merge($select, $field_select);
-			}
-
-			$this->EE->db->join('member_data', 'members.member_id = member_data.member_id');
-
-			return $this->get('members', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 
 		/**
@@ -1702,7 +1671,6 @@ if(!class_exists('Channel_data_lib'))
 				unset($select);
 
 				$keywords = $this->reserved_terms;
-
 				foreach($keywords as $keyword)
 				{
 					$$keyword = isset($subject[$keyword]) ? $subject[$keyword] : (isset($$keyword) ? $$keyword : NULL);
@@ -1724,7 +1692,7 @@ if(!class_exists('Channel_data_lib'))
 				'offset'	=> $offset
 			);
 
-			foreach(array('join', 'having', 'group_by') as $keyword)
+			foreach(array('join', 'inner join', 'left join', 'outer join', 'having', 'group_by') as $keyword)
 			{
 				if(isset($$keyword))
 				{
@@ -1737,132 +1705,122 @@ if(!class_exists('Channel_data_lib'))
 				if(isset($params[$term]) && $params[$term] !== FALSE)
 				{
 					$param = $params[$term];
-
-					switch ($term)
+					
+					if($term == 'select')
 					{
-						case 'select':
+						if(!is_array($param))
+							$param = array($param);
 
 
-							if(!is_array($param))
-								$param = array($param);
+						foreach($param as $select)
+						{
+							$this->EE->db->select($select);
+						}
+					}
+					else if($term == 'where')
+					{
+						$sql = $this->build_operators($param, TRUE, $debug);
+						
+						if(!empty($sql)) $this->EE->db->where($sql, FALSE, FALSE);
+					}
+					else if($term == 'order_by')
+					{
+						if(!is_array($param))
+						{
+							$order_params = array($param);
+						}
+						
+						foreach($order_params as $param)
+						{
+							$sort = isset($sort) ? $sort : 'DESC';
 
-
-							foreach($param as $select)
+							if($param)
 							{
-								//$select = $this->check_ambiguity($select);
-
-								$this->EE->db->select($select);
-							}
-
-
-							break;
-
-						case 'where':
-							$sql = $this->build_operators($param);
-
-							if(!empty($sql)) $this->EE->db->where($sql, FALSE, FALSE);
-
-							break;
-
-						case 'order_by':
-							if(!is_array($param))
-								$param = array($param);
-
-							foreach($param as $param)
-							{
-								$sort = isset($sort) ? $sort : 'DESC';
-
 								$this->EE->db->order_by($param, $sort);
 							}
+						}
+						
+					}
+					else if($term == 'limit')
+					{
+					
+						if(!is_array($param))
+							$param = array($param);
 
-							break;
+						$offset = isset($param['offset']) ? $param['offset'] : $offset;
+						$offset	= $offset !== FALSE ? $offset : 0;
 
-						case 'limit':
-							if(!is_array($param))
-								$param = array($param);
+						foreach($param as $param)
+							$this->EE->db->limit($param, $offset);
 
-							$offset = isset($param['offset']) ? $param['offset'] : $offset;
-							$offset	= $offset !== FALSE ? $offset : 0;
-
-							foreach($param as $param)
-								$this->EE->db->limit($param, $offset);
-
-
-							break;
-
-						case 'join':
-
-							if(is_array($param))
+					}
+					else if(preg_match('/^(\w*|)( |)join/', $term, $matches))
+					{
+						if(is_array($param))
+						{
+							if(count($param) == 1)
 							{
-								if(count($param) == 1)
+								$param = array($param);
+							}
+							
+							foreach($param as $row)
+							{
+								if(!is_array($row))
 								{
-									$param = array($param);
+									$row = array($index => $row);
 								}
 								
-								foreach($param as $row)
+								foreach($row as $table => $on)
 								{
-									if(!is_array($row))
+									$this->EE->db->join($table, $on, !empty($matches[1]) ? $matches[1] : false);
+								}
+							}
+						}
+					}
+					else if($term == 'having')
+					{
+						if(is_array($param))
+						{
+							$having_sql = array();
+
+							foreach($param as $field => $value)
+							{
+								$field = preg_replace('/\{+\d+\}/', '', $field);
+								if(!is_array($value)) $value = array($value);
+
+								foreach($value as $where_val)
+								{
+									$where_field = trim($field);
+
+									$concat = ' AND ';
+
+									if(preg_match("/(^or.+)|(^OR.+)/", $where_field))
 									{
-										$row = array($index => $row);
+										unset($params['where'][$field]);
+
+										//$where_field 	=  preg_replace("/^or.+/", "", $field);
+										
+										$where_field 	= trim(str_replace(array("or ", "OR "), '', $field));
+										$concat 		= ' OR ';
 									}
-									
-									foreach($row as $table => $on)
-									{
-										$this->EE->db->join($table, $on);
-									}
+
+									$having_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field)  .  $this->EE->db->escape($where_val);
+
 								}
 							}
 
-							break;
+							$sql = trim(implode(' ', $having_sql));
+							$sql = trim(ltrim(ltrim($sql, 'AND'), 'OR'));
 
-						case 'having':
-
-							if(is_array($param))
-							{
-								$having_sql = array();
-
-								foreach($param as $field => $value)
-								{
-									$field = preg_replace('/\{+\d+\}/', '', $field);
-									if(!is_array($value)) $value = array($value);
-
-									foreach($value as $where_val)
-									{
-										$where_field = trim($field);
-
-										$concat = ' AND ';
-
-										if(preg_match("/(^or.+)|(^OR.+)/", $where_field))
-										{
-											unset($params['where'][$field]);
-
-											//$where_field 	=  preg_replace("/^or.+/", "", $field);
-
-											$where_field 	= trim(str_replace(array("or ", "OR "), '', $field));
-											$concat 		= ' OR ';
-										}
-
-										$having_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field)  .  $this->EE->db->escape($where_val);
-
-									}
-								}
-
-								$sql = trim(implode(' ', $having_sql));
-								$sql = trim(ltrim(ltrim($sql, 'AND'), 'OR'));
-
-								if(!empty($sql)) $this->EE->db->having($sql, FALSE, FALSE);
-							}
-
-							break;
-
-						case 'group_by':
-
-							if(is_string($param))
-							{
-								$this->EE->db->group_by($param);
-							}
-
-							break;
+							if(!empty($sql)) $this->EE->db->having($sql, FALSE, FALSE);
+						}
+					}
+					else if($term ==  'group_by')
+					{
+						if(is_string($param))
+						{
+							$this->EE->db->group_by($param);
+						}
 					}
 				}
 			}
