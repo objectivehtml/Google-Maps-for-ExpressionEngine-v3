@@ -277,7 +277,9 @@ class Google_maps {
 					}
 					
 			$js.='
-					infowindow.open('.$params['id'].'_map, obj);					
+					infowindow.setMap('.$params['id'].'_map);
+					infowindow.setPosition(obj.position);	
+					infowindow.open('.$params['id'].'_map);				
 				});
 				
 				'.$params['id'].'_window = infowindow;
@@ -1229,7 +1231,112 @@ class Google_maps {
 		
 		return $return;
 	}  
+	
+	public function world_borders($params = array())
+	{		
+		$this->EE->load->library('kml_api');
+		
+		$params = array_merge(array(
+			'country_code' => FALSE,
+			'id' 		   => 'map', 
+			'options'      => array(
+				'afterParse'          => NULL,
+				'createOverlay'       => NULL,
+				'createMarker'        => NULL,
+				'failedParse'         => NULL,
+				'processStyles'       => FALSE,
+				'singleInfoWindow'    => FALSE,
+				'suppressInfoWindows' => TRUE,
+				'zoom'                => FALSE
+			),
+			'infobox'	 => FALSE,
+			'infowindow' => FALSE,
+			'style' => array(
+				'strokeWeight'  => 1,
+				'strokeOpacity' => .5,
+				'strokeColor'   => 'blue',
+				'fillOpacity'   => .3,
+				'fillColor'     => 'blue' 
+			)
+		), $params);
+		
+		if(!$params['country_code'])
+		{
+			return;
+		}
+		
+		$country_border  = $this->EE->kml_model->get_country_code($params['country_code']);
+		
+		$geoxml_options = json_encode($params['options']);
+		
+		$kml = $this->EE->kml_api->prep_string($country_border->row('geometry'), $params);
 
+		$content = isset($params['infowindow']['content']) ? $params['infowindow']['content'] : NULL;
+		$content = $content == NULL && isset($result->content) ? $this->EE->google_maps->clean_js($result->content) : $content;
+		
+		$show_one_window = isset($params['infowindow']['show_one_window']) ? $params['infowindow']['show_one_window'] : FALSE;
+		$open_windows = isset($params['infowindow']['open_windows']) ? $params['infowindow']['open_windows'] : FALSE;
+		
+		$return = '	
+		    var index   = '.$params['id'].'_regions.length;
+		    var options = '.$geoxml_options.';
+		    
+		    options.map = '.$params['id'].'_map;
+		    		    
+			var geoXml = new geoXML3.parser(options);
+			
+			geoXml.parseKmlString(\''.$kml.'\');
+			
+		    var polygon = geoXml.docs[0].gpolygons[0];
+		     
+		    polygon.setOptions('.json_encode($params['style']).');
+		    
+		    '.$params['id'].'_regions.push(polygon);
+		    
+		 ';
+		
+			
+		if(isset($params['infobox']) && $params['infobox'])
+		{							
+			$return .= $this->EE->google_maps->infobox(array(
+				'id'              => $params['id'],
+				'content'         => $content,
+				'options'         => $params['infowindow']['options'],
+				'script_tag'      => FALSE,
+				'var'             => $params['id'].'_regions[index]',
+				'show_one_window' => $show_one_window,
+				'open_windows'    => $open_windows,
+				'trigger'         => $params['window_trigger']
+			));
+		}
+		else
+		{
+			$return .= $this->EE->google_maps->infowindow(array(
+				'id'				=> $params['id'],
+				'content'			=> $content, 
+				'options'			=> $params['infowindow']['options'],
+				'script_tag'		=> FALSE,
+				'var'				=> $params['id'].'_regions[index]',
+				'show_one_window' 	=> $show_one_window,
+				'open_windows'		=> $open_windows,
+				'trigger'			=> $params['window_trigger']
+			));
+		}
+
+		$return = '<script type="text/javascript">'.$return.'</script>';
+		
+		if(isset($params['script_tag']))
+		{
+			$url = rtrim($this->EE->theme_loader->theme_url(), '/') . '/';
+
+			$return = '
+			<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/geoxml3.js"></script>
+			' . $return;
+		}
+		
+		return $return;
+	}
+	
 	public function base_url($append = '', $value = '')
 	{
 		$http = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://';

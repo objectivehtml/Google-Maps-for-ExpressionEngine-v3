@@ -131,16 +131,6 @@ Class Gmap {
 			'mapTypeId' => $map_type
 		);
 
-		/*
-		url: '../images/heart30.png',
-        height: 26,
-        width: 30,
-        anchor: [4, 0],
-        textColor: '#ff00ff',
-        textSize: 10
-	
-		*/
-
 		$map_options 	= array_merge($default_options, $this->get_options('map'));
 		
 		$map_options['clusterMaxZoom']  = $this->param('clusterMaxZoom', $this->param('cluster_max_zoom', 0));
@@ -229,6 +219,104 @@ Class Gmap {
 	public function clean_js()
 	{
 		return $this->EE->google_maps->clean_js($this->EE->TMPL->tagdata);
+	}
+	
+	public function kml()
+	{
+		$url = $this->param('url', FALSE, FALSE, TRUE);
+	}
+	
+	public function world_borders()
+	{
+		$this->EE->load->model('kml_model');
+		
+		$country_code = $this->param('country_code', FALSE, FALSE, TRUE);
+		$close_button = $this->param('close_button', 'http://www.google.com/intl/en_us/mapfiles/close.gif');
+		$content = $this->EE->google_maps->clean_js($this->EE->TMPL->tagdata);
+		
+		if($color_index = $this->param('color_index'))
+		{
+			$this->EE->load->config('gmap_color_index');
+			
+			$color_index_array = config_item('gmap_color_index');
+			
+			if(isset($color_index_array[$color_index]))
+			{
+				foreach($color_index_array[$color_index] as $param => $style)
+				{
+					$this->EE->TMPL->tagparams[$param] = $style;
+				}
+			}
+		}
+		
+		return $this->EE->google_maps->world_borders(array(
+			'id'           => $this->param('id', 'map'),
+			'country_code' => $country_code, 
+			'options'      => array(
+				'afterParse'          => $this->param('afterParse', NULL),
+				'createOverlay'       => $this->param('createOverlay', NULL),
+				'createMarker'        => $this->param('createMarker', NULL),
+				'failedParse'         => $this->param('failedParse', NULL),
+				'processStyles'       => $this->param('processStyles'),
+				'singleInfoWindow'    => $this->param('singleInfoWindow', FALSE),
+				'suppressInfoWindows' => $this->param('suppressInfoWindows', TRUE),
+				'zoom'                => $this->param('zoom')
+			),
+			'script_tag' => $this->param('script_tag', TRUE),
+			'style' => array(
+				'strokeWeight'  => $this->param('stroke_weight', $this->param('strokeWeight', 1)),
+				'strokeOpacity' => $this->param('stroke_opacity', $this->param('strokeOpacity', .5)),
+				'strokeColor'   => $this->param('stroke_color', $this->param('strokeColor', 'blue')),
+				'fillOpacity'   => $this->param('fill_opacity', $this->param('fillOpacity', .3)),
+				'fillColor'     => $this->param('fill_color', $this->param('fillColor', 'blue')) 
+			),
+			'window_trigger'        => $this->param('window_trigger', 'click'),
+			'infobox'				=> $this->param('infobox', FALSE, TRUE),
+			'infowindow'			=> array(
+				'options' 	=> array(
+					'alignBottom'            => $this->param('alignBottom', 'false', FALSE),
+					'boxClass'               => $this->param('class', 'ui-infowindow'),
+					'boxStyle'               => $this->param('style', ''),
+					'clearanceX'             => $this->param('clearanceX', 0),
+					'clearanceY'             => $this->param('clearanceY', 0),
+					'closeBoxMargin'         => $this->param('closeBoxMargin', ''),
+					'closeBoxURL'            => $this->param('closeBoxURL', $close_button),
+					'inner_class'            => $this->param('inner_class', 'ui-infobox-content'),
+					'content'                => $content,
+					'disableAutoPan'         => $this->param('disableAutoPan', 'false', FALSE),
+					'enableEventPropagation' => $this->param('enableEventPropagation', 'false', FALSE),
+					'maxWidth'               => $this->param('maxWidth', '0'),
+					'offsetX'                => $this->param('offsetX', '0'),
+					'offsetY'                => $this->param('offsetY', '0'),
+					'isHidden'               => $this->param('isHidden', 'false', FALSE),
+					'pane'                   => $this->param('pane', 'floatPane'),
+					'zIndex'                 => $this->param('zIndex', 'null')
+				),
+				'content'				 => $content,
+				'show_one_window'		 => $this->param('show_one_window', FALSE),
+				'open_windows'			 => $this->param('open_windows', $this->param('open_window', FALSE, TRUE), TRUE),
+				'script_tag' 	  		 => $this->param('script_tag', TRUE)
+			)
+		));
+	}
+	
+	public function world_borders_action()
+	{
+		$this->EE->load->model('kml_model');
+		$this->EE->load->library('kml_api');
+		
+		$code = $this->EE->input->get_post('country_code');
+		
+		if(!$code)
+		{
+			$data = $this->EE->kml_model->get_world_borders();		
+		}
+		else
+		{
+			$data = $this->EE->kml_model->get_country_code($code);
+		}
+		
+		$this->EE->kml_api->db_response($data, 'geometry', TRUE);
 	}
 	
 	public function marker()
