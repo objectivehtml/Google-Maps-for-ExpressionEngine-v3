@@ -31,5 +31,24 @@ class Kml_model extends CI_Model {
 		}
 		
 		return $this->channel_data->get('gmap_world_borders', $select, $where, $order_by, $sort, $limit, $offset);
-	}		
+	}
+	
+	public function install()
+	{
+		require_once PATH_THIRD . 'gmap/libraries/DataSource.php';
+		
+		$csv  = new File_CSV_DataSource(PATH_THIRD . 'gmap/data/WorldBorders.csv');
+		
+		$this->db->insert_batch('gmap_world_borders', $csv->connect());
+	}	
+	
+	public function update()
+	{
+		$row = $this->db->get('gmap_world_borders');
+		
+		if($row->num_rows() == 0)
+		{
+			$this->install();
+		}
+	}
 }

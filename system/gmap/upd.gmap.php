@@ -55,6 +55,36 @@ class Gmap_upd {
 			)
 		),
 		
+		'gmap_world_borders' => array(
+			'id' => array(
+				'type' 				=> 'int',
+				'constraint' 		=> 50,
+				'primary_key' 		=> TRUE,
+	            'auto_increment' 	=> TRUE
+			),
+			'name' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			),
+			'geometry_vertex_count' => array(
+				'type'				=> 'int',
+				'constraint'		=> 11
+			),
+			'country_code' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 2
+			),
+			'shape_length' => array(
+				'type' 				=> 'FLOAT'
+			),
+			'shape_area' => array(
+				'type' 				=> 'FLOAT'
+			),
+			'geometry' => array(
+				'type' 				=> 'BLOB'
+			)
+		),
+		
 		'gmap_static_maps' => array(
 			'id' => array(
 				'type' 				=> 'int',
@@ -292,7 +322,10 @@ class Gmap_upd {
 			$this->EE->db->insert('actions', $action);
 		
 		$this->_set_defaults();
-				
+		
+		$this->EE->load->model('kml_model');
+		$this->EE->kml_model->install();
+			
 		return TRUE;
 	}
 	
@@ -339,6 +372,9 @@ class Gmap_upd {
 			}
 		}
 		
+		$this->EE->load->model('kml_model');
+		$this->EE->kml_model->update();
+			
 	    return TRUE;
 	}
 	

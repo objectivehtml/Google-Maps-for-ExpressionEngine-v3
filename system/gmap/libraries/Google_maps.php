@@ -8,8 +8,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		1.2.1
- * @build		20121203
+ * @version		1.3.0
+ * @build		20120111
  */
  
 class Google_maps {
@@ -1074,7 +1074,12 @@ class Google_maps {
 		if(is_array($options))
 		{
 			foreach($options as $option_index => $option_value)
+			{
+				$option_value = (!is_null($option_value) ? $option_value : 'null');
+				$option_value = (!is_bool($option_value) ? $option_value : ($option_value ? 'true' : 'false'));
+				
 				$obj .= $option_index . ': '.$option_value.', ';
+			}
 			
 			$obj = '{' . rtrim(trim($obj), ',') . '}';
 		}
@@ -1238,7 +1243,8 @@ class Google_maps {
 		
 		$params = array_merge(array(
 			'country_code' => FALSE,
-			'id' 		   => 'map', 
+			'id' 		   => 'map',
+			'asynchronous' => TRUE, 
 			'options'      => array(
 				'afterParse'          => NULL,
 				'createOverlay'       => NULL,
@@ -1265,40 +1271,17 @@ class Google_maps {
 			return;
 		}
 		
-		$country_border  = $this->EE->kml_model->get_country_code($params['country_code']);
+		//$geoxml_options = json_encode($params['options']);
 		
-		$geoxml_options = json_encode($params['options']);
-		
-		$kml = $this->EE->kml_api->prep_string($country_border->row('geometry'), $params);
-
 		$content = isset($params['infowindow']['content']) ? $params['infowindow']['content'] : NULL;
 		$content = $content == NULL && isset($result->content) ? $this->EE->google_maps->clean_js($result->content) : $content;
 		
 		$show_one_window = isset($params['infowindow']['show_one_window']) ? $params['infowindow']['show_one_window'] : FALSE;
 		$open_windows = isset($params['infowindow']['open_windows']) ? $params['infowindow']['open_windows'] : FALSE;
 		
-		$return = '	
-		    var index   = '.$params['id'].'_regions.length;
-		    var options = '.$geoxml_options.';
-		    
-		    options.map = '.$params['id'].'_map;
-		    		    
-			var geoXml = new geoXML3.parser(options);
-			
-			geoXml.parseKmlString(\''.$kml.'\');
-			
-		    var polygon = geoXml.docs[0].gpolygons[0];
-		     
-		    polygon.setOptions('.json_encode($params['style']).');
-		    
-		    '.$params['id'].'_regions.push(polygon);
-		    
-		 ';
-		
-			
 		if(isset($params['infobox']) && $params['infobox'])
 		{							
-			$return .= $this->EE->google_maps->infobox(array(
+			$window = $this->EE->google_maps->infobox(array(
 				'id'              => $params['id'],
 				'content'         => $content,
 				'options'         => $params['infowindow']['options'],
@@ -1311,7 +1294,7 @@ class Google_maps {
 		}
 		else
 		{
-			$return .= $this->EE->google_maps->infowindow(array(
+			$window = $this->EE->google_maps->infowindow(array(
 				'id'				=> $params['id'],
 				'content'			=> $content, 
 				'options'			=> $params['infowindow']['options'],
@@ -1322,7 +1305,51 @@ class Google_maps {
 				'trigger'			=> $params['window_trigger']
 			));
 		}
-
+		
+		$this->EE->load->helper('addon');
+		
+		if($params['asynchronous'])
+		{
+			$params['options']['afterParse'] = 'function(docs) { 
+				
+			    var polygon = docs[0].gpolygons[0];
+			     
+			    polygon.setOptions('.json_encode($params['style']).');
+			    
+			    '.$params['id'].'_regions.push(polygon);
+			    '.$window.'
+			}';
+			
+			$kml = action_url('gmap', 'world_borders_action', FALSE) . '&country_code='.$params['country_code'];
+		}
+		else
+		{
+			$country_border  = $this->EE->kml_model->get_country_code($params['country_code']);
+		
+			$kml = $this->EE->kml_api->prep_string($country_border->row('geometry'), $params);
+		}
+		
+		$geoxml_options = $this->convert_to_js($params['options']);
+		
+		$return = '	
+		    var index   = '.$params['id'].'_regions.length;
+		    var options = '.$geoxml_options.';
+		    
+		    options.map = '.$params['id'].'_map;
+		    		    
+			var geoXml = new geoXML3.parser(options);
+			
+			'.(!$params['asynchronous'] ? '
+				
+		    	geoXml.parseKmlString(\''.$kml.'\');
+		    	
+		    	geoXml.docs[0].gpolygons[0].setOptions('.json_encode($params['style']).');
+		    
+		    	'.$params['id'].'_regions.push(geoXml.docs[0].gpolygons[0]);
+		    	
+			'. $window : 'geoXml.parse(\''.$kml.'\');').'
+		';
+		
 		$return = '<script type="text/javascript">'.$return.'</script>';
 		
 		if(isset($params['script_tag']))

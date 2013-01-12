@@ -251,7 +251,8 @@ Class Gmap {
 		
 		return $this->EE->google_maps->world_borders(array(
 			'id'           => $this->param('id', 'map'),
-			'country_code' => $country_code, 
+			'country_code' => $country_code,
+			'asynchronous' => $this->param('asynchronous', TRUE, TRUE),  
 			'options'      => array(
 				'afterParse'          => $this->param('afterParse', NULL),
 				'createOverlay'       => $this->param('createOverlay', NULL),

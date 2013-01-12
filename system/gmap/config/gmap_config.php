@@ -4,7 +4,7 @@
  *	Version and Build
 */
 
-$config['gmap_version']	= '3.1.0.1';
+$config['gmap_version']	= '3.1.0.2';
 $config['gmap_build']	= '20121204';
 
 /* 
