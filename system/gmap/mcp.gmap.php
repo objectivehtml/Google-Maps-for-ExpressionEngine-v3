@@ -43,6 +43,9 @@ class Gmap_mcp {
 			'New Schema' => $this->cp_url('settings'), 
 		));
 		
+		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.js');
+		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js');
+		
 		$vars = array(
 			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_data_action'),
 			'status_url' => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'change_statuses'),
@@ -139,8 +142,8 @@ class Gmap_mcp {
 		$settings = $this->EE->data_import_model->get_setting($id);
 		
 		$this->EE->theme_loader->javascript('https://maps.google.com/maps/api/js?sensor=true'.($this->EE->theme_loader->requirejs() ? '&callback=init' : NULL));
-		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.js');
-		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js');
+		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.js');
+		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js');
 		$this->EE->theme_loader->javascript('json2');
 		$this->EE->theme_loader->javascript('gmap_import');
 		
@@ -334,7 +337,7 @@ class Gmap_mcp {
 		$log_item      = array();
 		
 		$item = $this->EE->data_import_model->get_item($this->EE->input->get_post('schema_id'));
-				
+		
 		$settings = $this->EE->data_import_model->get_setting($this->EE->input->get_post('schema_id'));
 		$settings = (object) $settings;
 		
@@ -346,6 +349,20 @@ class Gmap_mcp {
 			$data['title'] = $settings->title_prefix . $data['title'];
 		}
 		
+		if(isset($item->username) && !empty($item->username))
+		{
+			$member = $this->EE->channel_data->get_members(array(
+				'where' => array(
+					'username' => $item->username			
+				)
+			));
+			
+			if($member->num_rows() > 0)
+			{
+				$data['author_id'] = $member->row('member_id');
+			}
+		}
+			
 		$data['entry_date'] = $this->EE->localize->now;
 		
 		if(isset($settings->duplicate_fields) && !empty($settings->duplicate_fields))
@@ -535,10 +552,13 @@ class Gmap_mcp {
 			{
 				foreach($settings['geocode_fields'] as $field)
 				{
-					if(!empty($entry[$field->column_name]))
-					{
-						$geocode .= isset($entry[$field->column_name]) ? $entry[$field->column_name] . ' ' : NULL;
+					if(!isset($entry[$field->column_name]))
+					{							
+						show_error('<i>'.$field->column_name.'</i> is not a valid column in your .CSV. Ensure that the column names match 100%, they are case-sensitive.');
 					}
+					
+					$geocode .= isset($entry[$field->column_name]) ? $entry[$field->column_name] . ' ' : NULL;
+				
 				}
 			}
 			
@@ -623,7 +643,6 @@ class Gmap_mcp {
 			{	
 				$data[] = $this->build_entry_data();		
 			}
-			
 		}
 		
 		if(count($data) > 0)
@@ -644,7 +663,7 @@ class Gmap_mcp {
 		$geocode      = $this->geocode;
 		$categories   = $this->categories;
 		
-		$title = $settings['title'];
+		$title 		= $settings['title'];
 					
 		$entry_data = array(
 			'status' 	=> $settings['status'],
@@ -662,7 +681,7 @@ class Gmap_mcp {
 			{
 				if(!isset($entry[$channel_field->column_name]))
 				{
-					show_error('<i>'.$channel_field->column_name.'</i> is does not exist within your data schema. Ensure that the column names match 100%, they are case-sensitive.');
+					show_error('<i>'.$channel_field->column_name.'</i> does not exist within your data schema. Ensure that the column names match 100%, they are case-sensitive.');
 				}
 				
 				if(!isset($fields[$channel_field->field_name]))
@@ -678,6 +697,11 @@ class Gmap_mcp {
 				$entry_data['field_ft_'.$field->field_id] = $field->field_fmt;
 			}
 		}
+		
+		if(isset($settings['title_column']) && isset($entry[$settings['title_column']]))
+		{
+			$title = $entry[$settings['title_column']];
+		}		
 		
 		$entry_data['title'] = $title;
 		
@@ -734,6 +758,7 @@ class Gmap_mcp {
 			'schema_id'           => $this->EE->input->post('id'),
 			'status'              => 'pending',
 			'gmt_date'            => $this->EE->localize->now,
+			'username'			  => isset($settings['username_column']) && !empty($settings['username_column']) ? $entry[$settings['username_column']] : '',
 			'group_by'            => !empty($settings['group_by']) ? $entry[$settings['group_by']] : FALSE,
 			'group_by_field_name' => isset($group_field) ? $group_field : NULL,
 			'map_field_name'      => $fields_by_id[$settings['gmap_field']]->field_name,
@@ -747,6 +772,71 @@ class Gmap_mcp {
 	
 	public function settings()
 	{	
+		$fields = $this->EE->channel_data->get_fields(array(
+			'select' => 'field_id, group_id, field_name, field_label, field_type',
+			'where' => array(
+				'site_id' => config_item('site_id')	
+			)
+		));
+		
+		$fields_by_group = array();
+		
+		foreach($fields->result() as $index => $field)
+		{
+			if(!isset($fields_by_group[$field->group_id]))
+			{
+				$fields_by_group[$field->group_id] = array();
+			}
+			
+			$fields_by_group[$field->group_id][] = $field;
+		}
+		
+		$channels = $this->EE->channel_data->get_channels(array(
+			'select' => 'channel_id, field_group',
+			'where' => array(
+				'site_id' => config_item('site_id')	
+			)
+		))->result();
+		
+		$channels = $this->EE->channel_data->utility->reindex($channels, 'channel_id');
+		
+		$this->EE->theme_loader->require_js = FALSE;
+		$this->EE->theme_loader->output('var ChannelData = '.json_encode(array(
+			'channels' => $channels,
+			'fields'   => $fields_by_group
+		)));
+		
+		$this->EE->theme_loader->output('
+			$(document).ready(function() {
+				var $channel = $(\'select[name="channel"]\');
+				var $map     = $(\'select[name="gmap_field"]\');
+				var $table   = $(\'#ib-matrix-channel_fields\');
+				var $addRow  = $table.find(\'.ib-add-row\');
+				
+				$channel.change(function() {
+					var value   = $(this).val();
+					var group   = ChannelData.channels[value];
+					var options = [\'<option value="">--</option>\'];
+					
+					$table.find("tbody").html("");
+					
+					$.each(ChannelData.fields[group.field_group], function(i, field) {
+						$addRow.click();
+						
+						$table.find("tbody tr:last-child td:nth-child(2) input").val(field.field_name);
+						
+						var selected = field.field_type == "gmap" ? \'selected="selected"\' : "";
+						
+						options.push(\'<option value="\'+field.field_id+\'" \'+selected+\'>\'+field.field_label+\'</option>\');
+					});
+					
+					options = options.join(\'\');
+					
+					$map.html(options);
+				});
+			});
+		');
+		
 		$this->EE->cp->set_right_nav(array(
 			'&larr; Back to Schemas' => $this->cp_url('schemas'), 
 		));
@@ -821,6 +911,16 @@ class Gmap_mcp {
 						'description' => 'This is the author id that will be assigned to the imported entries.',
 						'type'        => 'input'
 					),
+					'author_id_column' => array(
+						'label'       => 'Author ID Column',
+						'description' => 'If your .CSV has a column that stores author_id\'s, you can define that column name here. If the column doesn\'t exist, or have a value, the Author ID setting will be used instead.',
+						'type'        => 'input'
+					),
+					'username_column' => array(
+						'label'       => 'Username Column',
+						'description' => 'If your .CSV has a column that stores usernames, you can define that column name here. If the column doesn\'t exist, or have a value, the Author ID setting will be used instead.',
+						'type'        => 'input'
+					),
 					'channel_fields' => array(
 						'label' => 'Channel Fields',
 						'description' => 'Use this field to pair up your channel fields with the columns in the .csv file. Be sure to make sure the names are an exact match.',
@@ -882,6 +982,11 @@ class Gmap_mcp {
 					'title' => array(
 						'label'       => 'Title',
 						'description' => 'This is the title assigned to each entry. It can be a combination of channel fields, or a static string.',
+						'type'        => 'input'
+					),
+					'title_column' => array(
+						'label'       => 'Title Column',
+						'description' => 'If your .CSV has a column that stores the entry title, you can define that column name here. If the column doesn\'t exist, or have a value, the Title setting will be used instead.',
 						'type'        => 'input'
 					),
 					'title_prefix' => array(
