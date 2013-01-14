@@ -991,7 +991,7 @@ Class Gmap {
 	
 	public function streetview()
 	{
-		$id          = $this->param('id', FALSE, FALSE, TRUE);
+		$id          = $this->param('id', 'map', FALSE, TRUE);
 		$address     = $this->param('address');
 		$latitude    = $this->param('latitude');
 		$longitude   = $this->param('longitude');
