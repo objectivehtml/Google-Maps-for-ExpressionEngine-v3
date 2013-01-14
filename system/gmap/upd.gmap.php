@@ -281,6 +281,10 @@ class Gmap_upd {
         $this->mod_name 	= str_replace('_upd', '', __CLASS__);
         $this->ext_name		= $this->mod_name . '_ext';
         $this->mcp_name		= $this->mod_name . '_mcp';
+        
+        require_once PATH_THIRD.'gmap/models/kml_model.php';
+        
+        $this->EE->kml_model = new Kml_model();
     }
 	
 	public function install()
@@ -290,6 +294,7 @@ class Gmap_upd {
         $this->version = config_item('gmap_version');
         
 		$this->EE->load->library('data_forge');
+		$this->EE->load->model('kml_model');
 		
 		$this->EE->data_forge->update_tables($this->tables);
 		
@@ -333,7 +338,7 @@ class Gmap_upd {
 	{	
 		$this->EE->data_forge = new Data_forge();
 		$this->EE->data_forge->update_tables($this->tables);
-
+		
 		foreach($this->actions as $action)
 		{
 			$this->EE->db->where($action);
@@ -372,7 +377,6 @@ class Gmap_upd {
 			}
 		}
 		
-		$this->EE->load->model('kml_model');
 		$this->EE->kml_model->update();
 			
 	    return TRUE;

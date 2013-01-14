@@ -6,7 +6,12 @@ class Kml_model extends CI_Model {
 	{
 		parent::__construct();
 		
-		$this->load->driver('Channel_data');
+		if(!isset($this->channel_data))
+		{
+			require_once PATH_THIRD . 'gmap/libraries/Channel_data/Channel_data.php';
+			
+			$this->channel_data = new Channel_data();
+		}
 	}
 	
 	public function get_country_code($county_code)
