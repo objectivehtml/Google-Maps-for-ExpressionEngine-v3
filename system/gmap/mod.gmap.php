@@ -69,7 +69,72 @@ Class Gmap {
 		$this->EE->load->library('google_maps');
 		$this->EE->load->library('static_maps');
 	}
+	
+	public function event()
+	{
+		return $this->EE->google_maps->event(array(
+			'args'	   => $this->param('args', 'event'),
+			'id'       => $this->param('id', 'map'),
+			'event'    => $this->param('event', $this->param('name', 'click')),
+			'obj'      => $this->param('obj', 'map_markers[map_markers.length - 1]'),
+			'callback' => $this->EE->TMPL->tagdata
+		));
+	}
+	
+	public function current_location()
+	{
+		$close_button = $this->param('close_button', 'http://www.google.com/intl/en_us/mapfiles/close.gif');
+		$content      = $this->EE->TMPL->tagdata;
 		
+		$params = array(
+			'marker_options' => array(),
+			'circle_options' => array(
+				'strokeWeight'  => $this->param('stroke_weight', $this->param('strokeWeight', 1)),
+				'strokeOpacity' => $this->param('stroke_opacity', $this->param('strokeOpacity', .7)),
+				'strokeColor'   => $this->param('stroke_color', $this->param('strokeColor', 'rgb(13, 97, 245)')),
+				'fillOpacity'   => $this->param('fill_opacity', $this->param('fillOpacity', .2)),
+				'fillColor'     => $this->param('fill_color', $this->param('fillColor', 'rgb(13, 97, 245)')) 
+			),
+			'script_tag' => $this->param('script_tag', TRUE, TRUE),
+			'window_trigger'        => $this->param('window_trigger', 'click'),
+			'infobox'				=> $this->param('infobox', FALSE, TRUE),
+			'infowindow'			=> array(
+				'options' 	=> array(
+					'alignBottom'            => $this->param('alignBottom', 'false', FALSE),
+					'boxClass'               => $this->param('class', 'ui-infowindow'),
+					'boxStyle'               => $this->param('style', ''),
+					'clearanceX'             => $this->param('clearanceX', 0),
+					'clearanceY'             => $this->param('clearanceY', 0),
+					'closeBoxMargin'         => $this->param('closeBoxMargin', ''),
+					'closeBoxURL'            => $this->param('closeBoxURL', $close_button),
+					'inner_class'            => $this->param('inner_class', 'ui-infobox-content'),
+					'content'                => $content,
+					'disableAutoPan'         => $this->param('disableAutoPan', 'false', FALSE),
+					'enableEventPropagation' => $this->param('enableEventPropagation', 'false', FALSE),
+					'maxWidth'               => $this->param('maxWidth', '0'),
+					'offsetX'                => $this->param('offsetX', '0'),
+					'offsetY'                => $this->param('offsetY', '0'),
+					'isHidden'               => $this->param('isHidden', 'false', FALSE),
+					'pane'                   => $this->param('pane', 'floatPane'),
+					'zIndex'                 => $this->param('zIndex', 'null')
+				),
+				'content'				 => $content,
+				'show_one_window'		 => $this->param('show_one_window', FALSE),
+				'open_windows'			 => $this->param('open_windows', $this->param('open_window', FALSE, TRUE), TRUE),
+				'script_tag' 	  		 => $this->param('script_tag', TRUE)
+			)
+		);
+		
+		if($icon = $this->param('icon'))
+		{
+			$params['marker_options']['icon'] = '"'.$icon.'"';
+		}
+				
+		$this->_color_index();
+		
+		return $this->EE->google_maps->current_location($params);
+	}
+	
 	public function init()
 	{
 		//echo 'init';exit();
@@ -234,20 +299,7 @@ Class Gmap {
 		$close_button = $this->param('close_button', 'http://www.google.com/intl/en_us/mapfiles/close.gif');
 		$content = $this->EE->google_maps->clean_js($this->EE->TMPL->tagdata);
 		
-		if($color_index = $this->param('color_index'))
-		{
-			$this->EE->load->config('gmap_color_index');
-			
-			$color_index_array = config_item('gmap_color_index');
-			
-			if(isset($color_index_array[$color_index]))
-			{
-				foreach($color_index_array[$color_index] as $param => $style)
-				{
-					$this->EE->TMPL->tagparams[$param] = $style;
-				}
-			}
-		}
+		$this->_color_index();
 		
 		return $this->EE->google_maps->world_borders(array(
 			'id'           => $this->param('id', 'map'),
@@ -2208,6 +2260,24 @@ Class Gmap {
 		/* -------------------------------------------*/
 		
 		return $param;			
+	}
+	
+	private function _color_index()
+	{
+		if($color_index = $this->param('color_index'))
+		{
+			$this->EE->load->config('gmap_color_index');
+			
+			$color_index_array = config_item('gmap_color_index');
+			
+			if(isset($color_index_array[$color_index]))
+			{
+				foreach($color_index_array[$color_index] as $param => $style)
+				{
+					$this->EE->TMPL->tagparams[$param] = $style;
+				}
+			}
+		}
 	}
 	
 }

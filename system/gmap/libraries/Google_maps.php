@@ -82,6 +82,84 @@ class Google_maps {
 		return $js;
 	}
 	
+	public function current_location($params = array())
+	{		
+		$params = array_merge(array(
+			'id'             => 'map',
+			'script_tag'     => TRUE,
+			'content'        => FALSE,
+			'marker_options' => array(),
+			'circle_options' => array()
+		), $params);
+		
+		$show_one_window = isset($params['infowindow']['show_one_window']) ? $params['infowindow']['show_one_window'] : FALSE;
+		$open_windows = isset($params['infowindow']['open_windows']) ? $params['infowindow']['open_windows'] : FALSE;
+		
+		unset($params['options']['show_one_window']);
+		unset($params['options']['open_windows']);
+		
+		$return = NULL;
+		
+		if($params['script_tag'])
+		{
+			$url = rtrim($this->EE->theme_loader->theme_url(), '/') . '/';
+
+			$return .= '<script type="text/javascript" src="'.$url.'gmap/javascript/geolocationmarker.js"></script>';
+		}
+		
+		$content = isset($result->content) && !empty($result->content) ? $result->content : null;
+		$content = isset($params['infowindow']['content']) && $params['infowindow']['content'] ? $params['infowindow']['content'] : $content;
+						
+		if(isset($params['infobox']) && $params['infobox'])
+		{							
+			$window = $this->EE->google_maps->infobox(array(
+				'id'              => $params['id'],
+				'content'         => $content,
+				'options'         => $params['infowindow']['options'],
+				'script_tag'      => FALSE,
+				'var'             => 'GeoMarker',
+				'show_one_window' => $show_one_window,
+				'open_windows'    => $open_windows,
+				'trigger'         => $params['window_trigger']
+			));
+		}
+		else
+		{
+			$window = $this->EE->google_maps->infowindow(array(
+				'id'				=> $params['id'],
+				'content'			=> $content, 
+				'options'			=> $params['infowindow']['options'],
+				'script_tag'		=> FALSE,
+				'var'				=> 'GeoMarker',
+				'show_one_window' 	=> $show_one_window,
+				'open_windows'		=> $open_windows,
+				'trigger'			=> $params['window_trigger']
+			));
+		}
+				
+		$return .=
+		'<script type="text/javascript">
+			
+			var GeoMarker = new GeolocationMarker('.$params['id'].'_map, '.$this->convert_to_js($params['marker_options']).', '.json_encode($params['circle_options']).');
+			
+			'.$params['id'].'_markers.push(GeoMarker.b);
+			
+			var index = '.$params['id'].'_markers.length - 1;
+			
+			console.log(GeoMarker);
+			
+	        google.maps.event.addListenerOnce(GeoMarker, "position_changed", function() {
+	          '.$params['id'].'_map.setCenter(this.getPosition());
+	          '.$params['id'].'_map.fitBounds(this.getBounds());
+	        });
+	        
+	        '.$window.'
+
+		</script>';	
+		
+		return $return;
+	}
+	
 	public function directions($origin, $destination, $params = array())
 	{
 		$this->EE->load->library('directions');
@@ -110,6 +188,25 @@ class Google_maps {
 		}
 	
 		return $directions;
+	}
+	
+	public function event($params = array())
+	{
+		$params = array_merge(array(
+			'args'     => 'event',
+			'id'       => 'map',
+			'event'    => 'click',
+			'obj'      => 'map_markers[map_markers.length - 1]',
+			'callback' => ''
+		), $params);
+		
+		$callback = $params['callback'] ? $params['callback'] : '';
+		
+		return '<script type="text/javascript">
+		google.maps.event.addDomListener('.$params['obj'].', \''.$params['event'].'\', function('.$params['args'].') { 
+			'.$callback.'
+		});
+		</script>';
 	}
 	
 	public function infobox($params)
