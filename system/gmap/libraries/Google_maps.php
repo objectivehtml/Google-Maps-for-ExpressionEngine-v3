@@ -1414,6 +1414,9 @@ class Google_maps {
 			    polygon.setOptions('.json_encode($params['style']).');
 			    
 			    '.$params['id'].'_regions.push(polygon);
+			    
+			    index = '.$params['id'].'_regions.length - 1;
+			    			    
 			    '.$window.'
 			}';
 			
@@ -1444,6 +1447,8 @@ class Google_maps {
 		    
 		    	'.$params['id'].'_regions.push(geoXml.docs[0].gpolygons[0]);
 		    	
+			    index = '.$params['id'].'_regions.length - 1;
+			    			    
 			'. $window : 'geoXml.parse(\''.$kml.'\');').'
 		';
 		

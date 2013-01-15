@@ -86,6 +86,8 @@ function save(id, index, data, markers, status) {
 			status: status
 		}, function(data) {
 			
+			console.log(data);
+			
 			$('.geocoding p').html(data.geocode);
 			$('.success').html(data.total_entries_imported);
 			

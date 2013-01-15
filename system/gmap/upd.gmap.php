@@ -148,6 +148,15 @@ class Gmap_upd {
 			),
 			'map_field_name' => array(
 				'type'				=> 'text'
+			),
+			'lat_field_name' => array(
+				'type'				=> 'text'
+			),
+			'lng_field_name' => array(
+				'type'				=> 'text'
+			),
+			'username' => array(
+				'type'				=> 'text'
 			)
 		),
 		

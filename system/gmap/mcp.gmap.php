@@ -329,6 +329,29 @@ class Gmap_mcp {
 		return $this->json($start_data);		
 	}
 	
+	public function cron_import_action()
+	{
+		require(PATH_THIRD . 'gmap/libraries/YahooBossGeocoder.php');
+		 
+		$boss = new YahooBossGeocoder(array(
+			'consumer_key'    => 'dj0yJmk9ODB6RDBnMktDSzNxJmQ9WVdrOVRUbDJRbTVvTTJVbWNHbzlNVEU0TURZeU1qZzJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD01OA--',
+			'consumer_secret' => 'ee3c471c8f9ba7cb70bf3dda64222e22fe004952',
+			'appid'		      => 'M9vBnh3e'
+		));
+		
+		$boss->setLocation(array(
+			'city' => 'Noblesville',
+			'state' => 'IN'
+		));
+		
+		for($x = 0; $x < 50; $x++)
+		{
+			
+			var_dump($boss->json());exit();
+		
+		}
+	}
+	
 	public function import_item_action()
 	{
 		$new_entry     = TRUE;
@@ -433,12 +456,33 @@ class Gmap_mcp {
 		{
 			$existing_entry = json_decode($this->EE->input->get_post('existing_entry'));
 			$new_entry = FALSE;
-			$map_data = $existing_entry->{$item->map_field_name};
 			
-			if(empty($map_data))
+			if(!empty($settings->gmap_field))
 			{
-				$log_item[] = 'The entry does not have a valid location.';
+				$map_data = isset($existing_entry->{$item->map_field_name}) ? $existing_entry->{$item->map_field_name} : NULL;
+				
+				if(empty($map_data))
+				{
+					$log_item[] = 'The entry does not have a valid location.';
+				}
+				
+				$data['field_id_'.$settings->gmap_field] = $map_data;
+				$data['field_ft_'.$settings->gmap_field] = 'none';
 			}
+			else
+			{
+				if(!empty($settings->lat_field) && !empty($settings->lng_field))
+				{
+					$data['field_id_'.$settings->lat_field] = $existing_entry->{$item->lat_field_name};
+					$data['field_ft_'.$settings->lat_field] = 'none';
+					$data['field_id_'.$settings->lng_field] = $existing_entry->{$item->lng_field_name};
+					$data['field_ft_'.$settings->lng_field] = 'none';
+				}
+				else
+				{
+					$log_item[] = 'The entry does not have a valid latitude and longitude.';
+				}
+			}			
 		}
 		
 		if($this->EE->input->get_post('status') == 'OK')
@@ -452,9 +496,6 @@ class Gmap_mcp {
 			
 			$log_item[] = 'A geocoding error has occurred with this entry.';
 		}
-		
-		$data['field_id_'.$settings->gmap_field] = $map_data;
-		$data['field_ft_'.$settings->gmap_field] = 'none';
 		
 		$this->EE->load->library('api');
 		$this->EE->api->instantiate('channel_entries');
@@ -761,13 +802,14 @@ class Gmap_mcp {
 			'username'			  => isset($settings['username_column']) && !empty($settings['username_column']) ? $entry[$settings['username_column']] : '',
 			'group_by'            => !empty($settings['group_by']) ? $entry[$settings['group_by']] : FALSE,
 			'group_by_field_name' => isset($group_field) ? $group_field : NULL,
-			'map_field_name'      => $fields_by_id[$settings['gmap_field']]->field_name,
+			'map_field_name'      => isset($fields_by_id[$settings['gmap_field']]) ? $fields_by_id[$settings['gmap_field']]->field_name : FALSE,
+			'lat_field_name'      => isset($fields_by_id[$settings['lat_field']]) ? $fields_by_id[$settings['lat_field']]->field_name : FALSE,
+			'lng_field_name'      => isset($fields_by_id[$settings['lng_field']]) ? $fields_by_id[$settings['lng_field']]->field_name : FALSE,
 			'geocode'             => trim($geocode),
 			'data'                => json_encode($entry_data),
 			'entry'               => json_encode($entry),
 			'categories'          => implode('|', $entry_categories)
-		);	
-
+		);
 	}
 	
 	public function settings()
@@ -806,34 +848,63 @@ class Gmap_mcp {
 			'fields'   => $fields_by_group
 		)));
 		
+		
 		$this->EE->theme_loader->output('
 			$(document).ready(function() {
 				var $channel = $(\'select[name="channel"]\');
-				var $map     = $(\'select[name="gmap_field"]\');
+				var $map     = $(\'select[name="gmap_field"], select[name="lat_field"], select[name="lng_field"]\');
 				var $table   = $(\'#ib-matrix-channel_fields\');
 				var $addRow  = $table.find(\'.ib-add-row\');
+				var init     = false;
+				var curVal   = false;
+				var curObj   = false;
+				var initTbl  = false;
 				
 				$channel.change(function() {
 					var value   = $(this).val();
 					var group   = ChannelData.channels[value];
 					var options = [\'<option value="">--</option>\'];
 					
-					$table.find("tbody").html("");
+					if(init || initTbl) {
+						$table.find("tbody").html("");
+					}
 					
 					$.each(ChannelData.fields[group.field_group], function(i, field) {
-						$addRow.click();
+						if(init || initTbl) {
+							$addRow.click();
+							$table.find("tbody tr:last-child td:nth-child(2) input").val(field.field_name);
+						}
 						
-						$table.find("tbody tr:last-child td:nth-child(2) input").val(field.field_name);
-						
-						var selected = field.field_type == "gmap" ? \'selected="selected"\' : "";
+						var selected = field.field_type == "gmap" || (field.field_type != "gmap" && field.field_id == curVal) ? \'selected="selected"\' : "";
 						
 						options.push(\'<option value="\'+field.field_id+\'" \'+selected+\'>\'+field.field_label+\'</option>\');
 					});
 					
 					options = options.join(\'\');
 					
-					$map.html(options);
+					if(!init) {
+						console.log(options);
+						curObj.html(options);
+					}
+					else {
+						$map.html(options);
+					}
 				});
+				
+				initTbl = $table.find("tbody tr").length == 0 ? true : false;
+				
+				console.log($table.find("tbody tr").length);
+				
+				$map.each(function() {
+					curObj = $(this);
+					curVal = curObj.val();
+					
+					$channel.change();
+				});
+				
+				init = true;
+				curVal = false;
+				curObj = false;
 			});
 		');
 		
@@ -878,6 +949,22 @@ class Gmap_mcp {
 					'gmap_field' => array(
 						'label'       => 'Map Field',
 						'description' => 'This is the name of Google Maps for ExpressionEngine fieldtype to store your data.',
+						'type'        => 'select',
+						'settings' => array(
+							'options' => 'FIELD_DROPDOWN'
+						)
+					),
+					'lat_field' => array(
+						'label'       => 'Latitude Field',
+						'description' => 'This is the name of latitude field to store your data.',
+						'type'        => 'select',
+						'settings' => array(
+							'options' => 'FIELD_DROPDOWN'
+						)
+					),
+					'lng_field' => array(
+						'label'       => 'Longitude Field',
+						'description' => 'This is the name of longitude field to store your data.',
 						'type'        => 'select',
 						'settings' => array(
 							'options' => 'FIELD_DROPDOWN'
@@ -1084,8 +1171,17 @@ class Gmap_mcp {
 		
 		unset($_POST['return']);
 		
+		$channel_fields = array();
+		
+		foreach($_POST['channel_fields'] as $field)
+		{
+			$channel_fields[] = $field;	
+		}
+		
+		$_POST['channel_fields'] = $channel_fields;
+		
 		$this->EE->data_import_model->save_settings($this->EE->input->post('schema_id'), json_encode($_POST));
-				
+			
 		$this->EE->functions->redirect($return);
 	}
 	
