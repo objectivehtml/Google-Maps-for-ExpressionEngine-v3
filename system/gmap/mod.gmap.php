@@ -302,9 +302,10 @@ Class Gmap {
 		$this->_color_index();
 		
 		return $this->EE->google_maps->world_borders(array(
-			'id'           => $this->param('id', 'map'),
-			'country_code' => $country_code,
-			'asynchronous' => $this->param('asynchronous', TRUE, TRUE),  
+			'id'            => $this->param('id', 'map'),
+			'country_code'  => $country_code,
+			'asynchronous'  => $this->param('asynchronous', TRUE, TRUE),  
+			'extend_bounds' => $this->param('extend_bounds', TRUE, TRUE),  
 			'options'      => array(
 				'afterParse'          => $this->param('afterParse', NULL),
 				'createOverlay'       => $this->param('createOverlay', NULL),

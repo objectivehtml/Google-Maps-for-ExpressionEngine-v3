@@ -1352,6 +1352,7 @@ class Google_maps {
 				'suppressInfoWindows' => TRUE,
 				'zoom'                => FALSE
 			),
+			'extend_bounds' => TRUE,
 			'infobox'	 => FALSE,
 			'infowindow' => FALSE,
 			'style' => array(
@@ -1410,9 +1411,13 @@ class Google_maps {
 			$params['options']['afterParse'] = 'function(docs) { 
 				
 			    var polygon = docs[0].gpolygons[0];
-			     
+			    
+			    bounds.union(polygon.getBounds());
+			    
 			    polygon.setOptions('.json_encode($params['style']).');
 			    
+			    '.(!$params['extend_bounds'] && !$params['options']['zoom'] ? NULL : '
+			    '.$params['id'].'_map.fitBounds(bounds);').'
 			    '.$params['id'].'_regions.push(polygon);
 			    
 			    index = '.$params['id'].'_regions.length - 1;
@@ -1434,7 +1439,7 @@ class Google_maps {
 		$return = '	
 		    var index   = '.$params['id'].'_regions.length;
 		    var options = '.$geoxml_options.';
-		    
+		    var bounds  = new google.maps.LatLngBounds();
 		    options.map = '.$params['id'].'_map;
 		    		    
 			var geoXml = new geoXML3.parser(options);
@@ -1445,6 +1450,8 @@ class Google_maps {
 		    	
 		    	geoXml.docs[0].gpolygons[0].setOptions('.json_encode($params['style']).');
 		    
+		    	console.log(geoXml.docs[0].gpolygons[0].getBounds());
+		    	
 		    	'.$params['id'].'_regions.push(geoXml.docs[0].gpolygons[0]);
 		    	
 			    index = '.$params['id'].'_regions.length - 1;
