@@ -85,9 +85,7 @@ function save(id, index, data, markers, status) {
 			existing_entry: JSON.stringify(data.existing_entry),
 			status: status
 		}, function(data) {
-			
-			console.log(data);
-			
+		
 			$('.geocoding p').html(data.geocode);
 			$('.success').html(data.total_entries_imported);
 			
@@ -142,8 +140,7 @@ function geocode(index) {
 				var geocodeError = false;
 				var markers = [];
 				
-				if(!data.valid_address)
-				{
+				if(!data.valid_address) {
 					var geocoder = new google.maps.Geocoder();
 				
 					geocoder.geocode({address: data.item.geocode}, function(results, status) {		

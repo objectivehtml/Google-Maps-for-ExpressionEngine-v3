@@ -240,7 +240,7 @@ class Data_import_model extends CI_Model {
 	 *	Pool
 	/* -------------------------------------- */
 		
-	public function get_pools($id = FALSE, $status = 'pending')
+	public function get_pools($id = FALSE, $status = 'pending', $limit = FALSE, $offset = 0)
 	{
 		if($id)
 		{
@@ -252,7 +252,17 @@ class Data_import_model extends CI_Model {
 			$this->db->where('status', $status);	
 		}
 		
+		if($limit)
+		{
+			$this->db->limit($limit, $offset);
+		}
+		
 		return $this->db->get('gmap_import_pool');
+	}
+	
+	public function get_pool($id, $status = 'pending', $limit = FALSE, $offset = 0)
+	{
+		return $this->get_pools($id, $status, $limit, $offset);
 	}
 	
 	public function get_item($id)

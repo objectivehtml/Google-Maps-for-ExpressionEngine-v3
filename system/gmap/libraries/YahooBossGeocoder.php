@@ -25,14 +25,14 @@ class YahooBossGeocoder extends BaseClass {
 	
 	protected $gflags;
 	
-	protected $baseUrl = 'http://where.yahooapis.com/geocode';
+	protected $baseUrl = 'http://yboss.yahooapis.com/geo/placefinder';
 	
 	public function __construct($params = array())
 	{
 		parent::__construct($params);	
 	}
 	
-	public function url()
+	public function args()
 	{
 		$array = array(
 			'appid'  => $this->appid,
@@ -53,30 +53,35 @@ class YahooBossGeocoder extends BaseClass {
 			$array['q'] = $this->location;
 		}
 		
-		return $this->baseUrl . '?' . http_build_query($array);
+		$return = array();
+		
+		foreach($array as $index => $value)
+		{
+			if($value && !empty($value))
+			{
+				$return[$index] = $value;
+			}
+		}
+		
+		return $return;
 	}
 	
 	public function	geocode($location = FALSE)
 	{
-		if($location)
-		{
-			$this->location = $location;
-		}
+		$args = $this->args();
 		
-		$url = $this->url();
+		$request = $this->authorize($args);
 		
-		$oAuthRequest = $this->authorize();
-		
-		$headers = array($oAuthRequest->to_header());
+		$url = sprintf("%s?%s", $this->baseUrl, OAuthUtil::build_http_query($args));
 		
 		$ch = curl_init();
-		$headers = array();
+		$headers = array($request->to_header());
+		curl_setopt($ch,CURLOPT_ENCODING , "gzip"); 
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-		$rsp = curl_exec($ch);
 		
-		return $rsp;
+		return curl_exec($ch);
 	}
 	
 	public function json($location = FALSE)
@@ -86,7 +91,7 @@ class YahooBossGeocoder extends BaseClass {
 		return json_decode($this->geocode($location));
 	}
 	
-	public function authorize($key = FALSE, $secret = FALSE)
+	public function authorize($args = array(), $key = FALSE, $secret = FALSE)
 	{
 		if($key)
 		{
@@ -97,12 +102,11 @@ class YahooBossGeocoder extends BaseClass {
 		{
 			$this->consumerSecret = $secret;
 		}
-					 
+		
 		$consumer = new OAuthConsumer($this->consumerKey, $this->consumerSecret);
-		$request = OAuthRequest::from_consumer_and_token($consumer, NULL, 'GET', $this->baseUrl);
-		
+		$request  = OAuthRequest::from_consumer_and_token($consumer, NULL, 'GET', $this->baseUrl, $args);
 		$request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, NULL);
-		
+						
 		return $request;
 	}
 }

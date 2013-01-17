@@ -78,3 +78,31 @@ $config['gmap_geocoder_proxy_url']   = FALSE;
 
 $config['gmap_directions_proxy_url'] = FALSE;
 
+
+/* 
+ *	Import Threshold
+ *
+ *  The total number of entries a CRON request can import at one time.
+ *  Adjust this for maximum results on your server.
+ */
+
+$config['gmap_import_threshold'] = 5;
+
+
+
+/* 
+ *	Use Yahoo Boss Geocoder for Importing
+ *
+ *  You can use Yahoo's BOSS Placefinder geocoder for importing to comply
+ *  to Google's TOS or to get an more affordable geocoder. Simply input the
+ *  client key and secret (oAuth tokens) and the Appid given to each BOSS 
+ *  account.
+ */
+
+$config['gmap_import_use_yahoo'] = TRUE;
+
+$config['gmap_import_client_key'] = 'dj0yJmk9ODB6RDBnMktDSzNxJmQ9WVdrOVRUbDJRbTVvTTJVbWNHbzlNVEU0TURZeU1qZzJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD01OA--';
+
+$config['gmap_import_client_secret'] = 'ee3c471c8f9ba7cb70bf3dda64222e22fe004952';
+
+$config['gmap_import_appid'] = 'M9vBnh3e';
