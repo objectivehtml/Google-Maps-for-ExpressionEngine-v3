@@ -4,8 +4,8 @@
  *	Version and Build
 */
 
-$config['gmap_version']	= '3.1.0.4';
-$config['gmap_build']	= '20121204';
+$config['gmap_version']	= '3.1.0.5';
+$config['gmap_build']	= '20120117';
 
 /* 
  *	Protect JavaScript
@@ -101,8 +101,8 @@ $config['gmap_import_threshold'] = 5;
 
 $config['gmap_import_use_yahoo'] = TRUE;
 
-$config['gmap_import_client_key'] = 'dj0yJmk9ODB6RDBnMktDSzNxJmQ9WVdrOVRUbDJRbTVvTTJVbWNHbzlNVEU0TURZeU1qZzJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD01OA--';
+$config['gmap_import_client_key'] = '';
 
-$config['gmap_import_client_secret'] = 'ee3c471c8f9ba7cb70bf3dda64222e22fe004952';
+$config['gmap_import_client_secret'] = '';
 
-$config['gmap_import_appid'] = 'M9vBnh3e';
+$config['gmap_import_appid'] = '';
