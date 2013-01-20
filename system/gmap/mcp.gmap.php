@@ -70,10 +70,18 @@ class Gmap_mcp {
 		$this->EE->data_import_model->clear_item($id, $status);
 	}
 	
+	public function clear_pool_action()
+	{
+		$this->EE->data_import_model->clear_pool();
+		
+		$this->EE->functions->redirect($this->cp_url('import_log'));
+	}
+	
 	public function import_log()
 	{
 		$this->EE->cp->set_right_nav(array(
 			'&larr; Back to Home' => $this->cp_url(),
+			'Clear Log' => $this->cp_url('clear_pool_action'),
 			'Manage Schemas' => $this->cp_url('schemas'),
 		));
 		
