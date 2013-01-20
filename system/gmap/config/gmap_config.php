@@ -88,7 +88,9 @@ $config['gmap_directions_proxy_url'] = FALSE;
 
 $config['gmap_import_threshold'] = 5;
 
+$config['gmap_import_memory'] = FALSE; // Eg: '512M'
 
+$config['gmap_import_max_file_size'] = FALSE; // Eg: '200M';
 
 /* 
  *	Use Yahoo Boss Geocoder for Importing

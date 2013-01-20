@@ -29,7 +29,19 @@ class Gmap_import extends BaseClass {
 		$this->EE->load->library('google_maps');
 		$this->EE->load->model('data_import_model');
 		$this->EE->load->driver('Channel_data');
+			
+		if($memory = config_item('gmap_import_memory'))
+		{
+			ini_set('memory_limit', $memory);
+		}
+			
+		if($upload_max_filesize = config_item('gmap_import_max_file_size'))
+		{
+			ini_set('upload_max_filesize', $upload_max_filesize);
+			ini_set('post_max_size', $upload_max_filesize);
+		}
 	}
+	
 	private function build_entry_data()
 	{
 		$entry        = $this->entry;
@@ -131,7 +143,7 @@ class Gmap_import extends BaseClass {
 		}
 		
 		return array(
-			'schema_id'           => $schema_id,
+			'schema_id'           => $this->settings['schema_id'],
 			'status'              => 'pending',
 			'gmt_date'            => $this->EE->localize->now,
 			'username'			  => isset($settings['username_column']) && !empty($settings['username_column']) ? $entry[$settings['username_column']] : '',
@@ -561,7 +573,7 @@ class Gmap_import extends BaseClass {
 		
 		if(defined('AJAX_REQUEST') && AJAX_REQUEST)
 		{
-			return $this->json((object) $response);
+			return $this->json((object) $return);
 		}
 		
 		return (object) $return;

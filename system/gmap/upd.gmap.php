@@ -276,6 +276,10 @@ class Gmap_upd {
 		array(
 			'class' 	=> 'Gmap',
 			'method'	=> 'world_borders_action'
+		),
+		array(
+			'class' 	=> 'Gmap_mcp',
+			'method'	=> 'cron_import_action'
 		)
 	);
 	

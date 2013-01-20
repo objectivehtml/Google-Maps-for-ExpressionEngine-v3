@@ -122,8 +122,10 @@ class Gmap_mcp {
 		));
 		
 		$vars = array(
-			'settings' => $this->EE->data_import_model->get_settings(),
-			'edit_url' => $this->cp_url('settings')
+			'settings'      => $this->EE->data_import_model->get_settings(),
+			'edit_url'      => $this->cp_url('settings'),
+			'delete_url'    => $this->cp_url('delete_schema_action'),
+			'duplicate_url' => $this->cp_url('duplicate_schema_action')
 		);
 		
 		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
@@ -284,7 +286,7 @@ class Gmap_mcp {
 		$schema_id      = $this->EE->input->get_post('schema_id');
 		$valid_address  = $this->EE->input->get_post('valid_address') == 'true' ? TRUE : FALSE;
 		$markers        = $this->EE->input->get_post('markers');
-		$existing_entry = $this->EE->input->get_post('existing_entry');
+		$existing_entry = $this->EE->input->get_post('existing_entry') == 'true' ? TRUE : FALSE;
 		$status			= $this->EE->input->get_post('status');
 		
 		return $this->EE->gmap_import->import_item($schema_id, $valid_address, $markers, $existing_entry, $status);
@@ -295,6 +297,24 @@ class Gmap_mcp {
 		$this->EE->gmap_import->import_from_csv($_FILES["file"]['tmp_name'], $this->EE->input->get_post('id'));
 		
 		$this->EE->functions->redirect($this->EE->input->post('return'));
+	}
+	
+	public function delete_schema_action()
+	{
+		$id = $this->EE->input->get_post('id');
+		
+		$this->EE->data_import_model->delete_schema($id);
+		
+		$this->EE->functions->redirect($this->cp_url('schemas'));	
+	}
+		
+	public function duplicate_schema_action()
+	{
+		$id = $this->EE->input->get_post('id');
+		
+		$this->EE->data_import_model->duplicate_schema($id);
+		
+		$this->EE->functions->redirect($this->cp_url('schemas'));
 	}
 		
 	public function settings()
@@ -658,9 +678,12 @@ class Gmap_mcp {
 		
 		$channel_fields = array();
 		
-		foreach($_POST['channel_fields'] as $field)
+		if(isset($_POST['channel_fields']))
 		{
-			$channel_fields[] = $field;	
+			foreach($_POST['channel_fields'] as $field)
+			{
+				$channel_fields[] = $field;	
+			}
 		}
 		
 		$_POST['channel_fields'] = $channel_fields;

@@ -184,6 +184,21 @@ class Data_import_model extends CI_Model {
 		}
 	}
 	
+	public function delete_schema($schema_id)
+	{
+		$this->db->where('schema_id', $schema_id);
+		$this->db->delete('gmap_import_settings');
+	}
+	
+	public function duplicate_schema($schema_id)
+	{
+		$settings = $this->get_settings($schema_id)->row_array();
+		
+		unset($settings['schema_id']);
+		
+		$this->save_settings(0, $settings['settings']);
+	}
+	
 	/*------------------------------------------
 	 *	Stats
 	/* -------------------------------------- */

@@ -9,6 +9,7 @@
 			<th>Schema Name</th>
 			<th></th>
 			<th></th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -17,7 +18,8 @@
 			<td style="width:50%"><?php echo $setting->schema_id?></td>
 			<td style="width:50%"><?php echo json_decode($setting->settings)->id?></td>
 			<td><a href="<?php echo $edit_url?>&id=<?php echo $setting->schema_id?>">Edit</a></td>
-			<td><a href="">Delete</a></td>
+			<td><a href="<?php echo $duplicate_url?>&id=<?php echo $setting->schema_id?>">Duplicate</a></td>
+			<td><a href="<?php echo $delete_url?>&id=<?php echo $setting->schema_id?>">Delete</a></td>
 		</tr>
 	<?php endforeach; ?>
 	</tbody>	
