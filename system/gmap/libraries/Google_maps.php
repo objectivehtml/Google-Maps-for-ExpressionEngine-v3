@@ -1412,17 +1412,25 @@ class Google_maps {
 				
 			    var polygon = docs[0].gpolygons[0];
 			    
-			    '.$params['id'].'_bounds.union(polygon.getBounds());
-			    
-			    polygon.setOptions('.json_encode($params['style']).');
-			    
-			    '.(!$params['extend_bounds'] && !$params['options']['zoom'] ? NULL : '
-			    '.$params['id'].'_map.fitBounds('.$params['id'].'_bounds);').'
-			    '.$params['id'].'_regions.push(polygon);
-			    
-			    index = '.$params['id'].'_regions.length - 1;
-			    			    
-			    '.$window.'
+		    	if(polygon) {
+		    		
+				    '.$params['id'].'_bounds.union(polygon.getBounds());
+				    
+				    polygon.setOptions('.json_encode($params['style']).');
+				    
+				    '.(!$params['extend_bounds'] && !$params['options']['zoom'] ? NULL : '
+				    '.$params['id'].'_map.fitBounds('.$params['id'].'_bounds);').'
+				    '.$params['id'].'_regions.push(polygon);
+				    
+				    index = '.$params['id'].'_regions.length - 1;
+				    			    
+				    '.$window.'
+			    }
+			    else {
+			    	if(window.console && typeof console.log == "function") {
+			    		console.log("The country code: \"'.$params['country_code'].'\" is not found.");
+			    	}
+			    }
 			}';
 			
 			$kml = action_url('gmap', 'world_borders_action', FALSE) . '&country_code='.$params['country_code'];
@@ -1448,7 +1456,7 @@ class Google_maps {
 		    	geoXml.parseKmlString(\''.$kml.'\');
 		    	
 		    	geoXml.docs[0].gpolygons[0].setOptions('.json_encode($params['style']).');
-		    
+		    	
 		    	console.log(geoXml.docs[0].gpolygons[0].getBounds());
 		    	
 		    	'.$params['id'].'_regions.push(geoXml.docs[0].gpolygons[0]);
