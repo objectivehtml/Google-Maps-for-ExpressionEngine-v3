@@ -47,6 +47,7 @@ class Gmap_ft extends EE_Fieldtype {
 		'gmap_map_height'			=> '600px',
 		'gmap_marker_mode'			=> 'True',
 		'gmap_total_points'			=> '0',
+		'gmap_min_points'			=> '0',
 		'gmap_response'				=> '',
 		'gmap_formatted_address'	=> '',
 		'gmap_preview'				=> '',
@@ -183,8 +184,8 @@ class Gmap_ft extends EE_Fieldtype {
 				
 				$icons = array();
 				
-				$url  = $this->EE->theme_loader->theme_url() . 'third_party/gmap/icons/';
-				$path = PATH_THEMES . 'third_party/gmap/icons/';
+				$url  = $this->EE->theme_loader->theme_url() . 'gmap/icons/';				
+				$path = $this->EE->theme_loader->theme_path() . 'gmap/icons/';
 			}
 			else
 			{
@@ -392,8 +393,7 @@ class Gmap_ft extends EE_Fieldtype {
 			$this->EE->theme_loader->output('GmapPreview.init()');
 		}
 		
-		$this->EE->theme_loader->javascript($google_maps_api_url);
-		
+		$this->EE->theme_loader->javascript($google_maps_api_url);		
 		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js');
 		$this->EE->theme_loader->javascript('gmap');
 		$this->EE->theme_loader->javascript('gmap_preview');
@@ -445,77 +445,41 @@ class Gmap_ft extends EE_Fieldtype {
 	
 	public function validate($data)
 	{
+		$this->EE->lang->loadfile('gmap');
+		
 		$valid		= TRUE;
 		$response 	= json_decode($data);
 		$settings	= $this->get_settings();
 		$modes		= array();
 		
-		$total 		= (int) $settings['total_points'];
+		$total 		= isset($settings['total_points']) ? (int) $settings['total_points'] : FALSE;
+		$min  		= isset($settings['min_points']) ? (int) $settings['min_points'] : FALSE;
 		$obj_total	= 0;
 		
-		if($total > 0)
-		{
-			$plurality = NULL;
+		if($settings['marker_mode'] == 'yes' && isset($response->markers))
+		{	
+			$custom_message = !empty($settings['no_valid_location']) ? $settings['no_valid_location'] : FALSE;
+		
+			$total_markers = $response->markers->total;
 			
-			if($total > 1)
+			if($total > 0 && $total < $total_markers)
 			{
-				$plurality = 's';
+				return $custom_message ? $custom_message : $this->parse(array(
+					'total'   => $total,
+					'markers' => $total == 1 ? 'marker' : 'markers'
+				), lang('gmap_over_marker_limit'));
 			}
 			
-			if($settings['marker_mode'] == 'yes' && isset($response->markers))
+			if($min > 0 && $min > $total_markers)
 			{
-				$obj_total += $response->markers->total;
-				$modes[count($modes)] = 'Marker'.$plurality.',';
-			}
-			
-			if($settings['waypoint_mode'] == 'yes' && isset($response->waypoints))
-			{
-				$obj_total += $response->waypoints->total;
-				$modes[count($modes)] = 'Waypoint'.$plurality.',';
-			}
-			
-			if($settings['region_mode'] == 'yes' && isset($response->regions))
-			{
-				$obj_total += $response->regions->total;
-				$modes[count($modes)] = 'Region'.$plurality.',';
-			}
-			
-			if($obj_total > $total || $obj_total == 0)
-			{
-				$valid = FALSE;
+				return $custom_message ? $custom_message : $this->parse(array(
+					'total'   => $min,
+					'markers' => $min == 1 ? 'marker' : 'markers'
+				), lang('gmap_under_marker_limit'));
 			}
 		}
 		
-		if(!$valid)
-		{
-			$or = array(' or ');
-				
-			if(count($modes) == 2)
-			{
-				$modes[0] = str_replace(',', '', $modes[0]);
-				$modes = $this->array_insert($modes, 'or', 1);
-			}
-			else if(count($modes) == 3)
-			{	
-				$modes = $this->array_insert($modes, 'or', 2);
-			}
-			
-			$mode_string = implode(' ', $modes);
-			$mode_string = rtrim($mode_string, ',');
-			
-			$custom_message = !empty($settings['no_valid_location']) ? $settings['no_valid_location'] : FALSE;
-			
-			if($obj_total == 0)
-			{
-				$valid = !$custom_message ? 'You must enter at least 1 '.$mode_string : $custom_message;
-			}
-			else
-			{
-				$valid = !$custom_message ? 'You may only enter '.$total.' '.$mode_string : $custom_message;
-			}
-		}	
-		
-		return $valid;
+		return TRUE;
 	}
 		
 	/**
@@ -1088,12 +1052,29 @@ class Gmap_ft extends EE_Fieldtype {
 		
 	private function parse($vars, $tagdata = FALSE)
 	{
-		if($tagdata === FALSE)
+		if(!isset($vars[0]))
 		{
-			$tagdata = $this->EE->TMPL->tagdata;
+			$vars = array($vars);
 		}
+		
+		if(isset($this->EE->TMPL))
+		{
+			if($tagdata === FALSE)
+			{
+				$tagdata = $this->EE->TMPL->tagdata;
+			}
+				
+			return $this->EE->TMPL->parse_variables($tagdata, $vars);
+		}
+		else
+		{
+			foreach($vars[0] as $var => $value)
+			{
+				$tagdata = str_replace(LD.$var.RD, $value, $tagdata);
+			}
 			
-		return $this->EE->TMPL->parse_variables($tagdata, $vars);
+			return $tagdata;
+		}
 	}
 	
 	private function _url($method = 'index', $useAmp = FALSE)
