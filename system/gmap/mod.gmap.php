@@ -2085,6 +2085,7 @@ Class Gmap {
 				$result_array[$row_index] = array_merge($row, $this->EE->channel_data->utility->add_prefix($this->param('prefix', 'result'), $row));
 			}
 			
+			
 			$vars[0]['entry_ids']           = $entry_ids;
 			$vars[0]['grand_total_results'] = $grand_total_results;
 			$vars[0]['total_results']       = $total_results;
