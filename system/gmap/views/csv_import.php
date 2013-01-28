@@ -1,4 +1,4 @@
-<script type="text/javascript" src="<?=$interface_builder?>"></script>
+<script type="text/javascript" src="<?php echo $interface_builder?>"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
 		
@@ -7,15 +7,15 @@
 	});
 </script>
 
-<h2><?=$header?> Schema</h2>
+<h2><?php echo $header?> Schema</h2>
 
 <p>Enter all the correct values for the following settings to create a schema. Be sure to double check that the field names and column names are correct.</p>
 
-<form method="post" action="<?=$action?>">
-	<?=$settings?>
+<form method="post" action="<?php echo $action?>">
+	<?php echo $settings?>
 
-	<input type="hidden" name="return" value="<?=$return?>" />
-	<input type="hidden" name="schema_id" value="<?=$schema_id?>" />
+	<input type="hidden" name="return" value="<?php echo $return?>" />
+	<input type="hidden" name="schema_id" value="<?php echo $schema_id?>" />
 	
 	<button class="submit">Save Settings</button>
 </form>

@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.10
- * @build		20121028
+ * @version		0.8.15
+ * @build		20121216
  */
  
 class Channel_data_tmpl extends Channel_data_lib {
@@ -172,6 +172,8 @@ class Channel_data_tmpl extends Channel_data_lib {
 		
 		$TMPL = $this->EE->channel_data->tmpl->create_alias($tagdata);
 		
+		$this->EE->TMPL->template = $this->EE->functions->prep_conditionals($this->EE->TMPL->template, array_merge($parse_vars, (array) $entry_data));
+		
 		$this->EE->TMPL->template = $this->EE->TMPL->parse_variables($this->EE->TMPL->template, $parse_vars);
 		
 		$this->EE->TMPL->template = $this->parse_fieldtypes($entry_data, $channels, $channel_fields, $this->EE->TMPL->template, $prefix, $index);	
@@ -210,17 +212,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 	
 	public function parse_path_variables($vars = array(), $entry_data = array(), $tagdata = FALSE, $prefix = '')
 	{		
-		if(!isset($vars['var_single']))
-		{
-			$vars['var_single'] = $vars;
-		}
-		
-		if(!is_array($vars['var_single']))
-		{
-			$vars['var_single'] = array();	
-		}
-		
-		foreach($vars['var_single'] as $key => $value)
+		foreach($vars as $key => $value)
 		{	
 			//  parse URL title path
 			if(strncmp($key, $prefix.'url_title_path', 14) == 0)
@@ -365,7 +357,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 					
 					if($this->EE->api_channel_fields->setup_handler($field_id))
 					{
-						$channel = isset($channels[$entry_data->{$prefix.'channel_id'}]) ? $channels[$entry_data->{$prefix.'channel_id'}] : $channels[$entry_data->channel_id];
+						$channel = isset($entry_data->{$prefix.'channel_id'}) ? $channels[$entry_data->{$prefix.'channel_id'}] : $channels[$entry_data->channel_id];
 						
 						$row = array_merge((array) $channel, (array) $entry_data);
 						
@@ -510,7 +502,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 							
 						foreach($entry_data as $index => $value)
 						{
-							if(isset($channel_fields[$index]) && isset($channel_fields[$index]->field_id) && !isset($row['field_id_'.$channel_fields[$index]->field_id]))
+							if(isset($channel_fields[$index]) && is_object($channel_fields[$index]) && isset($channel_fields[$index]->field_id) && !isset($row['field_id_'.$channel_fields[$index]->field_id]))
 							{
 								$row['field_id_'.$channel_fields[$index]->field_id] = $value;
 								$row['field_ft_'.$channel_fields[$index]->field_id] = $channel_fields[$index]->field_fmt;	

@@ -54,12 +54,12 @@
 			<textarea name="side-content-text"></textarea>			
 		</div>
 		
-		<input type="hidden" name="import_url" value="<?=$import_url?>" />
+		<input type="hidden" name="import_url" value="<?php echo $import_url?>" />
 			
 		<!-- 	
 		<div class="gmap-import-panel gmap-flyout">			
 			
-			<form action="<?=$import_url?>" method="post" enctype="multipart/form-data">
+			<form action="<?php echo $import_url?>" method="post" enctype="multipart/form-data">
 				<h4>Import .CSV</h4>
 				
 				<input type="file" name="file" value="" />

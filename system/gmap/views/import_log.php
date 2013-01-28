@@ -21,7 +21,7 @@
 	<tbody>
 	<?php if($items->num_rows() == 0): ?>
 		<tr>
-			<td colspan="4">There are no items in the log at this time</td>
+			<td colspan="5">There are no items in the log at this time</td>
 		</tr>
 	<?php endif;?>
 	<?php foreach($items->result() as $item): ?>

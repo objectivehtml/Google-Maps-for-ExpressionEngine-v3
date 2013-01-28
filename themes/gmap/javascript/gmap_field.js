@@ -1191,6 +1191,11 @@ var Gmap  = function($wrapper, options) {
 			$('#'+t.settings.response).val(JSON.stringify(response));
 			
 			if(t.responseType == 'markers' || t.responseType == 'waypoints') {
+				
+				/* Ensure backwards compatibility is met upon users upgrading from v3.1.0 */
+				if(typeof t.settings.min_points == "undefined") {
+					t.settings.min_points = 0;
+				}
 			
 				if(t.responseType == 'markers') {
 					if(t.settings.total_points == 0 || t.response.markers.total < t.settings.total_points) {
@@ -1204,7 +1209,20 @@ var Gmap  = function($wrapper, options) {
 					}
 					else {
 						t.overlimit.markers = true;
-						alert('You are only allowed '+t.settings.total_points+' marker per map.');
+						
+						/*
+						var errors = [];
+						
+						if(t.settings.min_points <= t.response.markers.total) {
+							errors.push(t.settings.min_points > 0 ? 'Your map must contain at least '+t.settings.min_points+' marker'+(t.settings.min_points > 1 ? 's' : '') : '');
+						}
+						
+						if(t.response.markers.total > t.settings.total_points) {
+							errors.push('You are only allowed a maximum of '+t.settings.total_points+' marker'+(t.settings.total_points > 1 ? 's' : '')+' per map.');
+						}
+						*/
+						
+						alert('You are only allowed a maximum of '+t.settings.total_points+' marker'+(t.settings.total_points > 1 ? 's' : '')+' per map.');
 					}
 				}
 				else if(t.responseType == 'waypoints') {
@@ -1213,7 +1231,9 @@ var Gmap  = function($wrapper, options) {
 					t.response.waypoints.total++;
 				}
 				
-				t.refresh(response);
+				if(!t.overlimit.markers) {
+					t.refresh(response);
+				}
 			}
 							
 			return _return;
@@ -2134,7 +2154,8 @@ var Gmap  = function($wrapper, options) {
 			$t.html('Show Details');
 		}
 	});
-	
+		
+	/*
 	$t.parents('form').submit(function() {
 		
 		var title 	= $('#title').val();
@@ -2149,6 +2170,7 @@ var Gmap  = function($wrapper, options) {
 		
 		return _return;
 	});
+	*/
 	
 	/* Load the Third-party JS plugins */
 	if(!GmapPluginsLoaded)

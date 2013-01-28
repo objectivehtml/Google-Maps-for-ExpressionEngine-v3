@@ -2,13 +2,13 @@
 
 <p>Data is uploaded in two steps to minimize the load, memory usages, and queries against the server. Adding data to your pool is the first step. Once the data is in the pool below, run the geocoder to import and geocode your data.</p>
 
-<form method="post" enctype="multipart/form-data" action="<? echo $action?>" style="margin-bottom:2em;">
+<form method="post" enctype="multipart/form-data" action="<?php echo $action?>" style="margin-bottom:2em;">
 	
 	<p>
 		<label for="id">Settings Schema</label><br>
 		<select name="id" id="id">
 		<? foreach($settings->result() as $setting): ?>
-			<option value="<? echo $setting->schema_id?>"><? echo json_decode($setting->settings)->id?></option>
+			<option value="<?php echo $setting->schema_id?>"><?php echo json_decode($setting->settings)->id?></option>
 		<? endforeach; ?>
 		</select>
 	</p>
@@ -18,7 +18,7 @@
 		<input type="file" name="file" id="file" />
 	</p>
 	
-	<input type="hidden" name="return" value="<? echo $return?>" />
+	<input type="hidden" name="return" value="<?php echo $return?>" />
 	
 	<button type="submit" class="submit">Add to Pool</button>
 	
@@ -50,32 +50,32 @@
 	<? else: ?>
 		<? foreach($stats->result() as $item): ?>
 			<tr>
-				<td><? echo $item->schema_id?></td>
-				<td><? echo $item->schema_name?></td>
-				<td><? echo $item->items_in_pool?></td>
-				<td><? echo $item->total_entries_imported?></td>
-				<td><? echo date('Y-m-d h:i A', $item->importer_last_ran)?></td>
-				<td><? echo $item->importer_total_runs?></td>
+				<td><?php echo $item->schema_id?></td>
+				<td><?php echo $item->schema_name?></td>
+				<td><?php echo $item->items_in_pool?></td>
+				<td><?php echo $item->total_entries_imported?></td>
+				<td><?php echo date('Y-m-d h:i A', $item->importer_last_ran)?></td>
+				<td><?php echo $item->importer_total_runs?></td>
 				<td><a href="#" class="clear-pool">Clear Pool</a></td>
-				<td><a href="#<? echo $item->schema_id?>" class="change-status">Change Statuses</a></td>
-				<td><a href="<? echo $import_url . '&id='. $item->schema_id?>">Run Geocoder</a></td>
+				<td><a href="#<?php echo $item->schema_id?>" class="change-status">Change Statuses</a></td>
+				<td><a href="<?php echo $import_url . '&id='. $item->schema_id?>">Run Geocoder</a></td>
 			</tr>
 		<? endforeach; ?>
 	<? endif; ?>
 	</tbody>
 </table>
 
-<form id="change-status" action="<?=$status_url?>" method="post">
+<form id="change-status" action="<?php echo $status_url?>" method="post">
 	<h3><label for="status">New Status</label></h3>
 	<p style="padding:.5em 0;">You may change the status to all the entries in the channel the schema is assigned to.</p>
 	<input type="text" name="status" id="status" value="closed" />
 	<input type="hidden" name="schema_id" value="" />
-	<input type="hidden" name="return" value="<? echo $return?>" />
+	<input type="hidden" name="return" value="<?php echo $return?>" />
 </form>
 
-<form id="clear-pool" action="<?=$clear_pool_url?>" method="post">
+<form id="clear-pool" action="<?php echo $clear_pool_url?>" method="post">
 	<p>Are you sure you want to clear the pool?</p>
-	<input type="hidden" name="return" value="<? echo $return?>" />
+	<input type="hidden" name="return" value="<?php echo $return?>" />
 </form>
 
 <script type="text/javascript">

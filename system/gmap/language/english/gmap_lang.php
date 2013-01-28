@@ -31,8 +31,11 @@ $lang = array(
 'gmap_zoom_one_marker' 					=> 'One Marker Zoom',
 'gmap_zoom_one_marker_description'		=> 'When adding markers to the map, the zoom will go as detailed as possible, while still maintaining visibility of all the markers and regions on the map. This often times leaving the user confused. Override this setting by defining a default zoom for the first marker.',
 
-'gmap_total_points'						=> 'Total Points',
-'gmap_total_points_description' 		=> 'The total points the user is allowed to add to the map.<br> (0 = Unlimited)',
+'gmap_total_points'						=> 'Maximum Points',
+'gmap_total_points_description' 		=> 'The maximum points the user is allowed to add to the map.<br> (0 = Unlimited)',
+
+'gmap_min_points'						=> 'Minimum Points',
+'gmap_min_points_description' 			=> 'The minimum points the user is allowed to add to the map.<br> (0 = No minimum)',
 
 'gmap_map_height'						=> 'Map Height',
 'gmap_map_height_description' 			=> 'Enter a custom height for the map to appear in the control panel. (The default height is "600px")',
@@ -100,6 +103,9 @@ $lang = array(
 
 'gmap_no_valid_location'                => 'Custom Error Message',
 'gmap_no_valid_location_description'    => 'Enter a custom message that will prompt users when entries with invalid locations are submitted (overrides the default).',
+
+'gmap_over_marker_limit'                => 'You are only allowed to have {total} {markers} on the map.',
+'gmap_under_marker_limit'               => 'You must have at least {total} {markers} on the map.',
 
 'gmap_starting_point'                   => 'Starting Point',
 'gmap_ending_point'						=> 'Ending Point',
