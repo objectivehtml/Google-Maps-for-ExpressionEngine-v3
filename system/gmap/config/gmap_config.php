@@ -5,7 +5,7 @@
 */
 
 $config['gmap_version']	= '3.1.0.5';
-$config['gmap_build']	= '20120117';
+$config['gmap_build']	= '20121204';
 
 /* 
  *	Protect JavaScript
@@ -86,11 +86,11 @@ $config['gmap_directions_proxy_url'] = FALSE;
  *  Adjust this for maximum results on your server.
  */
 
-$config['gmap_import_threshold'] = 5;
+$config['gmap_import_threshold'] = 1000;
 
-$config['gmap_import_memory'] = FALSE; // Eg: '512M'
+$config['gmap_import_memory'] = '1028M';
 
-$config['gmap_import_max_file_size'] = FALSE; // Eg: '200M';
+$config['gmap_import_max_file_size'] = '200M';
 
 /* 
  *	Use Yahoo Boss Geocoder for Importing
@@ -103,8 +103,8 @@ $config['gmap_import_max_file_size'] = FALSE; // Eg: '200M';
 
 $config['gmap_import_use_yahoo'] = TRUE;
 
-$config['gmap_import_client_key'] = '';
+$config['gmap_import_client_key'] = 'dj0yJmk9ODB6RDBnMktDSzNxJmQ9WVdrOVRUbDJRbTVvTTJVbWNHbzlNVEU0TURZeU1qZzJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD01OA--';
 
-$config['gmap_import_client_secret'] = '';
+$config['gmap_import_client_secret'] = 'ee3c471c8f9ba7cb70bf3dda64222e22fe004952';
 
-$config['gmap_import_appid'] = '';
+$config['gmap_import_appid'] = 'M9vBnh3e';

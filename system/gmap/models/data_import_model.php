@@ -57,7 +57,7 @@ class Data_import_model extends CI_Model {
 		}
 		else
 		{
-			$this->db->delete('gmap_import_log');
+			$this->db->query('DELETE FROM exp_gmap_import_log');
 		}
 	}
 	
