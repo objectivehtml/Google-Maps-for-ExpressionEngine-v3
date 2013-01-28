@@ -2267,6 +2267,8 @@ Class Gmap {
 	{
 		if($color_index = $this->param('color_index'))
 		{
+			$color_index = trim($this->EE->TMPL->advanced_conditionals($color_index));
+			
 			$this->EE->load->config('gmap_color_index');
 			
 			$color_index_array = config_item('gmap_color_index');
