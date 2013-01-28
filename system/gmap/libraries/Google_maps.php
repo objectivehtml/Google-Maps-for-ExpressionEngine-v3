@@ -266,7 +266,8 @@ class Google_maps {
 				
 			$js .= '							
 				google.maps.event.addListener(obj, \''.$params['trigger'].'\', function(e) {
-					obj.position = e.latLng;';
+					var currentPos = e.latLng;
+				';
 
 					if(isset($params['show_one_window']) && $params['show_one_window'])
 					{
@@ -277,7 +278,8 @@ class Google_maps {
 					}
 					
 			$js.='
-					infowindow.open('.$params['id'].'_map, obj);					
+					infowindow.setPosition(currentPos);
+					infowindow.open('.$params['id'].'_map);					
 				});
 				
 				'.$params['id'].'_window = infowindow;
@@ -287,7 +289,7 @@ class Google_maps {
 		
 		return $js;
 	}
-	
+		
 	public function init($map_id, $options = FALSE, $args)
 	{
 		$cluster = array(

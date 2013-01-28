@@ -1013,7 +1013,7 @@ class Gmap_ft extends EE_Fieldtype {
 					$js			= $js . $this->EE->google_maps->route($options);
 				}
 				
-				if(isset($data->region) && $data->regions->total > 0 && in_array('regions', $params['render']))
+				if(isset($data->regions) && $data->regions->total > 0 && in_array('regions', $params['render']))
 				{
 					$regions		= array($data->regions);
 										
