@@ -12,7 +12,7 @@
 #### 3.1.1
 ##### 1/27/2013
 
-- (Bug Fix) Fixed a Theme Loader bug causing an alter to appear saying the sensor parameter was not set when loading Google Maps library
+- (Bug Fix) Fixed a Theme Loader bug causing an alert to appear saying the sensor parameter was not set when loading Google Maps library
 - (Bug Fix) Fixed a bug causing an incorrect file path when selecting icons in the fieldtype
 
 #### 3.1.0 
