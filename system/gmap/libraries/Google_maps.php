@@ -146,8 +146,6 @@ class Google_maps {
 			
 			var index = '.$params['id'].'_markers.length - 1;
 			
-			console.log(GeoMarker);
-			
 	        google.maps.event.addListenerOnce(GeoMarker, "position_changed", function() {
 	          '.$params['id'].'_map.setCenter(this.getPosition());
 	          '.$params['id'].'_map.fitBounds(this.getBounds());
@@ -1412,17 +1410,19 @@ class Google_maps {
 				
 			    var polygon = docs[0].gpolygons[0];
 			    
-			    '.$params['id'].'_bounds.union(polygon.getBounds());
-			    
-			    polygon.setOptions('.json_encode($params['style']).');
-			    
-			    '.(!$params['extend_bounds'] && !$params['options']['zoom'] ? NULL : '
-			    '.$params['id'].'_map.fitBounds('.$params['id'].'_bounds);').'
-			    '.$params['id'].'_regions.push(polygon);
-			    
-			    index = '.$params['id'].'_regions.length - 1;
-			    			    
-			    '.$window.'
+			    if(polygon) {
+				    '.$params['id'].'_bounds.union(polygon.getBounds());
+				    
+				    polygon.setOptions('.json_encode($params['style']).');
+				    
+				    '.(!$params['extend_bounds'] && !$params['options']['zoom'] ? NULL : '
+				    '.$params['id'].'_map.fitBounds('.$params['id'].'_bounds);').'
+				    '.$params['id'].'_regions.push(polygon);
+				    
+				    index = '.$params['id'].'_regions.length - 1;
+				    			    
+				    '.$window.'
+			    }
 			}';
 			
 			$kml = action_url('gmap', 'world_borders_action', FALSE) . '&country_code='.$params['country_code'];
@@ -1430,8 +1430,14 @@ class Google_maps {
 		else
 		{
 			$country_border  = $this->EE->kml_model->get_country_code($params['country_code']);
+			$country_border  = $country_border->row('geometry');
+			
+			if(is_array($country_border))
+			{
+				$country_border = NULL;
+			}
 		
-			$kml = $this->EE->kml_api->prep_string($country_border->row('geometry'), $params);
+			$kml = $this->EE->kml_api->prep_string($country_border, $params);
 		}
 		
 		$geoxml_options = $this->convert_to_js($params['options']);
@@ -1445,17 +1451,21 @@ class Google_maps {
 			
 			'.(!$params['asynchronous'] ? '
 				
-		    	geoXml.parseKmlString(\''.$kml.'\');
-		    	
+	    	geoXml.parseKmlString(\''.$kml.'\');
+	    	
+	    	if(geoXml.docs[0].gpolygons[0]) {
+			    '.$params['id'].'_bounds.union(geoXml.docs[0].gpolygons[0].getBounds());
+			    
 		    	geoXml.docs[0].gpolygons[0].setOptions('.json_encode($params['style']).');
 		    
-		    	console.log(geoXml.docs[0].gpolygons[0].getBounds());
-		    	
+			    '.(!$params['extend_bounds'] && !$params['options']['zoom'] ? NULL : '
+			    '.$params['id'].'_map.fitBounds('.$params['id'].'_bounds);').'				    
 		    	'.$params['id'].'_regions.push(geoXml.docs[0].gpolygons[0]);
 		    	
 			    index = '.$params['id'].'_regions.length - 1;
 			    			    
-			'. $window : 'geoXml.parse(\''.$kml.'\');').'
+			    '.$window . '
+			}' : 'geoXml.parse(\''.$kml.'\');').'
 		';
 		
 		$return = '<script type="text/javascript">'.$return.'</script>';
@@ -1501,5 +1511,31 @@ class Google_maps {
 		}
 			
 		return $this->EE->TMPL->parse_variables($tagdata, $vars);
+	}
+	
+	public function fetch_param($which, $default = FALSE)
+	{
+		if ( ! isset($this->EE->TMPL->tagparams[$which]))
+		{
+			return $default;
+		}
+		else
+		{			
+			$param = $this->EE->TMPL->tagparams[$which];
+				
+			// Making yes/no tag parameters consistent.  No "y/n" or "on/off".
+			if(strtolower($param) === 'y' || strtolower($param) === 'on')
+			{
+				return 'yes';
+			}
+			else if(strtolower($param) === 'n' || strtolower($param) === 'off')
+			{
+				return 'no';
+			}
+			else
+			{
+				return $param;
+			}
+		}
 	}
 }

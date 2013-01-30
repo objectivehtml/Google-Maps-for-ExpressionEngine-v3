@@ -13,6 +13,8 @@
 
 Class Gmap {
 	
+	private $debug = FALSE;
+	
 	private $reserved_terms = array('', '_min', '_max', '_like');
 	
 	private $args = array(
@@ -137,8 +139,6 @@ Class Gmap {
 	
 	public function init()
 	{
-		//echo 'init';exit();
-		
 		$map_id      = $this->param('id', 'map');
 		$map_type    = $this->param('map_type', 'google.maps.MapTypeId.ROADMAP');
 		$map_type    = $this->param('mapTypeId', $map_type);
@@ -294,6 +294,7 @@ Class Gmap {
 	public function world_borders()
 	{
 		$this->EE->load->model('kml_model');
+		$this->EE->load->library('theme_loader');
 		
 		$country_code = $this->param('country_code', FALSE, FALSE, TRUE);
 		$close_button = $this->param('close_button', 'http://www.google.com/intl/en_us/mapfiles/close.gif');
@@ -301,6 +302,7 @@ Class Gmap {
 		
 		$this->_color_index();
 		
+			
 		return $this->EE->google_maps->world_borders(array(
 			'id'            => $this->param('id', 'map'),
 			'country_code'  => $country_code,
@@ -2233,7 +2235,7 @@ Class Gmap {
 	private function param($param, $default = FALSE, $boolean = FALSE, $required = FALSE)
 	{
 		$name 	= $param;
-		$param 	= $this->EE->TMPL->fetch_param($param);
+		$param 	= $this->EE->google_maps->fetch_param($param, $default);
 		
 		if($required && !$param) show_error('You must define a "'.$name.'" parameter in the '.__CLASS__.' tag.');
 			
@@ -2242,11 +2244,11 @@ Class Gmap {
 			$param = $default;
 		}
 		else
-		{				
+		{			
 			if($boolean)
 			{
-				$param = strtolower($param);
-				$param = ($param == 'true' || $param == 'yes') ? TRUE : FALSE;
+				$param = is_string($param) ? strtolower($param) : $param;
+				$param = ($param === TRUE || $param == 'true' || $param == 'yes') ? TRUE : FALSE;
 			}			
 		}
 		
@@ -2263,25 +2265,24 @@ Class Gmap {
 		/* -------------------------------------------*/
 		
 		return $param;			
-	}
+	}	
 	
 	private function _color_index()
 	{
 		if($color_index = $this->param('color_index'))
 		{
-			$color_index = trim($this->EE->TMPL->advanced_conditionals($color_index));
+			$orig_index  = $color_index;	
 			
+			$color_index = trim($this->EE->TMPL->advanced_conditionals($color_index));
+					
 			$this->EE->load->config('gmap_color_index');
 			
 			$color_index_array = config_item('gmap_color_index');
 			
 			if(isset($color_index_array[$color_index]))
 			{
-				foreach($color_index_array[$color_index] as $param => $style)
-				{
-					$this->EE->TMPL->tagparams[$param] = $style;
-				}
-			}
+				$this->EE->TMPL->tagparams = array_merge($this->EE->TMPL->tagparams, $color_index_array[$color_index]);
+			}	
 		}
 	}
 	
