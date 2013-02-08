@@ -86,7 +86,7 @@ $config['gmap_directions_proxy_url'] = FALSE;
  *  Adjust this for maximum results on your server.
  */
 
-$config['gmap_import_threshold'] = 1000;
+$config['gmap_import_threshold'] = 500;
 
 $config['gmap_import_memory'] = '1028M';
 

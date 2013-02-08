@@ -10,15 +10,15 @@ $config['gmap_color_index'] = array(
 	// Defined an index and the value. The value being the color. 
 	// Example color values for Black: #000, #000000, black, rgb(0, 0, 0)
 	
-	
-	'controllermap20' => array(
+	/*
+	'some value' => array(
 		'strokeColor'   => 'red',
 		'strokeOpacity' => .7,
 		'strokeWeight'  => 3,
 		'fillColor'     => 'red',
 		'fillOpacity'   => .3,
 	),
-	
+	*/
  	
 	/*
 	'some value 2' => array(

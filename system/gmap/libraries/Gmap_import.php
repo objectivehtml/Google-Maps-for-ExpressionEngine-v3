@@ -306,6 +306,11 @@ class Gmap_import extends BaseClass {
 		$id    = $schema_id;
 		$items = $this->EE->data_import_model->get_pool($id, $status, $limit, $offset);
 		
+		if($items->num_rows() == 0)
+		{
+			return;
+		}
+		
 		$this->settings = json_decode($this->EE->data_import_model->get_settings($id)->row('settings'));
 		
 		$channel_fields = $this->EE->channel_data->get_fields()->result();
