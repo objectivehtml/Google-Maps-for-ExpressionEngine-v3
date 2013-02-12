@@ -92,6 +92,8 @@ $config['gmap_import_memory'] = '1028M';
 
 $config['gmap_import_max_file_size'] = '200M';
 
+$config['gmap_import_skip_rows'] = 0;
+
 /* 
  *	Use Yahoo Boss Geocoder for Importing
  *
