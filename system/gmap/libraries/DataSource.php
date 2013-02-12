@@ -68,9 +68,10 @@ class File_CSV_DataSource
      */
     $settings = array(
         'delimiter' => ',',
-        'eol' => ";",
-        'length' => 999999,
-        'escape' => '"'
+        'eol'       => ";",
+        'length'    => 999999,
+        'escape'    => '"',
+        'skipRows'  => 0
     );
 
     protected
@@ -2148,9 +2149,9 @@ class File_CSV_DataSource
 
         while ($keys = fgetcsv($res, $l, $d, $e)) {
 
-            if ($c == 0) {
+            if ($c == $this->settings['skipRows']) {
                 $this->headers = $keys;
-            } else {
+            } elseif($c > $this->settings['skipRows']) {
                 array_push($this->rows, $keys);
             }
 
