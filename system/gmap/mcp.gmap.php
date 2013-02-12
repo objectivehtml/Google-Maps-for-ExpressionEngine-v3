@@ -358,7 +358,8 @@ class Gmap_mcp {
 		$this->EE->theme_loader->require_js = FALSE;
 		$this->EE->theme_loader->output('var ChannelData = '.json_encode(array(
 			'channels' => $channels,
-			'fields'   => $fields_by_group
+			'fields'   => $fields_by_group,
+			'isNew'    => !$this->EE->input->get('id') ? TRUE : FALSE
 		)));
 		
 		
@@ -373,51 +374,53 @@ class Gmap_mcp {
 				var curObj   = false;
 				var initTbl  = false;
 				
-				$channel.change(function() {
-					var value   = $(this).val();
-					var group   = ChannelData.channels[value];
-					var options = [\'<option value="">--</option>\'];
-					
-					if(init || initTbl) {
-						$table.find("tbody").html("");
-					}
-					
-					$.each(ChannelData.fields[group.field_group], function(i, field) {
+				if(ChannelData.isNew) {
+					$channel.change(function() {
+						var value   = $(this).val();
+						var group   = ChannelData.channels[value];
+						var options = [\'<option value="">--</option>\'];
+						
 						if(init || initTbl) {
-							$addRow.click();
-							$table.find("tbody tr:last-child td:nth-child(2) input").val(field.field_name);
+							$table.find("tbody").html("");
 						}
 						
-						var selected = field.field_type == "gmap" || (field.field_type != "gmap" && field.field_id == curVal) ? \'selected="selected"\' : "";
-						
-						options.push(\'<option value="\'+field.field_id+\'" \'+selected+\'>\'+field.field_label+\'</option>\');
+						if(group && ChannelData.fields[group.field_group]) {
+							$.each(ChannelData.fields[group.field_group], function(i, field) {
+								if(init || initTbl) {
+									$addRow.click();
+									$table.find("tbody tr:last-child td:nth-child(2) input").val(field.field_name);
+								}
+								
+								var selected = field.field_type == "gmap" || (field.field_type != "gmap" && field.field_id == curVal) ? \'selected="selected"\' : "";
+								
+								options.push(\'<option value="\'+field.field_id+\'" \'+selected+\'>\'+field.field_label+\'</option>\');
+							});
+							
+							options = options.join(\'\');
+							
+							if(!init) {
+								console.log(options);
+								curObj.html(options);
+							}
+							else {
+								$map.html(options);
+							}
+						}
 					});
 					
-					options = options.join(\'\');
+					initTbl = $table.find("tbody tr").length == 0 ? true : false;
 					
-					if(!init) {
-						console.log(options);
-						curObj.html(options);
-					}
-					else {
-						$map.html(options);
-					}
-				});
-				
-				initTbl = $table.find("tbody tr").length == 0 ? true : false;
-				
-				console.log($table.find("tbody tr").length);
-				
-				$map.each(function() {
-					curObj = $(this);
-					curVal = curObj.val();
+					$map.each(function() {
+						curObj = $(this);
+						curVal = curObj.val();
+						
+						$channel.change();
+					});
 					
-					$channel.change();
-				});
-				
-				init = true;
-				curVal = false;
-				curObj = false;
+					init = true;
+					curVal = false;
+					curObj = false;
+				}
 			});
 		');
 		
