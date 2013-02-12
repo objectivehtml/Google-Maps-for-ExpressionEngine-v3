@@ -962,14 +962,26 @@ class Gmap_ft extends EE_Fieldtype {
 
 				if(isset($data->markers) && $data->markers->total > 0 && in_array('markers', $params['render']))
 				{
-				
+					$default_marker_options = array(
+						'animation', 'clickable', 'cursor', 'draggable', 'flat', 'icon', 'map', 'optimized',
+						'raiseOnDrag', 'shadow', 'shape', 'title', 'visible', 'zIndex', 'entry_id'
+					);
+					
+					$markers_options = array();
+					
+					foreach($default_marker_options as $option)
+					{
+						if(isset($params[$option]))
+						{
+							$markers_options[$option] = $params[$option];
+						}
+					}
+					
 					$markers 	= array($data->markers);
 					$options	= array(
 						'id' 			=> $params['id'],
 						'entry_id'		=> $this->row['entry_id'],
-						'options' 		=> array(
-							'icon' =>  isset($params['icon']) ? $params['icon'] : FALSE
-						), 
+						'options' 		=> $markers_options, 
 						'data'			=> $markers,
 						'limit'			=> isset($params['limit']) ? $params['limit'] : FALSE,
 						'offset'		=> isset($params['offset']) ? $params['offset']: FALSE,	
