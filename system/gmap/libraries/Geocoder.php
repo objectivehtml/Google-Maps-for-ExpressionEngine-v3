@@ -23,7 +23,7 @@ class Geocoder extends Google_API {
 	public $latlng			= FALSE;
 	public $region			= FALSE;
 	public $url				= NULL;
-	public $regex			= "/^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$/";
+	public $regex			= '/^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$/';
 	
 	public function __construct()
 	{
