@@ -744,6 +744,11 @@ class Gmap_import extends BaseClass {
 			'delimiter' => $this->delimeter
 		));
 		
+		if($skip_rows = config_item('gmap_import_skip_rows'))
+		{
+			$csv->settings['skipRows'] = $skip_rows;
+		}
+		
 		$csv->settings['eol'] = $this->eol;
 
 		if (!$csv->load($file))
