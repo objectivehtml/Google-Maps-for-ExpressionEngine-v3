@@ -1559,6 +1559,7 @@ Class Gmap {
 		
 		$location = '';
 		$location_array = array();
+		
 		foreach($geocode_fields as $geocode_field)
 		{	
 			$post = $this->EE->input->post($geocode_field);
@@ -1572,6 +1573,7 @@ Class Gmap {
 			$location_array[] = trim($post);
 			$vars[0][$geocode_field] = trim($post);
 		}
+		
 		$location       = trim($location);
 		$channels       = $this->EE->input->post('channel');
 		$distance_field = $this->EE->input->post('distance_field');
@@ -1700,7 +1702,10 @@ Class Gmap {
 					{
 						$having[] = '`distance'.$distance_index.'` '.$this->EE->google_maps->prep_value($distance_field, (float) $distance);
 					}
-
+				}
+				else
+				{
+					$select[] = '\'\' as `distance`';
 				}
 			}
 		}
