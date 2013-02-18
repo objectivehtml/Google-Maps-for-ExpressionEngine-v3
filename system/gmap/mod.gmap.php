@@ -1572,11 +1572,10 @@ Class Gmap {
 			$location_array[] = trim($post);
 			$vars[0][$geocode_field] = trim($post);
 		}
-		
 		$location       = trim($location);
 		$channels       = $this->EE->input->post('channel');
 		$distance_field = $this->EE->input->post('distance_field');
-		$distance       = $this->EE->input->post($distance_field);	
+		$distance       = $this->EE->input->post($distance_field);
 		$distance_index = '';	
 		$categories     = $this->EE->input->post('categories');
 		$select         = array();
@@ -1687,7 +1686,7 @@ Class Gmap {
 						}
 									
 						$select[] = 'ROUND((((ACOS(SIN('.$lat.' * PI() / 180) * SIN('.$lat_field_name.' * PI() / 180) + COS('.$lat.' * PI() / 180) * COS('.$lat_field_name.' * PI() / 180) * COS(('.$lng.' - '.$lng_field_name.') * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * '.$this->EE->google_maps->convert_metric($metric).'), 1) AS distance'.$distance_index;
-												
+							
 						$vars[0]['search_distance'] = $distance;
 						$vars[0]['metric'] = $metric;
 					}
