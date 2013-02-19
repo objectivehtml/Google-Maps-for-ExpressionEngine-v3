@@ -280,6 +280,12 @@ Class Gmap {
 				if($row->status == 'ZERO_RESULTS')
 					return NULL;
 			}
+		
+			if($response[0]->status == 'OVER_QUERY_LIMIT')
+			{
+				// add logging function here
+				return;
+			}
 			
 			$latitude	= $response[0]->results[0]->geometry->location->lat;
 			$longitude	= $response[0]->results[0]->geometry->location->lng;
@@ -1266,16 +1272,7 @@ Class Gmap {
 		
 		if($this->param('cache_post', TRUE, TRUE))
 		{		
-			if($this->EE->input->post('init_gmap_search') == 'y')
-			{			
-				$this->EE->functions->set_cookie('gmap_last_post', serialize($_POST), strtotime('+1 year'));
-			}
-			else
-			{
-				$cookie = $this->EE->input->cookie('gmap_last_post');
-				
-				if($cookie) $_POST = unserialize($cookie);
-			}
+			$this->EE->google_maps->search_cache();
 		}
 		
 		$checked_true  		= 'checked="checked"';
@@ -1524,21 +1521,9 @@ Class Gmap {
 		/*
 		/* -------------------------------------------*/
 		
-		if($this->EE->input->post('cache_post') == 'y')
+		if($this->EE->input->post('cache_post') == 'y' || $this->param('cache_post', TRUE, TRUE))
 		{		
-			if($this->EE->input->post('init_gmap_search') == 'y')
-			{			
-				$this->EE->functions->set_cookie('gmap_last_post', serialize($_POST), strtotime('+1 year'));
-			}
-			else
-			{
-				$cookie = $this->EE->input->cookie('gmap_last_post');
-				
-				if($cookie)
-				{
-					$_POST = unserialize($cookie);
-				}
-			}
+			$this->EE->google_maps->search_cache();
 		}
 		
 	// Check for a no_results prefix to avoid no_results parse conflicts
