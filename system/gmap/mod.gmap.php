@@ -1214,6 +1214,8 @@ Class Gmap {
 		
 		$params 	= $field_id !== FALSE ? array('field_id' => $field_id) : array('field_name' => $field_name);
 		
+		$params['site_id'] = config_item('site_id');
+		
 		$field		= $this->EE->channel_data->get_fields(array(), $params)->row();
 		$entry		= $this->EE->channel_data->get_channel_entry($entry_id)->row();
 		

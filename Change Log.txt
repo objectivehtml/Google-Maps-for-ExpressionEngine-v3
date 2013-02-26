@@ -19,6 +19,7 @@
 
 - (Bug Fix) Fixed bugs preventing the FT regions from displaying
 - (Bug Fix) Fixed bugs preventing region infowindows from displaying
+- (Feature) Added a new settings in the FT that allows users to specify a minimum number of points.
 
 #### 3.1.1
 ##### 1/27/2013
