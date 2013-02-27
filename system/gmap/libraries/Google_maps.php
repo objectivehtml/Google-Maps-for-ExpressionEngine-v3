@@ -188,6 +188,23 @@ class Google_maps {
 		return $directions;
 	}
 	
+	public function search_cache()
+	{
+		if($this->EE->input->post('init_gmap_search') == 'y')
+		{			
+			$this->EE->functions->set_cookie('gmap_last_post', serialize($_POST), strtotime('+1 year'));
+		}
+		else
+		{
+			$cookie = $this->EE->input->cookie('gmap_last_post');
+			
+			if($cookie)
+			{
+				$_POST = unserialize($cookie);
+			}
+		}
+	}
+	
 	public function event($params = array())
 	{
 		$params = array_merge(array(
