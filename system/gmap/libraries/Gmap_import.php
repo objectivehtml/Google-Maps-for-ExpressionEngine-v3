@@ -86,7 +86,7 @@ class Gmap_import extends BaseClass {
 			}
 		}
 		
-		if(isset($settings['title_column']) && isset($entry[$settings['title_column']]))
+		if(isset($settings['title_column']) && !empty($settings['title_column']) && isset($entry[$settings['title_column']]))
 		{
 			$title = $entry[$settings['title_column']];
 		}		
@@ -152,7 +152,7 @@ class Gmap_import extends BaseClass {
 			'map_field_name'      => isset($fields_by_id[$settings['gmap_field']]) ? $fields_by_id[$settings['gmap_field']]->field_name : FALSE,
 			'lat_field_name'      => isset($fields_by_id[$settings['lat_field']]) ? $fields_by_id[$settings['lat_field']]->field_name : FALSE,
 			'lng_field_name'      => isset($fields_by_id[$settings['lng_field']]) ? $fields_by_id[$settings['lng_field']]->field_name : FALSE,
-			'geocode'             => trim($geocode),
+			'geocode'             => $this->trim($geocode),
 			'data'                => json_encode($entry_data),
 			'entry'               => json_encode($entry),
 			'categories'          => implode('|', $entry_categories)
@@ -230,9 +230,9 @@ class Gmap_import extends BaseClass {
 							$saved_address .= isset($existing_entry[$field->field_name]) && !empty($existing_entry[$field->field_name]) ? $existing_entry[$field->field_name] . ' ' : NULL;
 						}	
 						
-						$saved_address = trim($saved_address);
+						$saved_address = $this->trim($saved_address);
 						
-						if($saved_address == $item->geocode)
+						if($saved_address == $this->trim($item->geocode))
 						{
 							$valid_address = TRUE;
 						}
@@ -248,7 +248,7 @@ class Gmap_import extends BaseClass {
 				$success = FALSE;
 			}
 		}
-		
+				
 		$response = array(
 			'valid_address'  => $valid_address,
 			'saved_address'  => $saved_address,
@@ -294,6 +294,11 @@ class Gmap_import extends BaseClass {
 		{
 			exit('google map geocode');
 		}
+	}
+	
+	public function trim($str)
+	{
+		return trim(preg_replace("/\\W+/u", " ", $str));
 	}
 	
 	public function import_pool($schema_id, $status = 'pending', $limit = FALSE, $offset = 0)
@@ -442,9 +447,9 @@ class Gmap_import extends BaseClass {
 						
 					}	
 					
-					$saved_address = trim($saved_address);
+					$saved_address = $this->trim($saved_address);
 					
-					if($saved_address == $item->geocode)
+					if($saved_address == $this->trim($item->geocode))
 					{
 						$valid_address = TRUE;
 					}
@@ -454,7 +459,7 @@ class Gmap_import extends BaseClass {
 		
 		if(!$valid_address)
 		{
-			$markers = json_encode($markers);
+			$markers = json_decode($markers);
 	
 			if(count($markers) == 0)
 			{
@@ -467,7 +472,7 @@ class Gmap_import extends BaseClass {
 			}
 			
 			if(!empty($settings->gmap_field))
-			{				
+			{	
 				$map_data = $this->EE->google_maps->build_response(array('markers' => $markers));
 			
 				$data['field_id_'.$settings->gmap_field] = $map_data;
@@ -521,16 +526,26 @@ class Gmap_import extends BaseClass {
 			}			
 		}
 		
-		if($status == 'OK')
+		if($has_existing_entry)
 		{
-			$data['status'] = $settings->status;
+			$data['status']          = $existing_entry->status;
+			$data['author_id']       = $existing_entry->author_id;
+			$data['entry_date']      = $existing_entry->entry_date;
+			$data['expiration_date'] = $existing_entry->expiration_date;
 		}
-		
-		if($data['status'] != $settings->status)
+		else
 		{
-			$data['status'] = 'closed';
+			if($status == 'OK')
+			{
+				$data['status'] = $settings->status;
+			}
 			
-			$log_item[] = 'A geocoding error has occurred with this entry.';
+			if($data['status'] != $settings->status)
+			{
+				$data['status'] = 'closed';
+				
+				$log_item[] = 'A geocoding error has occurred with this entry.';
+			}
 		}
 		
 		$this->EE->load->library('api');
@@ -692,7 +707,7 @@ class Gmap_import extends BaseClass {
 			
 			$this->categories = $categories;
 			
-			$geocode = trim($geocode);
+			$geocode = $this->trim($geocode);
 			
 			if(!empty($settings['group_by']))
 			{				
