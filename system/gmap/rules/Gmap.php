@@ -111,7 +111,10 @@ class Gmap_channel_search_rule extends Base_rule {
 				{
 					$select[] = 'ROUND((((ACOS(SIN('.$lat.' * PI() / 180) * SIN('.$lat_field.' * PI() / 180) + COS('.$lat.' * PI() / 180) * COS('.$lat_field.' * PI() / 180) * COS(('.$lng.' - '.$lng_field.') * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1), 1) AS distance';
 				}
-				
+				else
+				{
+					$select = $this->no_distance();
+				}
 			}
 			
 			if(empty($select))
