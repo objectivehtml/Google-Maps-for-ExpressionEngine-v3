@@ -271,9 +271,9 @@ class Gmap_import extends BaseClass {
 		if($use_yahoo)
 		{	
 			$boss = new YahooBossGeocoder(array(
-				'consumerKey'    => 'dj0yJmk9ODB6RDBnMktDSzNxJmQ9WVdrOVRUbDJRbTVvTTJVbWNHbzlNVEU0TURZeU1qZzJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD01OA--',
-				'consumerSecret' => 'ee3c471c8f9ba7cb70bf3dda64222e22fe004952',
-				'appid'		      => 'M9vBnh3e'
+				'consumer_key'    => config_item('gmap_consumer_key'),
+				'consumer_secret' => config_item('gmap_consumer_secret'),
+				'appid'		      => config_item('gmap_import_appid')
 			));
 			
 			$boss->setLocation($location);
