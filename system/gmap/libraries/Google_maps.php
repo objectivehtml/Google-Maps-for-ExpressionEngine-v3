@@ -550,7 +550,7 @@ class Google_maps {
 								}
 								
 								if('.$params['id'].'_markers.length > 0) {
-									for(var i in '.$params['id'].'_markers) {
+									for(var i = 0; i < '.$params['id'].'_markers.length; i++) {
 								
 										var marker = '.$params['id'].'_markers[i];
 										
