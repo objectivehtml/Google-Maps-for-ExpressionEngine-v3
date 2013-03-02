@@ -514,11 +514,11 @@ class Gmap_mcp {
 						'description' => 'This is the author id that will be assigned to the imported entries.',
 						'type'        => 'input'
 					),
-					'author_id_column' => array(
+					/*'author_id_column' => array(
 						'label'       => 'Author ID Column',
 						'description' => 'If your .CSV has a column that stores author_id\'s, you can define that column name here. If the column doesn\'t exist, or have a value, the Author ID setting will be used instead.',
 						'type'        => 'input'
-					),
+					),*/
 					'username_column' => array(
 						'label'       => 'Username Column',
 						'description' => 'If your .CSV has a column that stores usernames, you can define that column name here. If the column doesn\'t exist, or have a value, the Author ID setting will be used instead.',
