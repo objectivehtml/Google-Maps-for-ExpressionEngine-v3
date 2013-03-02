@@ -347,10 +347,11 @@ class Gmap_import extends BaseClass {
 	
 	public function import_item($schema_id, $valid_address = FALSE, $markers = array(), $existing_entry = FALSE, $status = 'OK')
 	{
-		$new_entry     = TRUE;
-		$geocode_error = FALSE;
-		$valid_address = FALSE;
-		$log_item      = array();
+		$new_entry          = TRUE;
+		$geocode_error      = FALSE;
+		$valid_address      = FALSE;
+		$log_item           = array();
+		$has_existing_entry = FALSE;
 		
 		if(!$this->item)
 		{
@@ -602,6 +603,7 @@ class Gmap_import extends BaseClass {
 	public function import_from_csv($csv_data, $schema_id)
 	{
 		$settings     = (array) $this->EE->data_import_model->get_setting($schema_id);
+		$settings['schema_id'] = $schema_id;
 		
 		if(isset($settings['eol']) && !empty($settings['eol']))
 		{
@@ -736,9 +738,10 @@ class Gmap_import extends BaseClass {
 			}
 			else
 			{	
-				$data[] = $this->build_entry_data();		
+				$data[] = $this->build_entry_data();	
 			}
 		}
+		
 			
 		if(count($data) > 0)
 		{
@@ -777,7 +780,7 @@ class Gmap_import extends BaseClass {
 		}	
 		
 		$entries = $csv->connect();
-
+		
 		return $entries;
 	}
 		

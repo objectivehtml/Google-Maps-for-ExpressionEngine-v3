@@ -333,7 +333,7 @@ class File_CSV_DataSource
             foreach ($record as $column => $value) {
                 $header = $this->headers[$column];
                 if (in_array($header, $columns)) {
-                    $item_array[$header] = utf8_decode($value);
+                    $item_array[$header] = $value;
                 }
             }
 
