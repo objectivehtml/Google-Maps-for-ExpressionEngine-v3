@@ -97,10 +97,10 @@ Class Gmap {
 				'fillOpacity'   => $this->param('fill_opacity', $this->param('fillOpacity', .2)),
 				'fillColor'     => $this->param('fill_color', $this->param('fillColor', 'rgb(13, 97, 245)')) 
 			),
-			'script_tag' => $this->param('script_tag', TRUE, TRUE),
-			'window_trigger'        => $this->param('window_trigger', 'click'),
-			'infobox'				=> $this->param('infobox', FALSE, TRUE),
-			'infowindow'			=> array(
+			'script_tag' 		=> $this->param('script_tag', TRUE, TRUE),
+			'window_trigger'    => $this->param('window_trigger', 'click'),
+			'infobox'			=> $this->param('infobox', FALSE, TRUE),
+			'infowindow'		=> array(
 				'options' 	=> array(
 					'alignBottom'            => $this->param('alignBottom', 'false', FALSE),
 					'boxClass'               => $this->param('class', 'ui-infowindow'),
@@ -123,7 +123,7 @@ Class Gmap {
 				'content'				 => $content,
 				'show_one_window'		 => $this->param('show_one_window', FALSE),
 				'open_windows'			 => $this->param('open_windows', $this->param('open_window', FALSE, TRUE), TRUE),
-				'script_tag' 	  		 => $this->param('script_tag', TRUE)
+				'script_tag' 	  		 => $this->param('script_tag', TRUE, TRUE)
 			)
 		);
 		
@@ -1939,7 +1939,7 @@ Class Gmap {
 				
 				if($this->param('match_categories_exact'))
 				{
-					$cat_where = implode($this->param('category_search_type', ' OR '), $cat_where);
+					$cat_where = implode(' '.$this->param('category_search_type', 'OR').' '., $cat_where);
 				}
 				else
 				{

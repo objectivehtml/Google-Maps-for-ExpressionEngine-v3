@@ -13,6 +13,7 @@ class Gmap_import extends BaseClass {
 	
 	public $latitude  = FALSE;
 	public $longitude = FALSE;
+	public $response  = FALSE;
 	public $threshold = 100;
 	public $settings  = FALSE;
 	public $item      = FALSE;
@@ -292,7 +293,16 @@ class Gmap_import extends BaseClass {
 		}
 		else
 		{
-			exit('google map geocode');
+			$data = $this->EE->google_maps->geocode($location);
+			
+			if(isset($data[0]->status) && $data[0]->status == 'OK')
+			{
+				$this->latitude  = $data[0]->results[0]->geometry->location->lat;
+				$this->longitude = $data[0]->results[0]->geometry->location->lng;
+				$this->response  = $data;
+			}
+			
+			return $data;
 		}
 	}
 	
@@ -333,7 +343,7 @@ class Gmap_import extends BaseClass {
 			}
 			else
 			{
-				$this->geocode($item->geocode, TRUE);
+				$this->geocode($item->geocode, config_item('gmap_import_use_yahoo'));
 				
 				if($entries['existing_entry'])
 				{
@@ -474,8 +484,13 @@ class Gmap_import extends BaseClass {
 			
 			if(!empty($settings->gmap_field))
 			{	
+				if($this->response)
+				{
+					$markers = $this->response[0]->results;
+				}
+				
 				$map_data = $this->EE->google_maps->build_response(array('markers' => $markers));
-			
+				
 				$data['field_id_'.$settings->gmap_field] = $map_data;
 				$data['field_ft_'.$settings->gmap_field] = 'none';
 			}

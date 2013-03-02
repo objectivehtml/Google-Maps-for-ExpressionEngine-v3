@@ -103,7 +103,7 @@ $config['gmap_import_skip_rows'] = 0;
  *  account.
  */
 
-$config['gmap_import_use_yahoo'] = TRUE;
+$config['gmap_import_use_yahoo'] = FALSE;
 
 $config['gmap_import_client_key'] = 'dj0yJmk9ODB6RDBnMktDSzNxJmQ9WVdrOVRUbDJRbTVvTTJVbWNHbzlNVEU0TURZeU1qZzJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD01OA--';
 

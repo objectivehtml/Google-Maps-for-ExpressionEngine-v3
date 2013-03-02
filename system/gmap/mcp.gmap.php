@@ -269,24 +269,7 @@ class Gmap_mcp {
 		
 		$this->EE->gmap_import->import_pool($schema_id);
 		
-		exit('stop');
-		
-		require(PATH_THIRD . 'gmap/libraries/YahooBossGeocoder.php');
-		 
-		$boss = new YahooBossGeocoder(array(
-			'consumer_key'    => config_item('gmap_consumer_key'),
-			'consumer_secret' => config_item('gmap_consumer_secret'),
-			'appid'		      => config_item('gmap_import_appid')
-		));
-		
-		$boss->setLocation(array(
-			'city' => 'Noblesville',
-			'state' => 'IN'
-		));
-		
-		
-		exit('test');
-		
+		exit();	
 	}
 	
 	public function import_item_action()
