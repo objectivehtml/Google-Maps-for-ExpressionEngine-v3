@@ -65,6 +65,14 @@
 	</tbody>
 </table>
 
+<hr>
+
+<h3>Cron URL</h3>
+
+<p>If you wish to geocode your entries with CRON, use the follow URL. Be sure to replace the X with your specific schema ID. To adjust the settings for each CRON, open your gmap_config.php file and find the applicable settings.</p>
+
+<p><b><?php echo $cron_url?></b></p>
+
 <form id="change-status" action="<?php echo $status_url?>" method="post">
 	<h3><label for="status">New Status</label></h3>
 	<p style="padding:.5em 0;">You may change the status to all the entries in the channel the schema is assigned to.</p>

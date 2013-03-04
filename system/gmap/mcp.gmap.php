@@ -51,6 +51,7 @@ class Gmap_mcp {
 			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_data_action'),
 			'status_url' => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'change_statuses'),
 			'clear_pool_url' => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'clear_pool'),
+			'cron_url' => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'cron_import_action').'&schema_id=X',			
 			'settings' => $this->EE->data_import_model->get_settings(),
 			'stats'    => $this->EE->data_import_model->get_stats(),
 			'import_url' => $this->cp_url('import_pool'),

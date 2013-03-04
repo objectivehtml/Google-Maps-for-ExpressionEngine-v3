@@ -5,14 +5,39 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.1.2
- * @build		20130128
+ * @version		3.2.0
+ * @build		20130302
  */
 
-#### 3.1.3
-##### 1/28/2013
+#### 3.2.0
+##### 03/02/2013
 
 - (Feature) Added a new grand_total_results to the variables getting parsed by exp:gmap:results
+- (Feature) Added new cache_post param to the exp:gmap:results tag
+- (Feature) Added a new variable to the exp:gmap:results tag called {paginate} which 
+- (Feature) Add new match_categories_exact parameter that allows people to match the exact categories they have check with an OR operator.
+- (Feature) Add category_search_type parameter to control if the cat search uses AND or OR keywords
+- (Feature) Add new match_category_operator to change the operator if a match_category parameter is defined.
+- (Feature) Added a CAT_COUNT variable to the match_category parameter that will be replaced with the category count.
+- (Feature) Added a new tag: {exp:gmap:world_borders} tag
+- (Feature) Added a new tag: {exp:gmap:current_location}
+- (Feature) Added a new tag: {exp:gmap:event}
+- (Feature) Added new bulk geocoder with CRON and Yahoo BOSS commercial API support.
+- (Feature) Added the ability to duplicate a schema.
+- (Feature) Added new config var to skip rows in a dataset during import
+- (Feature) Added new marker options like animate to the field type tag. Now all Google Maps properties are supported.
+- (Bug Fix) Fixed a bug that prevented certain variables from parsing correcting when using the parse_tags="true" parameter.
+- (Bug Fix) Fixed a bug preventing some Windows servers from parsing the regex pattern.
+- (Bug Fix) Fixed a bug with deleting schemas.
+- (Bug Fix) Make the ID param always default to "map" and is not required.
+- (Bug Fix) Fixed a bug that caused path's of the marker icons in the FT to break.
+- (Bug Fix) Fixed a bug that prevented a user from overriding the form's action in the template.
+- (Bug Fix) Fixed a parsing issue in the exp:gmap:results tag
+- (Bug Fix) Fixed PHP short tag
+- (Bug Fix) Fixed the bug that caused a SQL error if no validation location was found.
+- (Bug Fix) Overall improvements and bug fixes to the entire geocoder
+- (Bug Fix) Fixed several MSM performance issues when using the search and fieldtype with large sites.
+- (Bug Fix) Fixed a bug preventing info windows from displaying when using the duplicate_markers parameter.
 
 #### 3.1.2
 ##### 1/28/2013

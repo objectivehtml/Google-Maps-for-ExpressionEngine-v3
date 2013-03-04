@@ -1939,7 +1939,7 @@ Class Gmap {
 				
 				if($this->param('match_categories_exact'))
 				{
-					$cat_where = implode(' '.$this->param('category_search_type', 'OR').' '., $cat_where);
+					$cat_where = implode(' '.$this->param('category_search_type', 'OR').' ', $cat_where);
 				}
 				else
 				{
