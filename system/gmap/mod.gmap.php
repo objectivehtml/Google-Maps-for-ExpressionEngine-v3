@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.1.1
- * @build		20121204
+ * @version		3.2.1
+ * @build		20120304
  */
 
 Class Gmap {

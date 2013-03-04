@@ -7,8 +7,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.1.0
- * @build		20121203
+ * @version		3.2.1
+ * @build		20120304
  */
 
 include 'config/gmap_config.php';
@@ -311,7 +311,6 @@ class Gmap_upd {
         $this->version = config_item('gmap_version');
         
 		$this->EE->load->library('data_forge');
-		$this->EE->load->model('kml_model');
 		
 		$this->EE->data_forge->update_tables($this->tables);
 		
@@ -345,7 +344,6 @@ class Gmap_upd {
 		
 		$this->_set_defaults();
 		
-		$this->EE->load->model('kml_model');
 		$this->EE->kml_model->install();
 			
 		return TRUE;
