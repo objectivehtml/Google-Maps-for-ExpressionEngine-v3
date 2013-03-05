@@ -1,7 +1,11 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 require_once 'BaseClass.php';
-require_once 'OAuth.php';
+
+if(!class_exists('OAuthConsumer'))
+{
+	require_once 'OAuth.php';
+}
 
 class YahooBossGeocoder extends BaseClass {
 	
