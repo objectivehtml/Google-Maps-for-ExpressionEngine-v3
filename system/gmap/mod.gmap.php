@@ -645,8 +645,15 @@ Class Gmap {
 		
 		if($address)
 		{
-			$latitude 	= $address;
-			$longitude 	= FALSE;
+			$address   = $this->EE->google_maps->geocode($address);
+			
+			if($address[0]->status != "OK")
+			{
+				return;
+			}
+			
+			$latitude 	= $address[0]->results[0]->geometry->location->lat;
+			$longitude 	= $address[0]->results[0]->geometry->location->lng;
 		}
 		
 		$response = $this->EE->google_maps->center($map_id, $latitude, $longitude);
