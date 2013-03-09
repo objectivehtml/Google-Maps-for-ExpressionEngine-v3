@@ -515,6 +515,7 @@ Class Gmap {
 		$close_button 	= $this->param('close_button', 'http://www.google.com/intl/en_us/mapfiles/close.gif');
 		$margin			= '';
 		
+		
 		$marker_js = $this->EE->google_maps->marker(array(
 			'id' 					=> $map_id, 
 			'options' 				=> $options,
@@ -553,7 +554,7 @@ Class Gmap {
 			'clustering'            => $this->param('clustering', FALSE, TRUE),
 			'duplicate_markers'     => $this->param('duplicate_markers', FALSE, TRUE),
 			'window_trigger'        => $this->param('window_trigger', 'click'),
-			'redirect'        		=> $this->param('redirect', FALSE, TRUE)
+			'redirect'        		=> $this->param('redirect', FALSE)
 		));
 		
 		/* -------------------------------------------
