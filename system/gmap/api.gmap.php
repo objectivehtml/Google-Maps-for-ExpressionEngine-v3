@@ -20,6 +20,11 @@ class Gmap_api extends Base_API {
 		$this->EE->load->library('Google_maps');
 	}
 	
+	public function build_response($response)
+	{
+		return $this->EE->google_maps->build_response($response);
+	}
+	
 	public function geocode($query, $limit = FALSE, $offset = 0)
 	{
 		return $this->EE->google_maps->geocode($query, $limit, $offset);
