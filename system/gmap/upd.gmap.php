@@ -351,6 +351,11 @@ class Gmap_upd {
 	
 	public function update($current = '')
 	{	
+		if(get_class($this->EE) == 'Wizard')
+		{
+			return;
+		}
+		
 		$this->EE->data_forge = new Data_forge();
 		$this->EE->data_forge->update_tables($this->tables);
 		
