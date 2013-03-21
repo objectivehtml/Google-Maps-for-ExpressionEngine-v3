@@ -647,6 +647,67 @@ class Gmap_ft extends EE_Fieldtype {
 		return implode("\n", $formatted_address);
 	}
 		
+	public function replace_address_component($data, $params, $tagdata = FALSE)
+	{
+		// Set the default parameters
+		
+		$params = array_merge(array(
+			'type'         => FALSE,
+			'alias_county' => 'US',
+			'delimeter'	   => ' ',
+			'output'	   => 'long_name'
+		), $params);
+		
+		$components = array();
+		$data       = json_decode($data);
+		
+		foreach($data as $index => $obj)
+		{
+			if(isset($obj->results))
+			{
+				foreach($obj->results as $index => $obj_components)
+				{
+					$components = array_merge($components, $obj_components->address_components);
+				}
+			}
+		}
+		
+		$return = array();
+		
+		$aliases = array(
+			'US' => array(
+				'city'     => 'locality',
+				'county'   => 'administrative_area_level_2',
+				'township' => 'administrative_area_level_3',
+				'state'    => 'administrative_area_level_1',
+				'zip'	   => 'postal_code',
+				'zipcode'  => 'postal_code',
+				'zip_code' => 'postal_code'
+			)
+		);
+		
+		if($params['type'])
+		{
+			foreach($aliases[$params['alias_county']] as $alias => $component)
+			{
+				if($params['type'] == $alias)
+				{
+					$params['type'] = $component;
+				}
+			}	
+					
+			foreach($components as $component)
+			{
+				if(in_array($params['type'], $component->types))
+				{
+					$return[] = $component->{$params['output']};
+				}
+			}
+		}
+		
+		return implode($params['delimeter'], $return);
+	}
+		
 	public function replace_total_markers($data, $params, $tagdata = FALSE)
 	{
 		$data = json_decode($data);
