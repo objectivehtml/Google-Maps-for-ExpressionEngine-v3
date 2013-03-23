@@ -43,7 +43,7 @@ class Gmap_import extends BaseClass {
 		}
 	}
 	
-	private function build_entry_data()
+	private function build_entry_data($force_geocoder = FALSE)
 	{
 		$entry        = $this->entry;
 		$fields       = $this->fields;
@@ -55,8 +55,8 @@ class Gmap_import extends BaseClass {
 		$title 		= $settings['title'];
 					
 		$entry_data = array(
-			'status' 	=> $settings['status'],
-			'author_id' => $settings['author_id']
+			'status'         => $settings['status'],
+			'author_id'      => $settings['author_id'],
 		);
 		
 		foreach($settings['channel_fields'] as $channel_field)
@@ -156,7 +156,8 @@ class Gmap_import extends BaseClass {
 			'geocode'             => $this->trim($geocode),
 			'data'                => json_encode($entry_data),
 			'entry'               => json_encode($entry),
-			'categories'          => implode('|', $entry_categories)
+			'categories'          => implode('|', $entry_categories),
+			'force_geocoder' 	  => $force_geocoder
 		);
 	}
 	
@@ -272,8 +273,8 @@ class Gmap_import extends BaseClass {
 		if($use_yahoo)
 		{	
 			$boss = new YahooBossGeocoder(array(
-				'consumer_key'    => config_item('gmap_consumer_key'),
-				'consumer_secret' => config_item('gmap_consumer_secret'),
+				'consumer_key'    => config_item('gmap_import_client_key'),
+				'consumer_secret' => config_item('gmap_import_client_secret'),
 				'appid'		      => config_item('gmap_import_appid')
 			));
 			
@@ -337,7 +338,7 @@ class Gmap_import extends BaseClass {
 			
 			$this->item = $entries['item'];
 			
-			if($entries['valid_address'])
+			if($entries['valid_address'] && (int) $item->force_geocoder != 1)
 			{	
 				$this->import_item($item->schema_id, $entries['valid_address'], array(), (object) $entries['existing_entry'], FALSE);
 			}
@@ -468,7 +469,7 @@ class Gmap_import extends BaseClass {
 			}
 		}
 		
-		if(!$valid_address)
+		if(!$valid_address || (int) $this->item->force_geocoder == 1)
 		{
 			$markers = json_decode($markers);
 	
@@ -617,7 +618,10 @@ class Gmap_import extends BaseClass {
 	
 	public function import_from_csv($csv_data, $schema_id)
 	{
-		$settings     = (array) $this->EE->data_import_model->get_setting($schema_id);
+		$force_geocoder = $this->EE->input->get_post('force_geocoder');
+		$force_geocoder = $force_geocoder ? 1 : 0;
+		
+		$settings = (array) $this->EE->data_import_model->get_setting($schema_id);
 		$settings['schema_id'] = $schema_id;
 		
 		if(isset($settings['eol']) && !empty($settings['eol']))
@@ -670,7 +674,6 @@ class Gmap_import extends BaseClass {
 					}
 					
 					$geocode .= isset($entry[$field->column_name]) ? $entry[$field->column_name] . ' ' : NULL;
-				
 				}
 			}
 			
@@ -730,8 +733,7 @@ class Gmap_import extends BaseClass {
 			{				
 				if(!isset($data[$entry[$settings['group_by']]]))
 				{
-					$data[$entry[$settings['group_by']]] = $this->build_entry_data();	
-					
+					$data[$entry[$settings['group_by']]] = $this->build_entry_data($force_geocoder);
 				}
 				else
 				{
@@ -753,11 +755,11 @@ class Gmap_import extends BaseClass {
 			}
 			else
 			{	
-				$data[] = $this->build_entry_data();	
+				$data[] = $this->build_entry_data($force_geocoder);	
 			}
 		}
 		
-			
+		
 		if(count($data) > 0)
 		{
 			$this->EE->db->insert_batch('gmap_import_pool', $data);	

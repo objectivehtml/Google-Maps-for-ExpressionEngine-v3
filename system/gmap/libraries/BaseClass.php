@@ -26,10 +26,7 @@ if(!class_exists('BaseClass'))
 	    {
 		    foreach($data as $key => $value)
 		    {
-			    if(property_exists($this, $key))
-			    {
-				    $this->$key = $value;
-			    }
+			    $this->{'set_'.$key}($value);
 		    }
 		    
 		    return;
