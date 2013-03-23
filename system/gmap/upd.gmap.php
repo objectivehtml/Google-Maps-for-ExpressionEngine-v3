@@ -157,6 +157,10 @@ class Gmap_upd {
 			),
 			'username' => array(
 				'type'				=> 'text'
+			),
+			'force_geocode' => array(
+				'type'				=> 'int',
+				'constraint'		=> 1
 			)
 		),
 		

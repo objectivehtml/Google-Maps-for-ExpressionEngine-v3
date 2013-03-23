@@ -18,6 +18,8 @@
 		<input type="file" name="file" id="file" />
 	</p>
 	
+	<p><label><input type="checkbox" name="force_geocoder" value="true" /> Force the geocoder to run even if the existing entry has a valid location?</label></p>
+	
 	<input type="hidden" name="return" value="<?php echo $return?>" />
 	
 	<button type="submit" class="submit">Add to Pool</button>
