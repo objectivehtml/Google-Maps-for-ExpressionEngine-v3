@@ -201,6 +201,8 @@ class Gmap_mcp {
 							
 							itemsRemaining = data.items_in_pool;
 							
+							$(\'.items\').html(itemsRemaining);
+							$(\'.success\').html(data.total_entries_imported);
 							$(\'.last-ran\').html(data.importer_last_ran);
 							$(\'.total-runs\').html(data.importer_total_runs);
 							$(\'.progress-bar, .geocoding\').show();
@@ -252,7 +254,7 @@ class Gmap_mcp {
 	
 	public function import_start_action()
 	{
-		$id 	  = $this->EE->input->get_post('id');
+		$id = $this->EE->input->get_post('id');
 		
 		$start_data = $this->EE->data_import_model->start_import($id);
 		$start_data->importer_last_ran = date('Y-m-d h:i A', $start_data->importer_last_ran);

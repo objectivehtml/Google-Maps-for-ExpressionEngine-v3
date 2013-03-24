@@ -157,6 +157,7 @@ class Data_import_model extends CI_Model {
 	public function save_settings($schema_id, $settings)
 	{
 		$existing = $this->db->where('schema_id', $schema_id)->get('gmap_import_settings')->num_rows() > 0 ? TRUE : FALSE;
+		$create_stats = FALSE;
 		
 		if(!$existing)
 		{
@@ -164,8 +165,26 @@ class Data_import_model extends CI_Model {
 				'settings'   => $settings
 			));
 			
-			$schema_id = $this->db->insert_id();
+			$schema_id    = $this->db->insert_id();
+			$create_stats = TRUE;
+		}
+		else
+		{
+			$this->db->where('schema_id', $schema_id);
+			$this->db->update('gmap_import_settings', array(
+				'settings'   => $settings
+			));
+					
+			$existing = $this->db->where('schema_id', $schema_id)->get('gmap_import_stats')->num_rows() > 0 ? TRUE : FALSE;
 			
+			if(!$existing)
+			{
+				$create_stats = TRUE;
+			}
+		}
+		
+		if($create_stats)
+		{
 			$this->db->insert('gmap_import_stats', array(
 				'schema_id'              => $schema_id, 
 				'schema_name'            => json_decode($settings)->id, 
@@ -173,13 +192,6 @@ class Data_import_model extends CI_Model {
 				'total_entries_failed'   => 0,
 				'importer_last_ran'      => 0,
 				'importer_total_runs'    => 0,
-			));
-		}
-		else
-		{
-			$this->db->where('schema_id', $schema_id);
-			$this->db->update('gmap_import_settings', array(
-				'settings'   => $settings
 			));
 		}
 	}
