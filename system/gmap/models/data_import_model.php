@@ -200,6 +200,9 @@ class Data_import_model extends CI_Model {
 	{
 		$this->db->where('schema_id', $schema_id);
 		$this->db->delete('gmap_import_settings');
+		
+		$this->db->where('schema_id', $schema_id);
+		$this->db->delete('gmap_import_stats');
 	}
 	
 	public function duplicate_schema($schema_id)
