@@ -1,8 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 require_once('BaseClass.php');
-require_once('DataSource.php');
-require_once('YahooBossGeocoder.php');			 
+require_once('DataSource.php');		 
 			 
 class Gmap_import extends BaseClass {
 		
@@ -272,6 +271,11 @@ class Gmap_import extends BaseClass {
 	{
 		if($use_yahoo)
 		{	
+			if(!class_exists('YahooBossGeocoder'))
+			{
+				require_once('YahooBossGeocoder.php');	
+			}
+			
 			$boss = new YahooBossGeocoder(array(
 				'consumer_key'    => config_item('gmap_import_client_key'),
 				'consumer_secret' => config_item('gmap_import_client_secret'),
