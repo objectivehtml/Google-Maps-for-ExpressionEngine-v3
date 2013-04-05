@@ -158,7 +158,7 @@ class Gmap_upd {
 			'username' => array(
 				'type'				=> 'text'
 			),
-			'force_geocode' => array(
+			'force_geocoder' => array(
 				'type'				=> 'int',
 				'constraint'		=> 1
 			)
