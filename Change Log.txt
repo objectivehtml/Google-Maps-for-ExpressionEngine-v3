@@ -14,6 +14,12 @@
 
 - (Bug Fix) Fixed a bug that could cause a 500 error when updated EE.
 - (API) Updated api.gmap.php file with the build_response() method. This method was added for Geocoder (the add-on) specifically.
+- (Bug Fixed) Fixed a couple issues with the Yahoo geocoder service and importer.
+- (Bug Fix) Updated BaseClass
+- (Bug Fix) Fixed a bug that prevented the initial importer stats row from being created properly
+- (Bug Fix) Made it so when you delete a schema, it also deletes the related stats
+- (Bug Fix) Prevented YahooBossGeocoder.php from getting loaded everytime
+- (Bug Fix) Fixed an issue with the fieldtype that caused the map to reset the data if the defer map load setting is used.
 
 #### 3.2.2
 ##### 03/09/2013
