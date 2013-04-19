@@ -1139,8 +1139,10 @@ var Gmap  = function($wrapper, options) {
 			];
 			
 			t.updateCustomField(updateFields, updateValues);
-					
-			t.ui.input.html(JSON.stringify(response));
+			
+			if(t.isLoaded) {
+				t.ui.input.html(JSON.stringify(response));
+			}
 		},
 		
 		updateCustomField: function(setFields, values) {
