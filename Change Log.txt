@@ -9,6 +9,12 @@
  * @build		20130309
  */
 
+#### 3.2.3
+##### 04/19/2013
+
+- (Bug Fix) Fixed a bug that could cause a 500 error when updated EE.
+- (API) Updated api.gmap.php file with the build_response() method. This method was added for Geocoder (the add-on) specifically.
+
 #### 3.2.2
 ##### 03/09/2013
 - (Bug Fix) Fixed an issue that caused the redirect parameter to not work properly.
