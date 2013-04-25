@@ -5,9 +5,14 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.2.3
- * @build		20130419
+ * @version		3.2.4
+ * @build		20130425
  */
+
+#### 3.2.4
+##### 04/25/2013
+
+- (Bug Fix) Fixed all known 2.6.0 compatibility issues. Please report any 2.6.0 issues as you see them.
 
 #### 3.2.3
 ##### 04/19/2013
