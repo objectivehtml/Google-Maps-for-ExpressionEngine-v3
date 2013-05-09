@@ -730,7 +730,7 @@ var Gmap  = function($wrapper, options) {
 					search    = {'location': latLng};
 					isCoord   = true;
 				}
-
+				
 				geocoder.geocode(search, function(results, status) {
 					//$('#'+t.settings.response).val(results);
 					if(isCoord && status == 'ZERO_RESULTS') {
@@ -752,7 +752,7 @@ var Gmap  = function($wrapper, options) {
 					
 		   			$t.trigger('gmapGeocodeStop', [results, status, t]);
 		    
-					callback(results, status);
+					callback(results, status, isCoord);
 				});
 			})();		
 		},
@@ -1370,9 +1370,9 @@ var Gmap  = function($wrapper, options) {
 	t.ui.button.click(function() {
 		var value = t.ui.geocoder.val();
 		
-		t.geocode(value, function(results, status) {
+		t.geocode(value, function(results, status, isCoord) {
 			if(status == "OK") {
-				if(results.length > 1) {
+				if(results.length > 1 && !isCoord) {
 					
 					t.ui.suggestions.fadeIn('fast');
 					t.ui.suggestionStatistics.html(results.length+' possible locations');
