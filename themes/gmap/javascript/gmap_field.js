@@ -727,7 +727,7 @@ var Gmap  = function($wrapper, options) {
 					var coord = address.split(',');
 					latLng = new google.maps.LatLng(coord[0], coord[1]);
 
-					search    = {'location': latLng};
+					search    = {latLng: latLng};
 					isCoord   = true;
 				}
 				
@@ -746,10 +746,13 @@ var Gmap  = function($wrapper, options) {
 							}
 						}];
 						status = 'OK';
-					};
+					}
+					else if(isCoord) {
+						results[0].geometry.location = latLng;
+					}
 
 					t.results = results;
-					
+									
 		   			$t.trigger('gmapGeocodeStop', [results, status, t]);
 		    
 					callback(results, status, isCoord);
@@ -1391,7 +1394,9 @@ var Gmap  = function($wrapper, options) {
 					var lng = results[0].geometry.location.lng();
 					
 					results = t.saveResponse(results[0], lat, lng);
-				
+					
+					console.log(results);
+					
 					t.addMarker(results);
 					t.ui.geocoder.val('');
 					
