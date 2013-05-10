@@ -1395,8 +1395,6 @@ var Gmap  = function($wrapper, options) {
 					
 					results = t.saveResponse(results[0], lat, lng);
 					
-					console.log(results);
-					
 					t.addMarker(results);
 					t.ui.geocoder.val('');
 					
