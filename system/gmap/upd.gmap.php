@@ -157,6 +157,10 @@ class Gmap_upd {
 			),
 			'username' => array(
 				'type'				=> 'text'
+			),
+			'force_geocoder' => array(
+				'type'				=> 'int',
+				'constraint'		=> 1
 			)
 		),
 		
@@ -298,14 +302,14 @@ class Gmap_upd {
         $this->mod_name 	= str_replace('_upd', '', __CLASS__);
         $this->ext_name		= $this->mod_name . '_ext';
         $this->mcp_name		= $this->mod_name . '_mcp';
-        
-        require_once PATH_THIRD.'gmap/models/kml_model.php';
-        
-        $this->EE->kml_model = new Kml_model();
     }
 	
 	public function install()
 	{	
+   	 	require_once PATH_THIRD.'gmap/models/kml_model.php';
+   	 	  
+    	$this->EE->kml_model = new Kml_model();
+    	
         $this->EE->load->config('gmap_config');
         
         $this->version = config_item('gmap_version');
@@ -356,6 +360,10 @@ class Gmap_upd {
 			return;
 		}
 		
+   	 	require_once PATH_THIRD.'gmap/models/kml_model.php';
+   	 	  
+    	$this->EE->kml_model = new Kml_model();
+    	
 		$this->EE->data_forge = new Data_forge();
 		$this->EE->data_forge->update_tables($this->tables);
 		

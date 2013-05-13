@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.19
- * @build		20120215
+ * @version		0.8.20
+ * @build		20120404
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -73,7 +73,7 @@ if(!class_exists('Channel_data_lib'))
 		{
 			$return = FALSE;
 			
-			if(preg_match("/((^|\s)or.+)|((^|\s)OR.+)/", $field))
+			if(preg_match("/((^|\s)or\s.+)|((^|\s)OR\s.+)/", $field))
 			{
 				$return = TRUE;	
 			}
@@ -796,6 +796,7 @@ if(!class_exists('Channel_data_lib'))
 			return $this->get_fields(array(
 				'select' 	=> $select,
 				'where'		=> array(
+					'site_id'    => config_item('site_id'),
 					'field_name' => $field_name
 				)
 			));
@@ -1725,12 +1726,13 @@ if(!class_exists('Channel_data_lib'))
 					if($term == 'select')
 					{
 						if(!is_array($param))
+						{
 							$param = array($param);
-
+						}
 
 						foreach($param as $select)
 						{
-							$this->EE->db->select($select);
+							$this->EE->db->select($select, FALSE, TRUE);
 						}
 					}
 					else if($term == 'where')
@@ -1810,7 +1812,7 @@ if(!class_exists('Channel_data_lib'))
 
 									$concat = ' AND ';
 
-									if(preg_match("/(^or.+)|(^OR.+)/", $where_field))
+									if(preg_match("/(^or\s.+)|(^OR\s.+)/", $where_field))
 									{
 										unset($params['where'][$field]);
 

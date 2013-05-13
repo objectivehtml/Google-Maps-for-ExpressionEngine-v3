@@ -89,6 +89,7 @@ Class Gmap {
 		$content      = $this->EE->TMPL->tagdata;
 		
 		$params = array(
+			'id' 			 => $this->param('id', 'map'),
 			'marker_options' => array(),
 			'circle_options' => array(
 				'strokeWeight'  => $this->param('stroke_weight', $this->param('strokeWeight', 1)),

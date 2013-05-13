@@ -85,7 +85,7 @@ class Google_maps {
 	public function current_location($params = array())
 	{		
 		$params = array_merge(array(
-			'id'             => 'map',
+			'id'             => $params['id'],
 			'script_tag'     => TRUE,
 			'content'        => FALSE,
 			'marker_options' => array(),
@@ -751,7 +751,7 @@ class Google_maps {
 				if($limit === FALSE || $count < $limit && $index >= $offset)
 				{
 					$vars[$count][$prefix.'title'] 				= isset($result->title) ? $result->title : NULL;
-					$vars[$count][$prefix.'content']			= isset($result->title) ? $result->content : NULL;
+					$vars[$count][$prefix.'content']			= isset($result->content) ? $result->content : NULL;
 					$vars[$count][$prefix.'address_components'] = isset($result->address_components) ? $this->object_to_array($result->address_components) : array();
 					$vars[$count][$prefix.'formatted_address']	= isset($result->formatted_address) ? $result->formatted_address : NULL;
 					$vars[$count][$prefix.'latitude']			= $result->geometry->location->lat;

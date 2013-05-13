@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		1.0
- * @build		20120207
+ * @version		1.1.0
+ * @build		20130425
  */
  
 if(!class_exists('Data_forge'))
@@ -168,7 +168,9 @@ if(!class_exists('Data_forge'))
 				}	
 				else
 				{
-					if(count(array_diff($field, $existing_fields[$field_name])) > 0)
+					$diff = array_diff($field, $existing_fields[$field_name]);
+					
+					if(count($diff) > 0)
 					{
 						$column_data[$field_name]['name'] = '`'.$field_name.'`';
 						

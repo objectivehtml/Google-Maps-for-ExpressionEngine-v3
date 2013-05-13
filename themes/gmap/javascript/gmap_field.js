@@ -727,10 +727,10 @@ var Gmap  = function($wrapper, options) {
 					var coord = address.split(',');
 					latLng = new google.maps.LatLng(coord[0], coord[1]);
 
-					search    = {'location': latLng};
+					search    = {latLng: latLng};
 					isCoord   = true;
 				}
-
+				
 				geocoder.geocode(search, function(results, status) {
 					//$('#'+t.settings.response).val(results);
 					if(isCoord && status == 'ZERO_RESULTS') {
@@ -746,13 +746,16 @@ var Gmap  = function($wrapper, options) {
 							}
 						}];
 						status = 'OK';
-					};
+					}
+					else if(isCoord) {
+						results[0].geometry.location = latLng;
+					}
 
 					t.results = results;
-					
+									
 		   			$t.trigger('gmapGeocodeStop', [results, status, t]);
 		    
-					callback(results, status);
+					callback(results, status, isCoord);
 				});
 			})();		
 		},
@@ -1139,8 +1142,10 @@ var Gmap  = function($wrapper, options) {
 			];
 			
 			t.updateCustomField(updateFields, updateValues);
-					
-			t.ui.input.html(JSON.stringify(response));
+			
+			if(t.isLoaded) {
+				t.ui.input.html(JSON.stringify(response));
+			}
 		},
 		
 		updateCustomField: function(setFields, values) {
@@ -1368,9 +1373,9 @@ var Gmap  = function($wrapper, options) {
 	t.ui.button.click(function() {
 		var value = t.ui.geocoder.val();
 		
-		t.geocode(value, function(results, status) {
+		t.geocode(value, function(results, status, isCoord) {
 			if(status == "OK") {
-				if(results.length > 1) {
+				if(results.length > 1 && !isCoord) {
 					
 					t.ui.suggestions.fadeIn('fast');
 					t.ui.suggestionStatistics.html(results.length+' possible locations');
@@ -1389,7 +1394,7 @@ var Gmap  = function($wrapper, options) {
 					var lng = results[0].geometry.location.lng();
 					
 					results = t.saveResponse(results[0], lat, lng);
-				
+					
 					t.addMarker(results);
 					t.ui.geocoder.val('');
 					
