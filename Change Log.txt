@@ -17,7 +17,7 @@
 - (Feature) Added Low Variables support
 - (Feature) Added support for new UI updates introduced at Google IO13
 - (Feature) Added 3 new parameters to control the zoom for the current location tag.
-- (Feature) Added 2 secret new features that will bring some really powerful stuff in the near future. :)
+- (Feature) Added 2 super secret new features that will bring some really powerful stuff in the near future. :)
 - (Bug Fix) Fixed a typo, made an alias parameter called location_delimiter. The old param still works too.
 
 #### 3.2.5
