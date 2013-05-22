@@ -1789,7 +1789,7 @@ Class Gmap {
 
 					if(!empty($response[0]['formatted_address']))
 					{
-						$vars[0]['formatted_address_string'] .= $response[0]['formatted_address'] . $this->param('location_delimeter', ' - ');
+						$vars[0]['formatted_address_string'] .= $response[0]['formatted_address'] . $this->param('location_delimiter', $this->param('location_delimeter', ' - '));
 					}
 					
 					if($index == 0)

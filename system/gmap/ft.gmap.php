@@ -455,8 +455,8 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		$params = array_merge(array(
 			'type'         => FALSE,
-			'alias_county' => 'US',
-			'delimeter'	   => ' ',
+			'country_code' => 'US',
+			'delimiter'	   => ' ',
 			'output'	   => 'long_name'
 		), $params);
 		
@@ -478,19 +478,31 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		$aliases = array(
 			'US' => array(
-				'city'     => 'locality',
-				'county'   => 'administrative_area_level_2',
-				'township' => 'administrative_area_level_3',
-				'state'    => 'administrative_area_level_1',
-				'zip'	   => 'postal_code',
-				'zipcode'  => 'postal_code',
-				'zip_code' => 'postal_code'
+				'street_number' => 'street_number',
+				'street'        => 'route',
+				'city'          => 'locality',
+				'county'        => 'administrative_area_level_2',
+				'township'      => 'administrative_area_level_3',
+				'state'         => 'administrative_area_level_1',
+				'zip'           => 'postal_code',
+				'zipcode'       => 'postal_code',
+				'zip_code'      => 'postal_code',
+				'country'       => 'country',
+			),
+			'AU' => array(
+				'street_number' => 'street_number',
+				'street'        => 'route',
+				'city'          => 'locality',
+				'suburb'        => 'locality',
+				'state'         => 'administrative_area_level_1',
+				'country'       => 'country',
+				'postcode'      => 'postal_code'
 			)
 		);
 		
 		if($params['type'])
 		{
-			foreach($aliases[$params['alias_county']] as $alias => $component)
+			foreach($aliases[$params['country_code']] as $alias => $component)
 			{
 				if($params['type'] == $alias)
 				{
@@ -507,7 +519,7 @@ class Gmap_ft extends EE_Fieldtype {
 			}
 		}
 		
-		return implode($params['delimeter'], $return);
+		return implode($params['delimiter'], $return);
 	}
 
 	/**
