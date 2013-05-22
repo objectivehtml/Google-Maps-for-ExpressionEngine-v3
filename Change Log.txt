@@ -6,14 +6,18 @@
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
  * @version		3.3.0
- * @build		20130419
+ * @build		20130522
  */
 
 #### 3.3.0
 ##### 05/22/2013
 
 - (Feature) Added a new fieldtype tag, :address_component to return a single address component from the results loop.
-- (Feature) 
+- (Feature) Added Matrix support
+- (Feature) Added Low Variables support
+- (Feature) Added support for new UI updates introduced at Google IO13
+- (Feature) Added better 3 new parameters to control the zoom for the current location tag.
+
 
 #### 3.2.5
 ##### 05/13/2013
