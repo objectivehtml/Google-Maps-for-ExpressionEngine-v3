@@ -25,6 +25,8 @@ class Gmap_ft extends EE_Fieldtype {
 		'version'		=> GMAP_VERSION
 	);
 	
+	public $matrix			    = FALSE;
+	public $low_variables 		= FALSE;
 	public $has_array_data 		= TRUE;
 	public $safecracker			= FALSE;
 		
@@ -100,9 +102,20 @@ class Gmap_ft extends EE_Fieldtype {
 	{
 		$this->EE->load->driver('channel_data');
 		
-		$settings = $this->EE->channel_data->get_field($this->settings['field_id'])->row('field_settings');
+		if($this->low_variables)
+		{
+			$settings = $this->settings;
+		}
+		else if($this->matrix)
+		{
+			$settings = $this->settings;
+		}
+		else
+		{
+			$settings = $this->EE->channel_data->get_field($this->settings['field_id'])->row('field_settings');
+		}
 		
-		$settings = array_merge($merge, unserialize(base64_decode($settings)));
+		$settings = array_merge($merge, is_string($settings) ? unserialize(base64_decode($settings)) : $settings);
 		
 		foreach($settings as $index => $setting)
 		{
@@ -117,6 +130,22 @@ class Gmap_ft extends EE_Fieldtype {
 		return $settings;
 	}
 	
+	public function display_var_field($data)
+	{
+		$this->low_variables = TRUE;
+		
+		$this->EE->load->add_package_path(PATH_THIRD . 'gmap');
+		
+		return $this->display_field($data);
+	}
+	
+	public function display_cell($data)
+	{
+		$this->matrix = TRUE;
+		
+		return $this->display_field($data);
+	}
+	
 	/**
 	 * Displays the fieldtype
 	 *
@@ -125,7 +154,7 @@ class Gmap_ft extends EE_Fieldtype {
 	 * @return	string
 	 */
 	
-	function display_field($data)
+	public function display_field($data)
 	{	
 		$this->EE->load->driver('channel_data');
 		
@@ -144,30 +173,46 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		$this->EE->theme_loader->requirejs   = TRUE;
 		
-		$field	 		= $this->EE->channel_data->get_field($this->settings['field_id'])->row();
-		$field_group	= $this->EE->channel_data->get_field_group($field->group_id)->row();
-		//$channel		= $this->EE->channel_data->get_channel($field_group->channel_id);
-		
-		$fields			= $this->EE->channel_data->get_channel_fields($field->group_id)->result();
-		
-		$fields_array	= array();
-		
-		foreach($fields as $row)
+		if(!$this->low_variables)
 		{
-			$fields_array['field_id_'.$row->field_id] = $row;
+			$field	 		= $this->EE->channel_data->get_field($this->settings['field_id'])->row();
+			$field_group	= $this->EE->channel_data->get_field_group($field->group_id)->row();
+			//$channel		= $this->EE->channel_data->get_channel($field_group->channel_id);
+			
+			$fields			= $this->EE->channel_data->get_channel_fields($field->group_id)->result();
+			
+			$fields_array	= array();
+			
+			foreach($fields as $row)
+			{
+				$fields_array['field_id_'.$row->field_id] = $row;
+			}
+		}
+		else
+		{
+			$field = array();
+			$field_group = array();
+			$fields = array();
+			$fields_array = array();
+			
+			$this->settings['field_id'] = $this->var_id;
 		}
 		
-		$this->settings = $this->get_settings(array(
+		$this->settings = $this->get_settings(!$this->low_variables ? array(
 			'field_name' 	=> $field->field_name,
 			'field_id' 		=> $this->settings['field_id']
-		));
+		) : array());
 		
-		$this->settings['field_name'] = $this->field_name;
+		$this->settings['field_name'] = !$this->matrix ? $this->field_name : $this->cell_name;
 		$this->settings['theme_url']  = $this->EE->theme_loader->theme_url();
 		
+		/*
 		$req_fields		= $this->EE->channel_data->get_channel_fields($field->group_id, '*', array(
 			'field_required'	=> 'y'
 		))->result();
+		*/
+		
+		$req_fields = array();
 		
 		$data	 		= empty($data) ? 'false' : html_entity_decode($data);
 		$field			= json_encode($field);
@@ -244,51 +289,72 @@ class Gmap_ft extends EE_Fieldtype {
 		$this->EE->cp->add_to_head($settings_js);
 		
 		$js = '
-			var options = {
-				settings: '.$settings.',
-				response: '.$data.',
-				markers: [],
-				windows: [],
-				field: '.$field.',
-				fields: '.$fields.',
-				reqFields: '.$req_fields.',
-				icons: '.$icons.',
-				plugins: '.json_encode($third_party_js).',
-				safecracker: '.(isset($this->EE->safecracker_lib) ? 'true' : 'false').'
-			};
+		var options = {
+			settings: '.$settings.',
+			response: '.$data.',
+			markers: [],
+			windows: [],
+			field: '.$field.',
+			fields: '.$fields.',
+			reqFields: '.$req_fields.',
+			icons: '.$icons.',
+			plugins: '.json_encode($third_party_js).',
+			safecracker: '.(isset($this->EE->safecracker_lib) ? 'true' : 'false').'
+		};
+	
+		/* 
+		 * DEPRECATED since v3.1 - 11/07/2012
+		 * Going forward, use the Gmap.instance array to access the Gmap objects.
+		 */
+		 
+		if(!GmapGlobal.settings) 	GmapGlobal.settings 	= [];
+		if(!GmapGlobal.response)	GmapGlobal.response		= [];
+		if(!GmapGlobal.markers)		GmapGlobal.markers		= [];
+		if(!GmapGlobal.windows)		GmapGlobal.windows		= [];
+		if(!GmapGlobal.field)		GmapGlobal.field		= [];
+		if(!GmapGlobal.fields)		GmapGlobal.fields		= [];
+		if(!GmapGlobal.reqFields)	GmapGlobal.reqFields	= [];
+		if(!GmapGlobal.icons)		GmapGlobal.icons		= [];
+		if(!GmapGlobal.object)		GmapGlobal.object		= [];
+		if(!GmapGlobal.plugins)		GmapGlobal.plugins		= [];
+		if(!GmapGlobal.safecracker)	GmapGlobal.safecracker  = [];
+		if(!GmapGlobal.curl)		GmapGlobal.curl			= "";
 		
-			/* 
-			 * DEPRECATED since v3.1 - 11/07/2012
-			 * Going forward, use the Gmap.instance array to access the Gmap objects.
-			 */
-			 
-			if(!GmapGlobal.settings) 	GmapGlobal.settings 	= [];
-			if(!GmapGlobal.response)	GmapGlobal.response		= [];
-			if(!GmapGlobal.markers)		GmapGlobal.markers		= [];
-			if(!GmapGlobal.windows)		GmapGlobal.windows		= [];
-			if(!GmapGlobal.field)		GmapGlobal.field		= [];
-			if(!GmapGlobal.fields)		GmapGlobal.fields		= [];
-			if(!GmapGlobal.reqFields)	GmapGlobal.reqFields	= [];
-			if(!GmapGlobal.icons)		GmapGlobal.icons		= [];
-			if(!GmapGlobal.object)		GmapGlobal.object		= [];
-			if(!GmapGlobal.plugins)		GmapGlobal.plugins		= [];
-			if(!GmapGlobal.safecracker)	GmapGlobal.safecracker  = [];
-			if(!GmapGlobal.curl)		GmapGlobal.curl			= "";
-			
-			GmapGlobal.settings['.$this->settings['field_id'].']  	= '.$settings.';
-			GmapGlobal.response['.$this->settings['field_id'].']  	= '.$data.';
-			GmapGlobal.markers['.$this->settings['field_id'].']   	= [];
-			GmapGlobal.windows['.$this->settings['field_id'].'] 	= [];
-			GmapGlobal.field['.$this->settings['field_id'].'] 		= '.$field.';
-			GmapGlobal.fields['.$this->settings['field_id'].'] 		= '.$fields.';
-			GmapGlobal.reqFields['.$this->settings['field_id'].'] 	= '.$req_fields.';
-			GmapGlobal.icons['.$this->settings['field_id'].']		= '.$icons.';
-			GmapGlobal.plugins['.$this->settings['field_id'].']		= '.json_encode($third_party_js).';
-			GmapGlobal.safecracker['.$this->settings['field_id'].']	= '.(isset($this->EE->safecracker_lib) ? 'true' : 'false').';
-			
-			new Gmap($("#gmap-wrapper-'.$this->settings['field_id'].'"), options);';
+		GmapGlobal.settings['.$this->settings['field_id'].']  	= '.$settings.';
+		GmapGlobal.response['.$this->settings['field_id'].']  	= '.$data.';
+		GmapGlobal.markers['.$this->settings['field_id'].']   	= [];
+		GmapGlobal.windows['.$this->settings['field_id'].'] 	= [];
+		GmapGlobal.field['.$this->settings['field_id'].'] 		= '.$field.';
+		GmapGlobal.fields['.$this->settings['field_id'].'] 		= '.$fields.';
+		GmapGlobal.reqFields['.$this->settings['field_id'].'] 	= '.$req_fields.';
+		GmapGlobal.icons['.$this->settings['field_id'].']		= '.$icons.';
+		GmapGlobal.plugins['.$this->settings['field_id'].']		= '.json_encode($third_party_js).';
+		GmapGlobal.safecracker['.$this->settings['field_id'].']	= '.(isset($this->EE->safecracker_lib) ? 'true' : 'false').';';
 				
 		$this->EE->theme_loader->output($js);		
+		
+		if(!$this->matrix)
+		{
+			$this->EE->theme_loader->output('new Gmap($("#gmap-wrapper-'.$this->settings['field_id'].'"), options);');
+		}
+		else
+		{
+			$this->EE->theme_loader->output('
+				
+				Matrix.bind(\'gmap\', \'display\', function(cell) {
+					//if(cell.row.isNew) {
+						new Gmap(cell.dom.$td.find(\'.gmap-wrapper\'), Gmap.settings[cell.col.id]);
+					//}
+				});
+			
+			
+				'.($this->matrix ? 'Gmap.settings[\'col_id_'.$this->col_id.'\'] = options;' : NULL).'
+		
+				$(document).ready(function() {
+					//new Gmap($("#gmap-wrapper-'.$this->settings['field_id'].'"), options);
+				});'
+			);	
+		}
 		
 		if($third_party_css = directory_map($directory.'css'))
 		{
@@ -310,10 +376,12 @@ class Gmap_ft extends EE_Fieldtype {
 		//$this->EE->theme_loader->css('jquery.qtip');
 		
 		$vars = array(
+			'low_variables' => $this->low_variables,
+			'matrix'		=> $this->matrix,
 			'settings'		=> $this->settings,
 			'saved_value'	=> $data,
 			'safecracker'	=> $this->safecracker,
-			'field_name'	=> $this->field_name,
+			'field_name'	=> !$this->matrix ? $this->field_name : $this->cell_name,
 			'import_url' 	=> $this->_current_url() . '?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_csv_ft_action')
 		);
 		
@@ -351,7 +419,31 @@ class Gmap_ft extends EE_Fieldtype {
 	{
 		return $data;
 	}
+	
+	public function display_var_settings($data)
+	{	
+		$this->low_variables = TRUE;
 		
+		$this->EE->load->add_package_path(PATH_THIRD . 'gmap');
+		
+		// var_dump($data);exit();
+		
+		return array(
+			array(
+				'Google Maps for ExpressionEngine',
+				$this->display_settings($data)
+			)
+		);
+	}
+	
+	
+	public function display_cell_settings($data)
+	{	
+		$this->matrix = TRUE;
+		
+		return $this->display_settings($data);
+	}
+	
 	/**
 	 * Displays the fieldtype settings
 	 *
@@ -364,10 +456,15 @@ class Gmap_ft extends EE_Fieldtype {
 	{	
 		$this->EE->load->driver('channel_data');
 		
-		$this->EE->load->library('theme_loader', array(
-			'module_name'	=> 'gmap'
-		));
+		if(!isset($this->EE->theme_loader))
+		{
+			$this->EE->load->library('theme_loader', array(
+				'module_name'	=> 'gmap'
+			));
+		}
 				
+		$this->EE->theme_loader->module_name = 'gmap';
+		
 		// $this->EE->theme_loader->requirejs = FALSE;
 		
 		$this->settings = $data;
@@ -404,10 +501,17 @@ class Gmap_ft extends EE_Fieldtype {
 		$this->EE->lang->loadfile('gmap');
 		$this->EE->load->helper('form');
 		
-		$fields			= $this->EE->channel_data->get_fields_by_group($data['group_id'], array(
-			'order_by' => 'field_order',
-			'sort' 	   => 'asc'
-		));
+		if(!$this->low_variables)
+		{
+			$fields			= $this->EE->channel_data->get_fields_by_group($data['group_id'], array(
+				'order_by' => 'field_order',
+				'sort' 	   => 'asc'
+			))->result();
+		}
+		else
+		{
+			$fields = array();
+		}		
 		
 		$vars 			= array();
 		$options		= array('' => '');
@@ -424,20 +528,40 @@ class Gmap_ft extends EE_Fieldtype {
 			$file_options[$file->id] = $file->name;
 		}
 				
-		foreach($fields->result() as $field)
+		foreach($fields as $field)
 		{
 			$options['field_id_'.$field->field_id] = $field->field_name;
 		}
 		
 		foreach($this->default_settings as $setting => $value)
 		{
+			$name = $setting;
+			
+			if($this->low_variables)
+			{
+				$name = 'variable_settings[gmap]['.$name.']';
+			}
+			
 			$value									= isset($data[$setting]) ? $data[$setting] : $value;
 			$vars[$setting]							= $value;			
 			$vars['lang'][$setting]					= lang($setting);
 			$vars['lang'][$setting.'_description']	= lang($setting.'_description');
-			$vars[$setting.'_select']  				= form_dropdown($setting, $options, $value, 'id="'.$setting.'"');
-			$vars[$setting.'_boolean']				= form_dropdown($setting, $bool_options, $value, 'id="'.$setting.'"');
-			$vars[$setting.'_upload_prefs']			= form_dropdown($setting, $file_options, $value, 'id="'.$setting.'"');
+			$vars[$setting.'_select']  				= form_dropdown($name, $options, $value, 'id="'.$setting.'"');
+			$vars[$setting.'_boolean']				= form_dropdown($name, $bool_options, $value, 'id="'.$setting.'"');
+			$vars[$setting.'_upload_prefs']			= form_dropdown($name, $file_options, $value, 'id="'.$setting.'"');
+		}
+		
+		//var_dump($vars);exit();
+		
+		$vars['matrix']        = $this->matrix;
+		$vars['low_variables'] = $this->low_variables;
+		$vars['name_prefix']   = '';
+		$vars['name_suffix']   = '';
+		
+		if($this->low_variables)
+		{
+			$vars['name_prefix'] = 'variable_settings[gmap][';
+			$vars['name_suffix'] = ']';
 		}
 		
 		return $this->EE->load->view('fieldtype_settings', $vars, TRUE);
@@ -481,7 +605,14 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		return TRUE;
 	}
+	
+	public function save_var_settings($data)
+	{
+		$this->low_variables = TRUE;
 		
+		return $this->save_settings($data);
+	}
+	
 	/**
 	 * Saves the settings
 	 *
@@ -490,7 +621,7 @@ class Gmap_ft extends EE_Fieldtype {
 	 * @return	array
 	 */
 	 
-	function save_settings($data)
+	public function save_settings($data)
 	{
 		$validate 			= array();
 		$return 			= array();
@@ -503,7 +634,10 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		foreach($search_settings as $field)
 		{
-			$validate[] = $data[$field];
+			if(isset($data[$field]))
+			{
+				$validate[] = $data[$field];
+			}
 		}
 		
 		if(!$this->_validate_settings($validate))
@@ -514,7 +648,13 @@ class Gmap_ft extends EE_Fieldtype {
 		foreach($this->default_settings as $setting => $value)
 		{
 			$return[$setting]	= $this->EE->input->post($setting) !== FALSE ? 
-								  $this->EE->input->post($setting) : '';
+							      $this->EE->input->post($setting) : '';
+			
+		}
+		
+		if($this->low_variables)
+		{
+			$return = array_merge($return, $data);
 		}
 		
 		return $return;
@@ -645,67 +785,6 @@ class Gmap_ft extends EE_Fieldtype {
 		}
 		
 		return implode("\n", $formatted_address);
-	}
-		
-	public function replace_address_component($data, $params, $tagdata = FALSE)
-	{
-		// Set the default parameters
-		
-		$params = array_merge(array(
-			'type'         => FALSE,
-			'alias_county' => 'US',
-			'delimeter'	   => ' ',
-			'output'	   => 'long_name'
-		), $params);
-		
-		$components = array();
-		$data       = json_decode($data);
-		
-		foreach($data as $index => $obj)
-		{
-			if(isset($obj->results))
-			{
-				foreach($obj->results as $index => $obj_components)
-				{
-					$components = array_merge($components, $obj_components->address_components);
-				}
-			}
-		}
-		
-		$return = array();
-		
-		$aliases = array(
-			'US' => array(
-				'city'     => 'locality',
-				'county'   => 'administrative_area_level_2',
-				'township' => 'administrative_area_level_3',
-				'state'    => 'administrative_area_level_1',
-				'zip'	   => 'postal_code',
-				'zipcode'  => 'postal_code',
-				'zip_code' => 'postal_code'
-			)
-		);
-		
-		if($params['type'])
-		{
-			foreach($aliases[$params['alias_county']] as $alias => $component)
-			{
-				if($params['type'] == $alias)
-				{
-					$params['type'] = $component;
-				}
-			}	
-					
-			foreach($components as $component)
-			{
-				if(in_array($params['type'], $component->types))
-				{
-					$return[] = $component->{$params['output']};
-				}
-			}
-		}
-		
-		return implode($params['delimeter'], $return);
 	}
 		
 	public function replace_total_markers($data, $params, $tagdata = FALSE)
@@ -885,7 +964,77 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		return $this->EE->static_maps->render();
 	}
+	
+	public function replace_address_component($data, $params, $tagdata = FALSE)
+	{
+		// Set the default parameters
+		
+		$params = array_merge(array(
+			'type'         => FALSE,
+			'alias_county' => 'US',
+			'delimeter'	   => ' ',
+			'output'	   => 'long_name'
+		), $params);
+		
+		$components = array();
+		$data       = json_decode($data);
+		
+		foreach($data as $index => $obj)
+		{
+			if(isset($obj->results))
+			{
+				foreach($obj->results as $index => $obj_components)
+				{
+					$components = array_merge($components, $obj_components->address_components);
+				}
+			}
+		}
+		
+		$return = array();
+		
+		$aliases = array(
+			'US' => array(
+				'city'     => 'locality',
+				'county'   => 'administrative_area_level_2',
+				'township' => 'administrative_area_level_3',
+				'state'    => 'administrative_area_level_1',
+				'zip'	   => 'postal_code',
+				'zipcode'  => 'postal_code',
+				'zip_code' => 'postal_code'
+			)
+		);
+		
+		if($params['type'])
+		{
+			foreach($aliases[$params['alias_county']] as $alias => $component)
+			{
+				if($params['type'] == $alias)
+				{
+					$params['type'] = $component;
+				}
+			}	
+					
+			foreach($components as $component)
+			{
+				if(in_array($params['type'], $component->types))
+				{
+					$return[] = $component->{$params['output']};
+				}
+			}
+		}
+		
+		return implode($params['delimeter'], $return);
+	}
 
+	public function display_var_tag($data, $param, $tagdata)
+	{
+		$this->low_variables = TRUE;
+		
+		$this->EE->load->add_package_path(PATH_THIRD . 'gmap');
+		
+		return $this->replace_tag($data, $param, $tagdata);
+	}
+	
 	/**
 	 * Replaces the template tag
 	 *
@@ -1041,7 +1190,8 @@ class Gmap_ft extends EE_Fieldtype {
 					$markers 	= array($data->markers);
 					$options	= array(
 						'id' 			=> $params['id'],
-						'entry_id'		=> $this->row['entry_id'],
+						'entry_id'		=> isset($this->row['entry_id']) ? $this->row['entry_id'] : 0,
+						'var_id'		=> $this->low_variables ? $this->var_id : 0,
 						'options' 		=> $markers_options, 
 						'data'			=> $markers,
 						'limit'			=> isset($params['limit']) ? $params['limit'] : FALSE,
