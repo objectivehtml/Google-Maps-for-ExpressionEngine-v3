@@ -476,7 +476,7 @@ class Gmap_import extends BaseClass {
 		if(!$valid_address || (int) $this->item->force_geocoder == 1)
 		{
 			$markers = json_decode($markers);
-	
+			
 			if(count($markers) == 0)
 			{
 				$log_item[] = 'The entry has no valid location.';
@@ -509,10 +509,10 @@ class Gmap_import extends BaseClass {
 					$data['field_id_'.$settings->lng_field] = $this->longitude;
 					$data['field_ft_'.$settings->lng_field] = 'none';
 				}
-				else
-				{
-					$log_item[] = 'The entry has no valid location.';
-				}
+				//else
+				//{
+				//	$log_item[] = 'The entry has no valid location.';
+				//}
 			}
 		}
 		else
