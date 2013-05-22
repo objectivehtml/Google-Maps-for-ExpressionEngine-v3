@@ -10,9 +10,21 @@
  */
 
 #### 3.3.0
-##### 04/19/2013
+##### 05/22/2013
 
 - (Feature) Added a new fieldtype tag, :address_component to return a single address component from the results loop.
+- (Feature) 
+
+#### 3.2.5
+##### 05/13/2013
+
+- (Bug Fix) Fixed issue with FT not honoring exact coordinates.
+- (Bug Fix) Fixed issues with the importer introduced in EE 2.6.0
+
+#### 3.2.4
+##### 04/25/2013
+
+- (Bug Fix) Fixed all known 2.6.0 compatibility issues. Please report any 2.6.0 issues as you see them.
 
 #### 3.2.3
 ##### 04/19/2013

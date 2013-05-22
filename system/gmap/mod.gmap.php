@@ -27,7 +27,7 @@ Class Gmap {
 			'overviewMapControl', 'overviewMapControlOptions', 'panControl', 'panControlOptions', 			
 			'rotateControl', 'rotateControlOptions', 'scaleControl', 'scaleControlOptions', 
 			'scrollwheel', 'streetView', 'streetViewControl', 'streetViewControlOptions', 
-			'tilt', 'title', 'zoomControl', 'zoomControlOptions', 'zoom'
+			'tilt', 'title', 'zoomControl', 'zoomControlOptions', 'zoom', 'visualRefresh'
 		),
 		
 		'marker' => array(

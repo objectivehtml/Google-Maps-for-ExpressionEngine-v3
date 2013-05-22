@@ -425,9 +425,7 @@ class Gmap_ft extends EE_Fieldtype {
 		$this->low_variables = TRUE;
 		
 		$this->EE->load->add_package_path(PATH_THIRD . 'gmap');
-		
-		// var_dump($data);exit();
-		
+
 		return array(
 			array(
 				'Google Maps for ExpressionEngine',
@@ -440,9 +438,16 @@ class Gmap_ft extends EE_Fieldtype {
 	public function display_cell_settings($data)
 	{	
 		$this->matrix = TRUE;
-		
-		return $this->display_settings($data);
+				
+		return array(
+			array(
+				'Google Maps for ExpressionEngine',
+				$this->display_settings($data)
+			)
+		);
 	}
+	
+	
 
 	public function replace_address_component($data, $params, $tagdata = FALSE)
 	{
