@@ -216,7 +216,7 @@ Class Gmap {
 		/*
 		/* -------------------------------------------*/
 		
-		$return			= $this->EE->google_maps->init($map_id, $map_options, $this->get_options());
+		$return			= $this->EE->google_maps->init($map_id, $map_options, $this->get_options(), $this->param('visualRefresh', true, true));
 		
 		$return			= $center ? $return . $center : $return;
 		

@@ -207,7 +207,11 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 		width: 25%;
 		text-align: center;
 		}
-			
+		
+	.gmap-wrapper.low-vars .markers.column {
+		width: 37%;
+	}
+		
 		.gmap-wrapper .markers.column ul {
 			margin: 1em 10px 0 0;
 			text-align: left;
@@ -285,7 +289,10 @@ background: linear-gradient(top, rgba(127,127,127,1) 0%,rgba(56,56,56,1) 50%,rgb
 		z-index: 500;
 		padding: 0;
 		}
-		
+	
+	.gmap-wrapper.low-vars .map.column {
+		width: 63%;
+	}	
 		.gmap-wrapper .gmap-popup-window {
 			display: none;
 			position: absolute;

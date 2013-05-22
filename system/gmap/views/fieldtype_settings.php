@@ -1,10 +1,15 @@
-<table class="mainTable padTable">
+<table class="<?php echo $matrix ? 'matrix-col-settings' : 'mainTable padTable' ?>">
+	
+	<?php if(!$matrix): ?>
 	<thead>
 		<tr>
 			<th colspan="2"><?php echo lang('gmap_field_settings')?></th>
 		</tr>
 	</thead>
+	<?php endif; ?>
+	
 	<tbody>
+		<?php if(!$matrix): ?>
 		<tr>
 			<td width="40%">
 				<strong><?php echo $lang['gmap_preview']?></strong> <br>
@@ -34,7 +39,7 @@
 				</div>
 			</td>
 		</tr>
-		
+		<?php endif; ?>
 		<tr>
 			<td width="40%">
 				<strong><?php echo $lang['gmap_defer_init']?></strong> <br>
@@ -51,7 +56,7 @@
 				<?php echo $lang['gmap_geocoder_field_label_description']?>
 			</td>
 			<td>
-				<input type="text" name="gmap_geocoder_field_label" id="gmap_geocoder_field_label" value="<?php echo $gmap_geocoder_field_label?>" />
+				<input type="text" name="<?php echo $name_prefix ?>gmap_geocoder_field_label<?php echo $name_suffix ?>" id="gmap_geocoder_field_label" value="<?php echo $gmap_geocoder_field_label?>" />
 			</td>
 		</tr>
 
@@ -157,9 +162,9 @@
 			<td>
 				<input type="text" name="gmap_longitude" id="gmap_longitude" value="<?php echo $gmap_longitude?>" />
 			</td>
-		</tr>
+		</tr>		
 		
-		
+		<?php if(!$low_variables): ?>
 		<tr>
 			<td width="40%">
 				<strong><?php echo $lang['gmap_response']?></strong> <br>
@@ -169,7 +174,7 @@
 				<?php echo $gmap_response_select?>
 			</td>
 		</tr>
-		
+				
 		<tr>
 			<td width="40%">
 				<strong><?php echo $lang['gmap_formatted_address']?></strong> <br>
@@ -179,6 +184,7 @@
 				<?php echo $gmap_formatted_address_select?>
 			</td>
 		</tr>
+		<?php endif; ?>
 		
 		<tr class="onchange" id="gmap_marker_mode">
 			<td width="40%">
@@ -219,6 +225,8 @@
 				<?php echo $gmap_file_group_upload_prefs?>
 			</td>
 		</tr>
+		
+		<?php if(!$low_variables): ?>
 		<tr class="gmap_marker_mode">
 			<td width="40%">
 				<strong><?php echo $lang['gmap_latitude_field']?></strong> <br>
@@ -258,6 +266,8 @@
 				<?php echo $gmap_marker_field_select?>
 			</td>
 		</tr>
+		<?php endif; ?>
+		
 		<tr class="gmap_marker_mode">
 			<td width="40%">
 				<strong><?php echo $lang['gmap_include_marker_title']?></strong> <br>
@@ -277,7 +287,8 @@
 				<?php echo $gmap_waypoint_mode_boolean?>
 			</td>
 		</tr>
-		
+				
+		<?php if(!$low_variables): ?>
 		<tr class="gmap_waypoint_mode">
 			<td width="40%">
 				<strong><?php echo $lang['gmap_waypoint_start_coord']?></strong> <br>
@@ -297,6 +308,7 @@
 				<?php echo $gmap_waypoint_end_coord_select?>
 			</td>
 		</tr>
+		<?php endif; ?>
 		
 		<tr class="onchange" id="gmap_region_mode">
 			<td width="40%">
@@ -307,7 +319,8 @@
 				<?php echo $gmap_region_mode_boolean?>
 			</td>
 		</tr>
-
+		
+		<?php if(!$low_variables): ?>
 		<tr class="gmap_region_mode">
 			<td width="40%">
 				<strong><?php echo $lang['gmap_region_field']?></strong> <br>
@@ -317,6 +330,7 @@
 				<?php echo $gmap_region_field_select?>
 			</td>
 		</tr>
+		<?php endif; ?>
 
 	</tbody>
 </table>

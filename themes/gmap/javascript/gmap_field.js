@@ -14,6 +14,8 @@
  
 var Gmap  = function($wrapper, options) {
 	
+	google.maps.visualRefresh = true;
+	
 	var $t            = $wrapper;
 	var $gmap         = $t;
 	var id            = parseInt($t.attr('data-gmap-id'));
@@ -563,8 +565,8 @@ var Gmap  = function($wrapper, options) {
 			return content;
 		},
 		
-		showHelp: function(target, options) {
-			/*
+		/*showHelp: function(target, options) {
+			
 			$('.ui-tooltip').qtip('destroy');
 			
 			if(t.settings.display_help == 'yes') {		
@@ -590,8 +592,9 @@ var Gmap  = function($wrapper, options) {
 				if(typeof target == "object")
 					target.qtip(options);
 			}
-			*/
+			
 		},
+		*/
 		
 		init: function(options, callback) {
 			
@@ -1398,7 +1401,7 @@ var Gmap  = function($wrapper, options) {
 					t.addMarker(results);
 					t.ui.geocoder.val('');
 					
-					t.showHelp('2');
+					//t.showHelp('2');
 				}
 			}
 			else if(status == "ZERO_RESULTS") {
@@ -1435,18 +1438,15 @@ var Gmap  = function($wrapper, options) {
 	t.ui.deferer.click(function() {
 		t.init(function() {
 		
-			/* 	Fixes all the cropping and resizing bugs people complained about,
-				and it does it better than any way anyone recommended. */
-			
 			t.bounds = new google.maps.LatLngBounds();
 			
-			if(!t.bounds) { 
+			//if(!t.bounds) { 
 			
-				$('#hide_field_12').parent().bind('drag', function() {
+				/*$('#hide_field_12').parent().bind('drag', function() {
 					t.resize(500);
-				});
+				});*/
 			
-				$('.content_tab a').click(function() {
+				$('#mainWrapper .content_tab a').click(function() {
 					t.resize();
 				});
 				
@@ -1454,9 +1454,9 @@ var Gmap  = function($wrapper, options) {
 					t.resize();
 				});
 				
-			}
+			//}
 			
-			t.showHelp('1');
+			// t.showHelp('1');
 			
 			t.ui.lists.each(function() {
 				var list 		= $(this);
@@ -1836,7 +1836,7 @@ var Gmap  = function($wrapper, options) {
 		t.addMarker(response);
 		t.ui.suggestions.fadeOut('fast');
 
-		t.showHelp('3');
+		// t.showHelp('3');
 		
 		return false;
 	});
@@ -2208,8 +2208,10 @@ var Gmap  = function($wrapper, options) {
 
 	GmapGlobal.object.push(t);
 	Gmap.instances.push(t);
+	Gmap.settings[options.colId] = t.settings;
 	
 	return Gmap;
 }
 
 Gmap.instances = [];
+Gmap.settings  = [];

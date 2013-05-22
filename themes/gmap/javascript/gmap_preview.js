@@ -27,6 +27,8 @@ GmapPreview.validate = function(markerMode, waypointMode, regionMode) {
 
 GmapPreview.init = function() {
 
+	google.maps.visualRefresh = true;
+
 	var canvas 	= $('#gmap_canvas').get(0);
 	var lat		= $('#gmap_latitude').val();
 	var lng 	= $('#gmap_longitude').val();
@@ -229,13 +231,16 @@ GmapPreview.init = function() {
 		return;
 	}
 	
-	$('#field_type').change(function() {
+	$('#field_type, select[name="variable_type"]').change(function() {
 		var val = $(this).val();
 		
 		if(val == 'gmap' && defer != 'yes') {
 			$('.gmap .deferer').click();
 		}
 	});
+	
+	// For low variables
+	$('select[name="variable_type"]').change();
 	
 	$('form').submit(function() {
 		
