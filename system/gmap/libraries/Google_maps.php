@@ -153,7 +153,6 @@ class Google_maps {
 				'.((!$params['zoom_location'] && !$params['zoom']) ? '
 					google.maps.event.addListenerOnce('.$params['id'].'_GeoMarker, "position_changed", function() {			
 						'.$params['id'].'_bounds.extend(this.getPosition());
-		           		'.$params['id'].'_map.setCenter(this.getPosition());
 		           		'.$params['id'].'_map.fitBounds('.$params['id'].'_bounds);
 			        });
 			    ' : ((!$params['zoom']) ? '			    	
@@ -161,17 +160,11 @@ class Google_maps {
 			          '.$params['id'].'_map.setCenter(this.getPosition());
 			          '.$params['id'].'_map.fitBounds(this.getBounds());
 			        });
-			    ' : '')).'			    
-				'.($params['zoom'] ? '
-					google.maps.event.addListenerOnce('.$params['id'].'_GeoMarker, "position_changed", function() {
+			    ' : 'google.maps.event.addListenerOnce('.$params['id'].'_GeoMarker, "position_changed", function() {
 						'.$params['id'].'_map.setZoom('.$params['zoom'].');
 			        });
-			    ' : '').'
-			' : '
-				google.maps.event.addListenerOnce('.$params['id'].'_GeoMarker, "position_changed", function() {
-					'.$params['id'].'_map.fitBounds('.$params['id'].'_bounds);
-		        });
-			').'
+			    ')).'
+			' : '').'
 						
 	        '.$window.'
 
