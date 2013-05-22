@@ -402,7 +402,7 @@ class Google_maps {
 		return $js;
 	}
 	
-	public function init($map_id, $options = FALSE, $args)
+	public function init($map_id, $options = FALSE, $args = array(), $visual_refresh = TRUE)
 	{
 		$cluster = array(
 			'maxZoom'  => $options['clusterMaxZoom'],
@@ -423,7 +423,9 @@ class Google_maps {
 		<div id="'.$map_id.'" class="'.$class.'" style="'.$style.'"></div>
 		
 		<script type="text/javascript">
-
+			
+			'.($visual_refresh ? 'google.maps.visualRefresh = true;' : NULL).'
+			
 			var '.$map_id.'_options 			= '.$obj.';
 			var '.$map_id.'_canvas 				= document.getElementById("'.$map_id.'");
 			var '.$map_id.'_map					= new google.maps.Map('.$map_id.'_canvas, '.$map_id.'_options);
