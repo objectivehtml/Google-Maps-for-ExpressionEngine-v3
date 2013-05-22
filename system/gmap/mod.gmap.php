@@ -98,6 +98,9 @@ Class Gmap {
 				'fillOpacity'   => $this->param('fill_opacity', $this->param('fillOpacity', .2)),
 				'fillColor'     => $this->param('fill_color', $this->param('fillColor', 'rgb(13, 97, 245)')) 
 			),
+			'extend_bounds' 	=> $this->param('extend_bounds', TRUE, TRUE),
+			'zoom_location' 	=> $this->param('zoom_location', TRUE, TRUE),
+			'zoom' 				=> $this->param('zoom', FALSE),
 			'script_tag' 		=> $this->param('script_tag', TRUE, TRUE),
 			'window_trigger'    => $this->param('window_trigger', 'click'),
 			'infobox'			=> $this->param('infobox', FALSE, TRUE),

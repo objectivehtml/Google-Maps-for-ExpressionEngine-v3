@@ -86,6 +86,9 @@ class Google_maps {
 	{		
 		$params = array_merge(array(
 			'id'             => $params['id'],
+			'zoom_location'  => TRUE,
+			'extend_bounds'  => TRUE,
+			'zoom'  		 => FALSE,
 			'script_tag'     => TRUE,
 			'content'        => FALSE,
 			'marker_options' => array(),
@@ -136,21 +139,41 @@ class Google_maps {
 				'trigger'			=> $params['window_trigger']
 			));
 		}
-				
+		
 		$return .=
 		'<script type="text/javascript">
 			
-			var GeoMarker = new GeolocationMarker('.$params['id'].'_map, '.$this->convert_to_js($params['marker_options']).', '.json_encode($params['circle_options']).');
-			
-			'.$params['id'].'_markers.push(GeoMarker.b);
+			var '.$params['id'].'_GeoMarker = new GeolocationMarker('.$params['id'].'_map, '.$this->convert_to_js($params['marker_options']).', '.json_encode($params['circle_options']).');
+					    	
+			'.$params['id'].'_markers.push('.$params['id'].'_GeoMarker.b);
 			
 			var index = '.$params['id'].'_markers.length - 1;
 			
-	        google.maps.event.addListenerOnce(GeoMarker, "position_changed", function() {
-	          '.$params['id'].'_map.setCenter(this.getPosition());
-	          '.$params['id'].'_map.fitBounds(this.getBounds());
-	        });
-	        
+			
+			'.($params['extend_bounds'] ? '
+				'.((!$params['zoom_location'] && !$params['zoom']) ? '
+					google.maps.event.addListenerOnce('.$params['id'].'_GeoMarker, "position_changed", function() {			
+						'.$params['id'].'_bounds.extend(this.getPosition());
+		           		'.$params['id'].'_map.setCenter(this.getPosition());
+		           		'.$params['id'].'_map.fitBounds('.$params['id'].'_bounds);
+			        });
+			    ' : ((!$params['zoom']) ? '			    	
+			        google.maps.event.addListenerOnce('.$params['id'].'_GeoMarker, "position_changed", function() {
+			          '.$params['id'].'_map.setCenter(this.getPosition());
+			          '.$params['id'].'_map.fitBounds(this.getBounds());
+			        });
+			    ' : '')).'			    
+				'.($params['zoom'] ? '
+					google.maps.event.addListenerOnce('.$params['id'].'_GeoMarker, "position_changed", function() {
+						'.$params['id'].'_map.setZoom('.$params['zoom'].');
+			        });
+			    ' : '').'
+			' : '
+				google.maps.event.addListenerOnce('.$params['id'].'_GeoMarker, "position_changed", function() {
+					'.$params['id'].'_map.fitBounds('.$params['id'].'_bounds);
+		        });
+			').'
+			
 	        '.$window.'
 
 		</script>';	
