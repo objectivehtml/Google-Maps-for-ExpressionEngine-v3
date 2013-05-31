@@ -9,8 +9,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/google-maps/api/plugins
- * @version		1.1
- * @build		20120115
+ * @version		1.1.1
+ * @build		20130557
  */
  
  /**
@@ -99,10 +99,12 @@
 							var lat		= results.geometry.location.lat();
 							var lng		= results.geometry.location.lng();
 							var latlng  = new google.maps.LatLng(lat, lng);
-							
-							// Saves the response and adds marker to map
-							results = Gmap.saveResponse(results, lat, lng);
-							Gmap.addMarker(results, false, false);
+								
+							if(Gmap.response.markers.total == 0) {
+								// Saves the response and adds marker to map
+								results = Gmap.saveResponse(results, lat, lng);
+								Gmap.addMarker(results, false, false);
+							}
 							
 							// Sets the zoom and the center
 							Gmap.map.setZoom(defaultZoom);
