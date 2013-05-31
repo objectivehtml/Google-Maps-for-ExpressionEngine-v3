@@ -1185,7 +1185,6 @@ Class Gmap {
 				for(i = 0; i < '.$map_id.'_count; i++) {
 					if(i < '.$map_id.'_dropdownLimit || !'.$map_id.'_dropdownLimit) {
 						var marker = '.$map_id.'_markers[i];
-						
 						if(marker) {
 							var content = (typeof marker.title != "undefined") ? marker.title : "Marker "+(i+1);
 							var html = content;';

@@ -588,6 +588,16 @@ class Google_maps {
 								$js .= $params['id'].'_markers[index] = new google.maps.Marker('.$this->convert_to_js($options).');';
 							}
 							
+							if(isset($result->title))
+							{
+								$js .= $params['id'].'_markers[index].title = \''.str_replace('\'', '\\\'', $result->title).'\';';
+							}
+							
+							if(isset($result->content))
+							{
+								$js .= $params['id'].'_markers[index].content = \''.str_replace('\'', '\\\'', $result->content).'\';';
+							}
+							
 							if(isset($params['redirect']) && $params['redirect'])
 							{
 								$js .= '
