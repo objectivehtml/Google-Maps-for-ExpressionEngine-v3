@@ -147,7 +147,7 @@
 			
 			google.maps.event.addListener(this.marker, 'dragend', function(e) {					
 				t.lat = e.latLng.lat();
-				t.lng = e.latLng.lat();
+				t.lng = e.latLng.lng();
 				
 				t.refresh();
 			});
@@ -180,7 +180,7 @@
 			var t = this, html = $([
 				'<div class="photo-frame-geolocation-form two-columns photo-frame-grid">',
 					'<div class="photo-frame-column">',
-						'<div class="photo-frame-inline clearfix photo-frame-margin-bottom">',
+						'<div class="photo-frame-inline photo-frame-location clearfix photo-frame-margin-bottom">',
 							'<div class="photo-frame-label"><label for="photo-frame-location">'+PhotoFrame.Lang.location+'</label></div>',
 							'<div class="photo-frame-input"><input type="text" name="photo-frame-location" id="photo-frame-location" placeholder="'+PhotoFrame.Lang.enter_location+'" /></div>',
 							'<a href="#" class="photo-frame-tool-window-button">'+PhotoFrame.Lang.locate+'</a>',
@@ -207,6 +207,13 @@
 			this.window.ui.btn = html.find('a');						
 			this.window.ui.lat = html.find('#photo-frame-lat');						
 			this.window.ui.lng = html.find('#photo-frame-lng');
+			
+			this.window.ui.loc.keypress(function(e) {
+				if(e.keyCode == 13) {
+					t.window.ui.btn.click();
+					e.preventDefault();
+				}
+			});
 			
 			html.find('#photo-frame-lat, #photo-frame-lng').keyup(function() {
 				var lat = html.find('#photo-frame-lat').val();
@@ -278,7 +285,9 @@
 					});
 					
 					google.maps.event.addListenerOnce(t.geo, "position_changed", function(e) {
-						t.map.setCenter(t.geo.getPosition());
+						if(!t.marker) {
+							t.map.setCenter(t.geo.getPosition());
+						}
 			        });
 			        
 					if(t.getManipulation()) {
