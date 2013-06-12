@@ -2,6 +2,11 @@
 
 class GeolocationButton extends PhotoFrameButton {
 	
+	public $name = 'Geolocation'; 
+	
+	public $moduleName = 'gmap'; 
+	
+	
 	public function modifyTables($tables)
 	{    
 		$tables['photo_frame']['lat'] = array(
@@ -33,6 +38,7 @@ class GeolocationButton extends PhotoFrameButton {
 		$ee =& get_instance();
 			
 		return array(
+			'geolocation',
 			'https://maps.google.com/maps/api/js?sensor=true',
 			$ee->theme_loader->theme_url() . 'gmap/javascript/geolocationmarker.js'
 		);
