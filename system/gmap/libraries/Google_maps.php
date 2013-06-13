@@ -452,6 +452,7 @@ class Google_maps {
 			var '.$map_id.'_html				= [];
 			var '.$map_id.'_waypoints 			= [];
 			var '.$map_id.'_regions 			= [];
+			var '.$map_id.'_isRetina 			= window.devicePixelRatio > 1;
 			var '.$map_id.'_geocoder 			= new google.maps.Geocoder();
 			var '.$map_id.'_directionsService 	= new google.maps.DirectionsService();
 			var '.$map_id.'_directionsDisplay	= new google.maps.DirectionsRenderer({map: '.$map_id.'_map});
@@ -477,6 +478,7 @@ class Google_maps {
 			'options'           => array(),
 			'data'              => array(),
 			'extend_bounds'     => FALSE,
+			'retina'     		=> FALSE,
 			'script_tag'        => TRUE,
 			'duplicate_markers' => TRUE,
 			'clustering' 		=> FALSE,
@@ -544,6 +546,18 @@ class Google_maps {
 
 							$options['icon'] = $icon;
 
+							if($params['retina'] && $icon != "")
+							{
+								$filename = basename(ltrim(rtrim($icon, '"'), '"'));
+								$ext 	  = pathinfo($filename, PATHINFO_EXTENSION);
+								$filebase = str_replace('.'.$ext, '', $filename);
+								
+								$retina_name = $filebase . '@2x' . '.' . $ext;
+								$retina_icon = str_replace($filename, $retina_name, $icon);
+								
+								$options['icon'] = '(' . $params['id'].'_isRetina ? ' . $retina_icon . ' : '. $icon . ')';
+							}
+							
 							$js .= 'var index = '.$params['id'].'_markers.length;';
 
 							if(isset($params['options']['infowindow'])) {

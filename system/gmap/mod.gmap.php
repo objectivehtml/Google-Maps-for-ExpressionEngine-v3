@@ -24,7 +24,7 @@ Class Gmap {
 			'backgroundColor', 'disableDefaultUI', 'disableDoubleClickZoom', 'draggable', 
 			'draggableCursor', 'heading', 'keyboardShortcuts', 'mapTypeControl', 
 			'mapTypeControlOptions', 'mapTypeId', 'maxZoom', 'minZoom', 'noClear', 
-			'overviewMapControl', 'overviewMapControlOptions', 'panControl', 'panControlOptions', 			
+			'overviewMapControl', 'overviewMapControlOptions', 'optimized', 'panControl', 'panControlOptions', 			
 			'rotateControl', 'rotateControlOptions', 'scaleControl', 'scaleControlOptions', 
 			'scrollwheel', 'streetView', 'streetViewControl', 'streetViewControlOptions', 
 			'tilt', 'title', 'zoomControl', 'zoomControlOptions', 'zoom', 'visualRefresh'
@@ -132,7 +132,7 @@ Class Gmap {
 		);
 		
 		if($icon = $this->param('icon'))
-		{
+		{			
 			$params['marker_options']['icon'] = '"'.$icon.'"';
 		}
 				
@@ -518,8 +518,7 @@ Class Gmap {
 		$class			= 'ui-infowindow';
 		$close_button 	= $this->param('close_button', 'http://www.google.com/intl/en_us/mapfiles/close.gif');
 		$margin			= '';
-		
-		
+				
 		$marker_js = $this->EE->google_maps->marker(array(
 			'id' 					=> $map_id, 
 			'options' 				=> $options,
@@ -527,6 +526,7 @@ Class Gmap {
 			'limit'					=> $this->param('limit', FALSE),
 			'offset'				=> $this->param('offset', 0),
 			'extend_bounds'			=> $extend,
+			'retina'				=> $this->param('retina', FALSE, TRUE),
 			'infobox'				=> $this->param('infobox', FALSE, TRUE),
 			'infowindow'			=> array(
 				'options' 	=> array(
