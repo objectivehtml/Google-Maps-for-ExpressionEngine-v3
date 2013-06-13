@@ -452,7 +452,7 @@ class Google_maps {
 			var '.$map_id.'_html				= [];
 			var '.$map_id.'_waypoints 			= [];
 			var '.$map_id.'_regions 			= [];
-			var '.$map_id.'_isRetina 			= false; //window.devicePixelRatio > 1;
+			var '.$map_id.'_isRetina 			= window.devicePixelRatio > 1;
 			var '.$map_id.'_geocoder 			= new google.maps.Geocoder();
 			var '.$map_id.'_directionsService 	= new google.maps.DirectionsService();
 			var '.$map_id.'_directionsDisplay	= new google.maps.DirectionsRenderer({map: '.$map_id.'_map});
@@ -575,22 +575,22 @@ class Google_maps {
 									
 								if($params['retinaSize'])
 								{
-									if(!isset($params['size']))
+									if(!$params['size'])
 									{
-										$icon_options['size'] = 'new google.maps.Size('.$params['retinaSize'].')';	
+										$params['size'] = 'new google.maps.Size('.$params['retinaSize'].')';	
 									}
 									
-									$icon_options['size'] = '(' . $params['id'].'_isRetina ? new google.maps.Size(' . $params['retinaSize'] . ') : '. $icon_options['size'] . ')';
+									$icon_options['size'] = '(' . $params['id'].'_isRetina ? new google.maps.Size(' . $params['retinaSize'] . ') : '. $params['size'] . ')';
 								}
 								
-								if($params['scaledSize'])
+								if($params['retinaScaledSize'])
 								{
-									if(!isset($params['scaledSize']))
+									if(!$params['scaledSize'])
 									{
-										$icon_options['scaledSize'] = 'new google.maps.Size('.$params['retinaScaledSize'].')';	
+										$params['scaledSize'] = 'new google.maps.Size('.$params['retinaScaledSize'].')';	
 									}
 									
-									$icon_options['scaledSize'] = '(' . $params['id'].'_isRetina ? new google.maps.Size(' . $params['retinaScaledSize'] . ') : '. $icon_options['scaledSize'] . ')';	
+									$icon_options['scaledSize'] = '(' . $params['id'].'_isRetina ? new google.maps.Size(' . $params['retinaScaledSize'] . ') : '. $params['scaledSize'] . ')';	
 								}
 								
 								$icon_options['url'] = $options['icon'];
