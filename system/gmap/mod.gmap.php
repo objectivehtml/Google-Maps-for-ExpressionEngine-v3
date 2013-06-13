@@ -31,7 +31,7 @@ Class Gmap {
 		),
 		
 		'marker' => array(
-			'animation', 'clickable', 'cursor', 'draggable', 'flat', 'icon', 'map', 'optimized',
+			'animation', 'clickable', 'cursor', 'draggable', 'flat', 'icon', 'map',
 			'raiseOnDrag', 'shadow', 'shape', 'title', 'visible', 'zIndex', 'entry_id'
 		),
 		
@@ -40,7 +40,8 @@ Class Gmap {
 		    'author_id', 'backspace', 'cache', 'refresh', 'cat_limit', 'category', 
 		    'category_group', 'isable','channel', 'display_by', 'dynamic', 'dynamic_start',
 	   		'entry_id', 'entry_id_from', 'entry_id_to', 'fixed_order', 'group_id', 'limit', 
-	   		'month_limit', 'offset', 'orderby', 'paginate', 'paginate_base', 'paginate_type', 			'related_categories_mode', 'relaxed_categories', 'require_entry', 'show_current_week', 
+	   		'month_limit', 'offset', 'orderby', 'paginate', 'paginate_base', 'paginate_type', 			
+	   		'related_categories_mode', 'relaxed_categories', 'require_entry', 'show_current_week', 
 	   		'show_expired', 'show_future_entries', 'show_pages', 'sort', 'start_day', 'start_on', 
 	   		'status', 'stop_before', 'sticky', 'track_views', 'uncategorized_entries', 'url_title', 
 	   	 	'username', 'week_sort', 'year', 'month', 'day'
@@ -527,6 +528,10 @@ Class Gmap {
 			'offset'				=> $this->param('offset', 0),
 			'extend_bounds'			=> $extend,
 			'retina'				=> $this->param('retina', FALSE, TRUE),
+			'size'					=> $this->param('size'),
+			'scaledSize'			=> $this->param('scaledSize'),
+			'retinaSize'			=> $this->param('retinaSize'),
+			'retinaScaledSize'		=> $this->param('retinaScaledSize'),
 			'infobox'				=> $this->param('infobox', FALSE, TRUE),
 			'infowindow'			=> array(
 				'options' 	=> array(

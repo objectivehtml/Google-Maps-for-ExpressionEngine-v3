@@ -452,7 +452,7 @@ class Google_maps {
 			var '.$map_id.'_html				= [];
 			var '.$map_id.'_waypoints 			= [];
 			var '.$map_id.'_regions 			= [];
-			var '.$map_id.'_isRetina 			= window.devicePixelRatio > 1;
+			var '.$map_id.'_isRetina 			= false; //window.devicePixelRatio > 1;
 			var '.$map_id.'_geocoder 			= new google.maps.Geocoder();
 			var '.$map_id.'_directionsService 	= new google.maps.DirectionsService();
 			var '.$map_id.'_directionsDisplay	= new google.maps.DirectionsRenderer({map: '.$map_id.'_map});
@@ -479,6 +479,10 @@ class Google_maps {
 			'data'              => array(),
 			'extend_bounds'     => FALSE,
 			'retina'     		=> FALSE,
+			'size'     			=> FALSE,
+			'scaledSize'     	=> FALSE,
+			'retinaSize'     	=> FALSE,
+			'retinaScaledSize'	=> FALSE,
 			'script_tag'        => TRUE,
 			'duplicate_markers' => TRUE,
 			'clustering' 		=> FALSE,
@@ -506,9 +510,7 @@ class Google_maps {
 		}
 		
 		$js     = NULL;
-		
 		$limit  = isset($params['limit']) && $params['limit'] !== FALSE ? (int) $params['limit'] : FALSE;
-		
 		$offset = isset($params['offset']) ? (int) $params['offset'] : FALSE;
 
 		$data_count = 0;
@@ -545,7 +547,21 @@ class Google_maps {
 							}
 
 							$options['icon'] = $icon;
-
+							
+							$icon_options = array(
+								'url'        => $icon
+							);
+							
+							if($params['size'])
+							{
+								$icon_options['size'] = 'new google.maps.Size('.$params['size'].')';	
+							}
+							
+							if($params['scaledSize'])
+							{
+								$icon_options['scaledSize'] = 'new google.maps.Size('.$params['scaledSize'].')';	
+							}
+							
 							if($params['retina'] && $icon != "")
 							{
 								$filename = basename(ltrim(rtrim($icon, '"'), '"'));
@@ -555,10 +571,35 @@ class Google_maps {
 								$retina_name = $filebase . '@2x' . '.' . $ext;
 								$retina_icon = str_replace($filename, $retina_name, $icon);
 								
-								$options['icon'] = '(' . $params['id'].'_isRetina ? ' . $retina_icon . ' : '. $icon . ')';
+								$options['icon']     = '(' . $params['id'].'_isRetina ? ' . $retina_icon . ' : '. $icon . ')';
+									
+								if($params['retinaSize'])
+								{
+									if(!isset($params['size']))
+									{
+										$icon_options['size'] = 'new google.maps.Size('.$params['retinaSize'].')';	
+									}
+									
+									$icon_options['size'] = '(' . $params['id'].'_isRetina ? new google.maps.Size(' . $params['retinaSize'] . ') : '. $icon_options['size'] . ')';
+								}
+								
+								if($params['scaledSize'])
+								{
+									if(!isset($params['scaledSize']))
+									{
+										$icon_options['scaledSize'] = 'new google.maps.Size('.$params['retinaScaledSize'].')';	
+									}
+									
+									$icon_options['scaledSize'] = '(' . $params['id'].'_isRetina ? new google.maps.Size(' . $params['retinaScaledSize'] . ') : '. $icon_options['scaledSize'] . ')';	
+								}
+								
+								$icon_options['url'] = $options['icon'];
 							}
 							
-							$js .= 'var index = '.$params['id'].'_markers.length;';
+							$options['icon'] = ''.$this->convert_to_js($icon_options).'';
+							
+							$js .= '
+							var index = '.$params['id'].'_markers.length;';
 
 							if(isset($params['options']['infowindow'])) {
 								$infowindow = $params['options']['infowindow'];
