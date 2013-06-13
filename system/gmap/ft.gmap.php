@@ -581,6 +581,11 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		if(!$this->low_variables)
 		{
+			if(!isset($data['group_id']))
+			{
+				return;			
+			}
+	
 			$fields			= $this->EE->channel_data->get_fields_by_group($data['group_id'], array(
 				'order_by' => 'field_order',
 				'sort' 	   => 'asc'
