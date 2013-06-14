@@ -477,6 +477,7 @@ class Google_maps {
 		$default_params = array(
 			'options'           => array(),
 			'data'              => array(),
+			'append_data'       => array(),
 			'extend_bounds'     => FALSE,
 			'retina'     		=> FALSE,
 			'size'     			=> FALSE,
@@ -676,6 +677,11 @@ class Google_maps {
 							if(isset($params['category']) && $params['category'] !== FALSE)
 							{								
 								$js .= $params['id'].'_markers[index].category = '.json_encode(explode('|', $params['category'])).';';
+							}
+							
+							if(!empty($params['append_data']))
+							{
+								$js .= $params['id'].'_markers[index].data = '.json_encode($params['append_data']).';';
 							}
 							
 							if($params['extend_bounds'])
