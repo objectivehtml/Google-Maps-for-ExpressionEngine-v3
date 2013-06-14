@@ -597,7 +597,10 @@ class Google_maps {
 								$icon_options['url'] = $options['icon'];
 							}
 							
-							$options['icon'] = ''.$this->convert_to_js($icon_options).'';
+							if($icon_options['url'] != '""')
+							{
+								$options['icon'] = ''.$this->convert_to_js($icon_options).'';
+							}
 							
 							$js .= '
 							var index = '.$params['id'].'_markers.length;';
