@@ -75,7 +75,7 @@ Class Gmap {
 	public function event()
 	{
 		return $this->EE->google_maps->event(array(
-			'args'	   => $this->param('args', 'event'),
+			'args'	   => $this->param('args', 'event, map_markers'),
 			'id'       => $this->param('id', 'map'),
 			'event'    => $this->param('event', $this->param('name', 'click')),
 			'obj'      => $this->param('obj', 'map_markers[map_markers.length - 1]'),
@@ -519,6 +519,20 @@ Class Gmap {
 		$close_button 	= $this->param('close_button', 'http://www.google.com/intl/en_us/mapfiles/close.gif');
 		$margin			= '';
 		
+		$data = array();
+		
+		if(is_array($this->EE->TMPL->tagparams))
+		{
+			foreach($this->EE->TMPL->tagparams as $param => $value)
+			{
+				if(preg_match('/^data:/', $param))
+				{
+					$param = str_replace('data:', '', $param);
+					
+					$data[$param] = $value;
+				}
+			}
+		}
 		
 		$marker_js = $this->EE->google_maps->marker(array(
 			'id' 					=> $map_id, 
@@ -553,6 +567,7 @@ Class Gmap {
 				'open_windows'			 => $this->param('open_windows', $this->param('open_window', FALSE, TRUE), TRUE),
 				'script_tag' 	  		 => $this->param('script_tag', FALSE)
 			),
+			'append_data'			=> $data,
 			'category'				=> $this->param('category', FALSE),
 			'exclude_single_marker' => $this->param('exclude_single_marker', TRUE, TRUE),
 			'clustering'            => $this->param('clustering', FALSE, TRUE),
