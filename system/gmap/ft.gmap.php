@@ -1138,7 +1138,7 @@ class Gmap_ft extends EE_Fieldtype {
 				'duplicate_markers' => TRUE,
 				'window_trigger'    => 'click',
 				'redirect'			=> FALSE,
-				'category'			=> FALSE,
+				'category'			=> FALSE
 			);
 			
 			$params                      = array_merge($default_params, $params);
@@ -1210,6 +1210,21 @@ class Gmap_ft extends EE_Fieldtype {
 						}
 					}
 					
+					$append_data = array();
+		
+					if(is_array($params))
+					{
+						foreach($params as $param => $value)
+						{
+							if(preg_match('/^data:/', $param))
+							{
+								$param = str_replace('data:', '', $param);
+								
+								$append_data[$param] = $value;
+							}
+						}
+					}
+					
 					$markers 	= array($data->markers);
 					$options	= array(
 						'id' 			=> $params['id'],
@@ -1232,7 +1247,8 @@ class Gmap_ft extends EE_Fieldtype {
 						'duplicate_markers' => $params['duplicate_markers'],
 						'window_trigger'    => $params['window_trigger'],
 						'redirect'			=> $params['redirect'],
-						'category'			=> $params['category']
+						'category'			=> $params['category'],
+						'append_data'		=> $append_data
 					);
 					
 					$marker		= $this->EE->google_maps->marker($options);			
