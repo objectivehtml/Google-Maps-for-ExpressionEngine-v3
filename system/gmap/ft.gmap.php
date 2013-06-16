@@ -1220,7 +1220,7 @@ class Gmap_ft extends EE_Fieldtype {
 							{
 								$param = str_replace('data:', '', $param);
 								
-								$append_data[$param] = $value;
+								$append_data[$param] = str_replace(array('URL_TITLE', 'ENTRY_ID'), array($this->row['url_title'], $this->row['entry_id']), $value);
 							}
 						}
 					}
