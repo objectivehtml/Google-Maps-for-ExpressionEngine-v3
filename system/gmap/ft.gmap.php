@@ -1138,11 +1138,18 @@ class Gmap_ft extends EE_Fieldtype {
 				'duplicate_markers' => TRUE,
 				'window_trigger'    => 'click',
 				'redirect'			=> FALSE,
+				'retina'			=> FALSE,
+				'retinaSize'		=> FALSE,
+				'retinaScaledSize'	=> FALSE,
+				'size'				=> FALSE,
+				'scaledSize'		=> FALSE,
+				'redirect'			=> FALSE,
 				'category'			=> FALSE
 			);
 			
 			$params                      = array_merge($default_params, $params);
 			$params['clustering']        = $this->bool_param($params['clustering']);
+			$params['retina']       	 = $this->bool_param($params['retina']);
 			$params['duplicate_markers'] = $this->bool_param($params['duplicate_markers']);
 			$params['extend_bounds']     = $this->bool_param($params['extend_bounds']);
 			$params['open_windows']      = $this->bool_param($params['open_windows']);
@@ -1248,6 +1255,11 @@ class Gmap_ft extends EE_Fieldtype {
 						'window_trigger'    => $params['window_trigger'],
 						'redirect'			=> $params['redirect'],
 						'category'			=> $params['category'],
+						'retina'			=> $params['retina'],
+						'retinaScaledSize'	=> $params['retinaScaledSize'],
+						'retinaSize'		=> $params['retinaSize'],
+						'size'				=> $params['size'],
+						'scaledSize'		=> $params['scaledSize'],
 						'append_data'		=> $append_data
 					);
 					
