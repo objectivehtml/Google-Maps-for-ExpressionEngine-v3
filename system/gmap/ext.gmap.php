@@ -42,6 +42,11 @@ class Gmap_ext {
 	 
 	public function channel_entries_tagdata($tagdata, $row, $obj)
 	{
+		if(ee()->extensions->last_call)
+		{
+			$tagdata = ee()->extensions->last_call;
+		}
+		
 		$obj->EE->TMPL->protect_javascript = FALSE;
 		
 		if(isset($obj->categories[$row['entry_id']]))
@@ -64,6 +69,11 @@ class Gmap_ext {
 	 
 	public function channel_entries_tagdata_end($tagdata, $row, $obj)
 	{
+		if(ee()->extensions->last_call)
+		{
+			$tagdata = ee()->extensions->last_call;
+		}
+		
 		if(isset($obj->categories[$row['entry_id']]))
 		{
 			$categories = $this->get_categories($obj, $row['entry_id']);
