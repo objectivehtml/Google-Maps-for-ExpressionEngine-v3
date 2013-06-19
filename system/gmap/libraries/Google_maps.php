@@ -1414,9 +1414,11 @@ class Google_maps {
 	
 	function current_url($uri_segments = TRUE, $get_string = TRUE, $base_url = FALSE)
 	{
+		$this->EE->load->helper('addon');
+		
 		if(!$base_url)
 		{
-			$return = $this->EE->config->site_url();
+			$return = base_url();
 		}
 		else
 		{
@@ -1595,16 +1597,9 @@ class Google_maps {
 	
 	public function base_url($append = '', $value = '')
 	{
-		$http = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://';
+		$this->EE->load->helper('addon_helper');
 		
-		$port = $_SERVER['SERVER_PORT'] == '80' || $_SERVER['SERVER_PORT'] == '443' ? NULL : ':' . $_SERVER['SERVER_PORT'];
-		
-		if(!isset($_SERVER['SCRIPT_URI']))
-		{				
-			 $_SERVER['SCRIPT_URI'] = $http . $_SERVER['HTTP_HOST']. $_SERVER['REQUEST_URI'];
-		}
-		
-		$base_url = $http . $_SERVER['HTTP_HOST'];
+		$base_url = base_url();
 		
 		if(!empty($append))
 		{
