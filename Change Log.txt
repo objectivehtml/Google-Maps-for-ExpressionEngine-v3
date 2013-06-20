@@ -5,9 +5,16 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.3.0
- * @build		20130522
+ * @version		3.3.1
+ * @build		20130620
  */
+
+#### 3.3.1
+##### 06/20/2013
+
+- (Bug Fix) Fixed compatibility issue with Photo Frame
+- (Bug Fix) Fixed an issue with Low Variables
+- (Bug Fix) Fixed an issue when searching categories that would cause a PHP issue to appear.
 
 #### 3.3.0
 ##### 05/22/2013
