@@ -20,17 +20,17 @@ class GeolocationButton extends PhotoFrameButton {
 		return $tables;
 	}
 	
-	public function postSave($photo)
+	public function postSave($save_photo, $orig_photo)
 	{
-		$manipulations = json_decode($photo['manipulations']);
+		$manipulations = json_decode($save_photo['manipulations']);
 		
 		if(isset($manipulations->geolocation))
 		{
-			$photo['lat'] = $manipulations->geolocation->data->lat;
-			$photo['lng'] = $manipulations->geolocation->data->lng;
+			$save_photo['lat'] = $manipulations->geolocation->data->lat;
+			$save_photo['lng'] = $manipulations->geolocation->data->lng;
 		}
 		
-		return $photo;
+		return $save_photo;
 	}
 	
 	public function javascript()

@@ -90,7 +90,7 @@
 					lat: this.lat,
 					lng: this.lng,
 					loc: this.loc,
-					zoom: this.map.getZoom()
+					zoom: this.map ? this.map.getZoom() : false
 				});
 			}	
 			else {
@@ -152,7 +152,9 @@
 				t.refresh();
 			});
 			
-			this.map.setCenter(new google.maps.LatLng(lat, lng));
+			if(this.map) {
+				this.map.setCenter(new google.maps.LatLng(lat, lng));
+			}
 			
 			if(typeof populate === "undefined" || populate !== false) {
 				this.window.ui.lat.val(lat);
@@ -172,6 +174,11 @@
 			
 			this.base();
 			this.refresh();
+		},
+		
+		startCrop: function() {
+			var t = this;		
+			
 		},
 		
 		buildWindow: function() {	
@@ -222,6 +229,22 @@
 				t.addMarker(lat, lng);
 			});
 			
+			t.bind('metaLatLng', function(lat, lng) {
+				t.lat = lat;
+				t.lng = lng;
+				if(t.lat !== false && t.lng !== false) {
+			    	t.addMarker(t.lat, t.lng);
+					t.refresh();
+				}
+			});
+			
+			t.bind('metaStaticMap', function(map) {
+				map.html('');
+				if(t.lat !== false && t.lng !== false) {
+					map.html('<img src="https://maps.googleapis.com/maps/api/staticmap?markers='+t.lat+','+t.lng+'&size=400x160&scale=2&sensor=true&zoom=14">')
+				}
+			});
+			
 			this.window.ui.btn.click(function(e) {
 				var m = t.getManipulation();
 				
@@ -248,6 +271,11 @@
 			google.maps.visualRefresh = true;
 			
 			this.geocoder = new google.maps.Geocoder();
+			
+			this.bind('metaLatLng', function(lat, lng) {
+				t.lat = lat;
+				t.lng = lng;
+			});
 			
 			this.bind('windowOpenEnd', function(window) {
 				if(window.title == 'Geolocation') {	
@@ -302,7 +330,7 @@
 				        }	
 				        
 						t.refresh();	
-					}        
+					}  
 				}
 			});
 		}
