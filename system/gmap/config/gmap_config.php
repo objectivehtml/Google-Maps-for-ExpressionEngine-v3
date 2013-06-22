@@ -110,3 +110,17 @@ $config['gmap_import_client_key'] = 'dj0yJmk9ODB6RDBnMktDSzNxJmQ9WVdrOVRUbDJRbTV
 $config['gmap_import_client_secret'] = 'ee3c471c8f9ba7cb70bf3dda64222e22fe004952';
 
 $config['gmap_import_appid'] = 'M9vBnh3e';
+
+/* 
+ *	Define the ee() function introduced in EE 2.6
+ */
+
+if ( ! function_exists('ee'))
+{
+    function ee()
+    {
+        static $EE;
+        if ( ! $EE) $EE = get_instance();
+        return $EE;
+    }
+} 
