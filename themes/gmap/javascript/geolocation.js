@@ -232,10 +232,8 @@
 			t.bind('metaLatLng', function(lat, lng) {
 				t.lat = lat;
 				t.lng = lng;
-				if(t.lat !== false && t.lng !== false) {
-			    	t.addMarker(t.lat, t.lng);
-					t.refresh();
-				}
+		    	t.addMarker(t.lat, t.lng);
+				t.refresh();
 			});
 			
 			t.bind('metaStaticMap', function(map) {
@@ -243,6 +241,11 @@
 				if(t.lat !== false && t.lng !== false) {
 					map.html('<img src="https://maps.googleapis.com/maps/api/staticmap?markers='+t.lat+','+t.lng+'&size=400x160&scale=2&sensor=true&zoom=14">')
 				}
+			});
+			
+			t.bind('metaStartCrop', function() {
+				t.lat = false;
+				t.lng = false;
 			});
 			
 			this.window.ui.btn.click(function(e) {
