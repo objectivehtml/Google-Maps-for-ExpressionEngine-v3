@@ -59,6 +59,12 @@
 		icon: 'location',
 		
 		/**
+		 * Should Photo Frame render the photo after removing the layer
+		 */	
+		 
+		renderAfterRemovingLayer: false,
+		
+		/**
 		 * The JSON object used for Window settings 
 		 */
 		
@@ -83,6 +89,11 @@
 		
 		disable: function() {
 		},
+
+		removeLayer: function() {
+			this.removeManipulation();
+			this.updateJson();
+		},
 		
 		refresh: function() {
 			if(this.marker) {
@@ -103,7 +114,7 @@
 			this.window.ui.lng.val(this.lng);
 			this.window.ui.loc.val(this.loc);
 		
-			this.render();			
+			this.updateJson();			
 		},
 		
 		enable: function() {
@@ -119,9 +130,15 @@
 		},
 		
 		toggleLayer: function(visibility, render) {
-			this.base(visibility, render);
+			this.base(visibility, false);
+
+			if(render) {
+				this.updateJson();
+			}
 			
-			this.marker.setVisible(visibility);
+			if(this.marker) {
+				this.marker.setVisible(visibility);
+			}
 		},
 		
 		addMarker: function(lat, lng, populate) {
@@ -165,13 +182,16 @@
 		},
 		
 		removeLayer: function() {
-			this.marker.setMap(null);
-			this.marker = false;
+			if(this.marker) {
+				this.marker.setMap(null);
+				this.marker = false;
+			}
+			if(this.map) {
+				this.map.setCenter(this.geo.getPosition());
+			}
 			this.lat = false;
 			this.lng = false;
 			this.loc = false;
-			this.map.setCenter(this.geo.getPosition());
-			
 			this.base();
 			this.refresh();
 		},
