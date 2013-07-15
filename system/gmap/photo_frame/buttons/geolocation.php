@@ -22,7 +22,7 @@ class GeolocationButton extends PhotoFrameButton {
 	
 	public function postSave($save_photo, $orig_photo)
 	{
-		$manipulations = json_decode($save_photo['manipulations']);
+		//$manipulations = json_decode($save_photo['manipulations']);
 		
 		if(isset($manipulations->geolocation))
 		{
