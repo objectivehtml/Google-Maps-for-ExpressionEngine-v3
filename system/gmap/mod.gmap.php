@@ -1754,7 +1754,7 @@ Class Gmap {
 		$categories     = $this->EE->input->post('categories');
 		$select         = array();
 		$having         = array();
-		$where   	    = array();
+		$where   	    = array('`exp_channel_titles`.`site_id` = '.config_item('site_id'));
 		
 		foreach($_POST as $field => $value)
 		{
