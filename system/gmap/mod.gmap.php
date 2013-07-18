@@ -1963,7 +1963,7 @@ Class Gmap {
 			$match_categories_exact = $this->param('match_categories_exact');
 			
 			$cat_having       = NULL;
-			
+						
 			if(($match_categories !== FALSE || $match_categories_exact !== FALSE) && is_array($cat_where)) 
 			{
 				$match_categories = str_replace('CAT_COUNT', count($cat_where), $match_categories);
@@ -1974,7 +1974,8 @@ Class Gmap {
 				}
 				else
 				{
-					$cat_op = $this->param('match_category_operator', '>=');
+					$cat_op 	= $this->param('match_category_operator', '>=');
+					$cat_where  = array();
 					$cat_having	= 'HAVING cat_count '.$cat_op.' '.$match_categories;
 				}
 			}
