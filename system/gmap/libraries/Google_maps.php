@@ -23,6 +23,7 @@ class Google_maps {
 		$this->EE =& get_instance();
 
 		$this->EE->load->config('gmap_config');
+		$this->EE->load->helper('url');
 	}	
 	
 	public function build_response($data)
