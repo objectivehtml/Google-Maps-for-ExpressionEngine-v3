@@ -7,9 +7,9 @@
 	<p>
 		<label for="id">Settings Schema</label><br>
 		<select name="id" id="id">
-		<? foreach($settings->result() as $setting): ?>
+		<?php foreach($settings->result() as $setting): ?>
 			<option value="<?php echo $setting->schema_id?>"><?php echo json_decode($setting->settings)->id?></option>
-		<? endforeach; ?>
+		<?php endforeach; ?>
 		</select>
 	</p>
 	
@@ -45,12 +45,12 @@
 		</tr>
 	</thead>
 	<tbody>
-	<? if($stats->num_rows() == 0): ?>
+	<?php if($stats->num_rows() == 0): ?>
 		<tr>
 			<td colspan="9">There are no items in the pool.</td>
 		</tr>
-	<? else: ?>
-		<? foreach($stats->result() as $item): ?>
+	<?php else: ?>
+		<?php foreach($stats->result() as $item): ?>
 			<tr>
 				<td><?php echo $item->schema_id?></td>
 				<td><?php echo $item->schema_name?></td>
@@ -62,8 +62,8 @@
 				<td><a href="#<?php echo $item->schema_id?>" class="change-status">Change Statuses</a></td>
 				<td><a href="<?php echo $import_url . '&id='. $item->schema_id?>">Run Geocoder</a></td>
 			</tr>
-		<? endforeach; ?>
-	<? endif; ?>
+		<?php endforeach; ?>
+	<?php endif; ?>
 	</tbody>
 </table>
 
