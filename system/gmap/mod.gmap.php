@@ -1754,7 +1754,7 @@ Class Gmap {
 		$categories     = $this->EE->input->post('categories');
 		$select         = array();
 		$having         = array();
-		$where   	    = array('`exp_channel_titles`.`site_id` = '.config_item('site_id'));
+		$where   	    = array();
 		
 		foreach($_POST as $field => $value)
 		{
@@ -1932,7 +1932,7 @@ Class Gmap {
 						{			
 							if(!empty($category))
 							{			
-								$cat_where[] = '`cat_id` = '.$category.'';
+								$cat_where[] = '(`cat_ids` = '.$category.' OR `cat_ids` LIKE \'%|'.$category.'|%\' OR `cat_ids` LIKE \'%|'.$category.'\' OR `cat_ids` LIKE \''.$category.'|%\')';
 							}
 						}
 					}
@@ -1987,7 +1987,8 @@ Class Gmap {
 									
 			if(!empty($cat_where))
 			{
-				$cat_where = 'WHERE '.$cat_where;	
+				$cat_having = 'HAVING '.$cat_where;	
+				$cat_where  = NULL;
 			}
 			
 			if(is_array($cat_where))
@@ -2070,7 +2071,7 @@ Class Gmap {
 		FROM
 			'.$table.'
 		INNER JOIN `exp_channel_titles` USING (entry_id)
-		'.(count($where) > 0 ? ' WHERE ' . ltrim(implode(' ', $where), 'OR') : NULL).' 
+		'.(count($where) > 0 ? ' WHERE `exp_channel_titles`.`site_id` = '.config_item('site_id').' AND (' . ltrim(implode(' ', $where), 'OR') : NULL).') 
 		'.(count($having) > 0 ? ' HAVING '.implode(' AND ', $having) : NULL);
 		
 		$grand_total_results = $this->EE->db->query($base_sql)->num_rows();
