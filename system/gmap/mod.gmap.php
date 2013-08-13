@@ -1916,7 +1916,7 @@ Class Gmap {
 					$where[] = 'OR `exp_channel_data`.`channel_id` = \''.$channel_data->channel_id.'\'';
 
 					if(is_array($prep_fields))
-					{				
+					{	
 						foreach($prep_fields as $prep_index => $prep_value)
 						{
 							$where[] = ' AND '.$prep_value;

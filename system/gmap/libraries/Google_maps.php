@@ -1167,9 +1167,17 @@ class Google_maps {
 				//Validates that a value is not FALSE
 				if($value !== FALSE && !empty($value) || $to_append == FALSE)
 				{
+					if(is_string($value))
+					{
+						if(count($explode_value = explode('|', $value)) > 0)
+						{
+							$value = 'IN (\''.implode('\' OR \'', $explode_value).'\')';
+						}
+					}
+
 					//If to_append is TRUE, then the operator is appended
 					if($to_append == TRUE)
-					{			
+					{	
 						//Converts a value string to a variable
 						$values = is_array($value) ? $value : array($value);
 						
@@ -1202,7 +1210,7 @@ class Google_maps {
 				}
 			}			
 		}
-		
+
 		return $string;
 	}
 	
@@ -1224,7 +1232,11 @@ class Google_maps {
 		}
 			
 		//Preps conditional statement by testing the field_name for keywords
-		if(strpos($field_name, '_min'))
+		if(preg_match('/^IN \(/', $value))
+		{
+			$operator = $value;
+		}
+		else if(strpos($field_name, '_min'))
 		{
 			$operator = ' >= \''.$value.'\'';
 		}
