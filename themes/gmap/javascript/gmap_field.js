@@ -371,7 +371,11 @@ var Gmap  = function($wrapper, options) {
 				position: new google.maps.LatLng(lat, lng),
 				map: t.map,
 				title: response.title,
-				icon: t.settings.theme_url+'/third_party/gmap/css/images/marker_orange.png'
+				icon: {
+					url: t.settings.theme_url+'/gmap/css/images/marker_orange.png',
+					size: new google.maps.Size(22, 31),
+					origin: new google.maps.Point(-3, -17)
+				}
 			};
 			
 			var content 		= 'Are you sure you want to <a href="#" data-index="'+index+'" class="delete-point">Delete</a>?';
