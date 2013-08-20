@@ -2071,7 +2071,7 @@ Class Gmap {
 		FROM
 			'.$table.'
 		INNER JOIN `exp_channel_titles` USING (entry_id)
-		'.(count($where) > 0 ? ' WHERE `exp_channel_titles`.`site_id` = '.config_item('site_id').' AND (' . ltrim(implode(' ', $where), 'OR') : NULL).') 
+		'.(count($where) > 0 ? ' WHERE `exp_channel_titles`.`site_id` = '.config_item('site_id').' AND (' . ltrim(implode(' ', $where), 'OR') . ')' : NULL).' 
 		'.(count($having) > 0 ? ' HAVING '.implode(' AND ', $having) : NULL);
 		
 		$grand_total_results = $this->EE->db->query($base_sql)->num_rows();
