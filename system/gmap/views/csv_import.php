@@ -16,6 +16,7 @@
 
 	<input type="hidden" name="return" value="<?php echo $return?>" />
 	<input type="hidden" name="schema_id" value="<?php echo $schema_id?>" />
+	<input type="hidden" name="XID" value="<?php echo $xid?>" />
 	
 	<button class="submit">Save Settings</button>
 </form>

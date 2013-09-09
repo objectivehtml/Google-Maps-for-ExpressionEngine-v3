@@ -654,6 +654,7 @@ class Gmap_mcp {
 		$this->EE->interface_builder->add_fieldsets($fields);
 
 		$vars = array(
+			'xid'      => XID_SECURE_HASH,
 			'return'   => $this->cp_url('schemas'),
 			'header'   => $this->EE->input->get('id') ? 'Edit' : 'New',
 			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_csv_save_settings_action'),
