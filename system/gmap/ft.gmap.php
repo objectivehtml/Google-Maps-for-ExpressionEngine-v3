@@ -831,6 +831,11 @@ class Gmap_ft extends EE_Fieldtype {
 	{
 		$data = json_decode($data);
 
+		if(!$data)
+		{
+			return;
+		}
+
 		$default_vars = array(
 			'limit'   => FALSE,
 			'offset'  => 0,
