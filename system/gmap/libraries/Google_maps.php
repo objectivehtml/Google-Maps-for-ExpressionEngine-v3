@@ -731,7 +731,7 @@ class Google_maps {
 								{							
 									$js .= $this->EE->google_maps->infobox(array(
 										'id'              => $params['id'],
-										'content'         => $content,
+										'content'         => trim($content),
 										'options'         => $params['infowindow']['options'],
 										'script_tag'      => FALSE,
 										'var'             => $params['id'].'_markers[index]',
@@ -744,7 +744,7 @@ class Google_maps {
 								{
 									$js .= $this->EE->google_maps->infowindow(array(
 										'id'				=> $params['id'],
-										'content'			=> $content, 
+										'content'			=> trim($content), 
 										'options'			=> $params['infowindow']['options'],
 										'script_tag'		=> FALSE,
 										'var'				=> $params['id'].'_markers[index]',
