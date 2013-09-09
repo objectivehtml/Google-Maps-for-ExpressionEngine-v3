@@ -207,13 +207,18 @@ class Google_maps {
 	public function search_cache()
 	{
 		if($this->EE->input->post('init_gmap_search') == 'y')
-		{			
-			$this->EE->functions->set_cookie('gmap_last_post', serialize($_POST), strtotime('+1 year'));
+		{	
+			// $this->EE->functions->set_cookie('gmap_last_post', serialize($_POST), strtotime('+1 year'));
+
+			setcookie('gmap_last_post', serialize($_POST), strtotime('+1 year'), '/');	
+
 		}
 		else
 		{
-			$cookie = $this->EE->input->cookie('gmap_last_post');
+			// $cookie = $this->EE->input->cookie('gmap_last_post');
 			
+			$cookie = $_COOKIE['gmap_last_post'];
+
 			if($cookie)
 			{
 				$_POST = unserialize($cookie);
@@ -365,7 +370,7 @@ class Google_maps {
 		);
 		
 		$params = array_merge($default_params, $params);
-		
+
 		if(!isset($params['content']) || empty($params['content']))
 		{
 			return NULL;	
@@ -440,7 +445,7 @@ class Google_maps {
 		
 		<script type="text/javascript">
 			
-			'.($visual_refresh ? 'google.maps.visualRefresh = true;' : NULL).'
+			'.($visual_refresh ? 'google.maps.visualRefresh = true;' : false).'
 			
 			var '.$map_id.'_options 			= '.$obj.';
 			var '.$map_id.'_canvas 				= document.getElementById("'.$map_id.'");
@@ -633,7 +638,7 @@ class Google_maps {
 										
 										var a = newMarker.getPosition();
 										var b = marker.getPosition();
-											
+
 										if(a.lat() == b.lat() && a.lng() == b.lng()) {
 											newMarker.setMap(null);
 										}		
