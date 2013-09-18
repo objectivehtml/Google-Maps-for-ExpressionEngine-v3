@@ -68,7 +68,7 @@ class Gmap_ft extends EE_Fieldtype {
 	{
 		$this->EE =& get_instance();
 		
-		if(isset($this->EE->safecracker_lib))
+		if(isset($this->EE->safecracker_lib) || isset($this->EE->channel_form_lib))
 		{
 			$this->safecracker = TRUE;
 		}

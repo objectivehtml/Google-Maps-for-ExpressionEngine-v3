@@ -375,6 +375,11 @@ class Google_maps {
 		{
 			return NULL;	
 		}
+
+		if(!empty($params['options']['offsetX']) || !empty($params['options']['offsetY']))
+		{
+			$options['pixelOffset'] = 'new google.maps.Size('.$params['options']['offsetX'].', '.$params['options']['offsetY'].')';	
+		}
 			
 		if(!isset($options['content']))
 		{
