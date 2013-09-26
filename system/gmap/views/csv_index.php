@@ -21,6 +21,7 @@
 	<p><label><input type="checkbox" name="force_geocoder" value="true" /> Force the geocoder to run even if the existing entry has a valid location?</label></p>
 	
 	<input type="hidden" name="return" value="<?php echo $return?>" />
+	<input type="hidden" name="XID" value="<?php echo $xid?>" />
 	
 	<button type="submit" class="submit">Add to Pool</button>
 	

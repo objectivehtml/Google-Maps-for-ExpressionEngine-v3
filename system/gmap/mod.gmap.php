@@ -533,7 +533,7 @@ Class Gmap {
 				}
 			}
 		}
-		
+
 		$marker_js = $this->EE->google_maps->marker(array(
 			'id' 					=> $map_id, 
 			'options' 				=> $options,

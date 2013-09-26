@@ -55,7 +55,9 @@ class Gmap_ext {
 			
 			$tagdata = $obj->EE->TMPL->parse_variables_row($tagdata, array('category_ids' => $categories));
 		}
-		
+	
+		ee()->session->set_flashdata('gmap_tagdata', $tagdata);
+
 		return $tagdata;
 	}
 	 
