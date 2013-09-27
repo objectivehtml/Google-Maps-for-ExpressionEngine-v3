@@ -1281,6 +1281,7 @@ var Gmap  = function($wrapper, options) {
 			}	
 					
 			t.ui.sideContentText.val('');
+			t.ui.regionName.val('');
 			t.ui.regionContent.val('');
 			
 			if(t.editRegion !== false) {
@@ -1295,7 +1296,9 @@ var Gmap  = function($wrapper, options) {
 				
 				t.ui.regionPanel.find('select[name="region-stroke-weight"]').val(style.strokeWeight).change();
 				t.ui.regionPanel.find('select[name="region-stroke-opacity"]').val(style.strokeOpacity).change();
-				t.ui.regionPanel.find('select[name="region-fill-opacity"]').val(style.fillOpacity).change();						t.ui.regionContent.val(data.content);
+				t.ui.regionPanel.find('select[name="region-fill-opacity"]').val(style.fillOpacity).change();						
+				t.ui.regionName.val(data.title);					
+				t.ui.regionContent.val(data.content);
 				t.ui.sideContentText.val(data.content);
 			}
 			
@@ -2082,7 +2085,7 @@ var Gmap  = function($wrapper, options) {
 		t.response.regions.results[index].setMap(null);
 		t.polyInfoWindow.setMap(null);
 		t.editRegion = index;
-				
+
 		t.showRegionPanel(t.editRegion);
 			
 		$.each(regionData.coords, function(i, data) {
