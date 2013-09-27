@@ -660,12 +660,12 @@ class Google_maps {
 							
 							if(isset($result->title))
 							{
-								$js .= $params['id'].'_markers[index].title = \''.str_replace('\'', '\\\'', $result->title).'\';';
+								$js .= $params['id'].'_markers[index].title = \''.$this->clean_js($result->title).'\';';
 							}
 							
 							if(isset($result->content))
 							{
-								$js .= $params['id'].'_markers[index].content = \''.str_replace('\'', '\\\'', $result->content).'\';';
+								$js .= $params['id'].'_markers[index].content = \''.$this->clean_js($result->content).'\';';
 							}
 							
 							if(isset($params['redirect']) && $params['redirect'])
