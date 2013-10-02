@@ -105,11 +105,11 @@ $config['gmap_import_skip_rows'] = 0;
 
 $config['gmap_import_use_yahoo'] = FALSE;
 
-$config['gmap_import_client_key'] = 'dj0yJmk9ODB6RDBnMktDSzNxJmQ9WVdrOVRUbDJRbTVvTTJVbWNHbzlNVEU0TURZeU1qZzJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD01OA--';
+$config['gmap_import_client_key'] = '';
 
-$config['gmap_import_client_secret'] = 'ee3c471c8f9ba7cb70bf3dda64222e22fe004952';
+$config['gmap_import_client_secret'] = '';
 
-$config['gmap_import_appid'] = 'M9vBnh3e';
+$config['gmap_import_appid'] = '';
 
 /* 
  *	Define the ee() function introduced in EE 2.6

@@ -416,8 +416,8 @@ Class Gmap {
 		}
 		
 		//If user doesn't want to pass information to geocoder for limitation reasons
-		//this param is way to opt-out of the system. By default you are opt-in.
-		if($this->param('geocode', TRUE, TRUE))
+		//this param is way to opt-out of the system. By default you are opt-out.
+		if($this->param('geocode', FALSE, TRUE))
 		{
 			$coordinate	= $this->param('latitude') .','.$this->param('longitude');
 			$query 		= ($address = $this->param('address')) ? $address : str_replace(array('<p>', '</p>'), '', $coordinate);

@@ -121,7 +121,7 @@ class Google_maps {
 				'content'         => $content,
 				'options'         => $params['infowindow']['options'],
 				'script_tag'      => FALSE,
-				'var'             => 'GeoMarker',
+				'var'             => $params['id'].'_GeoMarker',
 				'show_one_window' => $show_one_window,
 				'open_windows'    => $open_windows,
 				'trigger'         => $params['window_trigger']
@@ -134,7 +134,7 @@ class Google_maps {
 				'content'			=> $content, 
 				'options'			=> $params['infowindow']['options'],
 				'script_tag'		=> FALSE,
-				'var'				=> 'GeoMarker',
+				'var'				=> $params['id'].'_GeoMarker',
 				'show_one_window' 	=> $show_one_window,
 				'open_windows'		=> $open_windows,
 				'trigger'			=> $params['window_trigger']
@@ -162,6 +162,7 @@ class Google_maps {
 			          '.$params['id'].'_map.fitBounds(this.getBounds());
 			        });
 			    ' : 'google.maps.event.addListenerOnce('.$params['id'].'_GeoMarker, "position_changed", function() {
+			            '.$params['id'].'_map.setCenter(this.getPosition());
 						'.$params['id'].'_map.setZoom('.$params['zoom'].');
 			        });
 			    ')).'

@@ -59,8 +59,15 @@ class Gmap_mcp {
 			'return'   => $this->cp_url('index', TRUE)
 		);
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
-		
+		if(version_compare(APP_VER, '2.6.0', '<'))
+		{
+			$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
+		}
+		else
+		{
+			$this->EE->view->cp_page_title = $this->EE->lang->line('gmap_module_name');
+		}
+
 		return $this->EE->load->view('csv_index', $vars, TRUE);
 	}
 	
@@ -93,8 +100,15 @@ class Gmap_mcp {
 			'items' => $this->EE->data_import_model->get_log('open')
 		);
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
-		
+		if(version_compare(APP_VER, '2.6.0', '<'))
+		{
+			$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
+		}
+		else
+		{
+			$this->EE->view->cp_page_title = $this->EE->lang->line('gmap_module_name');
+		}
+
 		return $this->EE->load->view('import_log', $vars, TRUE);
 	}
 	
@@ -138,8 +152,15 @@ class Gmap_mcp {
 			'duplicate_url' => $this->cp_url('duplicate_schema_action')
 		);
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
-		
+		if(version_compare(APP_VER, '2.6.0', '<'))
+		{
+			$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
+		}
+		else
+		{
+			$this->EE->view->cp_page_title = $this->EE->lang->line('gmap_module_name');
+		}
+
 		return $this->EE->load->view('schemas', $vars, TRUE);		
 	}
 	
@@ -231,8 +252,15 @@ class Gmap_mcp {
 			$item->data = json_decode($item->data);	
 		}*/
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
-		
+		if(version_compare(APP_VER, '2.6.0', '<'))
+		{
+			$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
+		}
+		else
+		{
+			$this->EE->view->cp_page_title = $this->EE->lang->line('gmap_module_name');
+		}
+
 		return $this->EE->load->view('import_pool', $vars, TRUE);
 	}
 	
@@ -664,8 +692,15 @@ class Gmap_mcp {
 			'schema_id' => $this->EE->input->get('id') ? $this->EE->input->get('id') : NULL
 		);
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
-		
+		if(version_compare(APP_VER, '2.6.0', '<'))
+		{
+			$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
+		}
+		else
+		{
+			$this->EE->view->cp_page_title = $this->EE->lang->line('gmap_module_name');
+		}
+
 		return $this->EE->load->view('csv_import', $vars, TRUE);
 	}
 	
