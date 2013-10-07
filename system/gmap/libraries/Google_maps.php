@@ -218,7 +218,7 @@ class Google_maps {
 		{
 			// $cookie = $this->EE->input->cookie('gmap_last_post');
 			
-			$cookie = $_COOKIE['gmap_last_post'];
+			$cookie = isset($_COOKIE['gmap_last_post']) ? $_COOKIE['gmap_last_post'] : FALSE;
 
 			if($cookie)
 			{

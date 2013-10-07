@@ -36,7 +36,16 @@ $config['gmap_cache_length'] = 604800;
  
  $config['gmap_force_http'] = FALSE;
  
+
+/* 
+ *	Default Geocoding Region
+ *
+ *  If FALSE, the default region will be used (United States)
+ */
  
+ $config['gmap_default_geocoding_region'] = 'gb';
+
+
 /* 
  *	Static Maps
  *

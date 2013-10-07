@@ -27,6 +27,7 @@ class Geocoder extends Google_API {
 	
 	public function __construct()
 	{
+		$this->region    = config_item('gmap_default_geocoding_region');
 		$this->base_url .= 'geocode/'.$this->format;
 		$this->url = $this->construct_url();
 	}
