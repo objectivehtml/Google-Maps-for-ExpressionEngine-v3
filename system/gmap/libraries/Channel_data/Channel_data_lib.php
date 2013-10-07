@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.20
- * @build		20120404
+ * @version		0.8.21
+ * @build		20130906
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -93,7 +93,7 @@ if(!class_exists('Channel_data_lib'))
 			return $concat;
 		}
 		
-		public function build_operator($field, $value, $protect_identifiers = TRUE)
+		public function build_operator($field, $value, $protect_identifiers = TRUE, $debug = FALSE)
 		{
 			$field = trim($field);
 			
@@ -119,8 +119,21 @@ if(!class_exists('Channel_data_lib'))
 			{
 				$field = $this->EE->db->protect_identifiers($field);
 			}
+
+			$conditional = $this->assign_conditional($field);
+
+			if($conditional != ($alt_conditional = $this->assign_conditional(' '.trim($value))))
+			{
+				$conditional = $alt_conditional;
+				$value       = $this->strip_logic($value);
+			}
+
+			if(preg_match('/^\d*$/', $value))
+			{
+				$value = (float) $value;
+			}
 			
-			return $concat . $this->remove_conditionals($field) . $this->assign_conditional($field) . $this->EE->db->escape($value) ;
+			return $concat . $this->remove_conditionals($field) . $conditional . $this->EE->db->escape($value);
 		}
 		
 		public function build_operators($where = array(), $protect_identifiers = TRUE, $debug = FALSE)
@@ -138,7 +151,7 @@ if(!class_exists('Channel_data_lib'))
 					$values = array($field => array($values));
 				}
 				
-			$reserved = array('channel_id', 'group_id', 'channel_data.channel_id', 'status', 'channel_titles.channel_id', 'channel_name', 'author_id', 'url_title', 'field_id_135', 'author_id', 'author_id', 'author_id', 'author_id', 'author_id', 'author_id');
+				$reserved = array('channel_id', 'group_id', 'channel_data.channel_id', 'status', 'channel_titles.channel_id', 'channel_name', 'author_id', 'url_title', 'field_id_135', 'author_id', 'author_id', 'author_id', 'author_id', 'author_id', 'author_id');
 			
 				foreach($values as $field => $value)
 				{
@@ -155,9 +168,9 @@ if(!class_exists('Channel_data_lib'))
 					$concat = $this->build_concat($field);
 				
 					foreach($value as $where_val)
-					{		
+					{	
 						$field_sql[] = $this->build_operator($field, $where_val, $protect_identifiers);	
-					}	
+					}
 				}
 				
 				$sql = trim(implode(' ', $field_sql));
@@ -165,6 +178,7 @@ if(!class_exists('Channel_data_lib'))
 					
 				$where_sql[] = str_replace('()', '', $concat . '('.trim(ltrim(ltrim($sql, 'AND'), 'OR')).')');
 			}
+			
 			
 			$sql = trim(implode('', $where_sql));
 			$sql = preg_replace("/^(AND|OR)|(AND|OR)$/", '', trim($sql));
@@ -216,8 +230,8 @@ if(!class_exists('Channel_data_lib'))
 
 		public function build_where($result_array, $field_array = array(), $debug = FALSE)
 		{
-			$where_array = array();
-			
+			$where_array = array();			
+					
 			foreach($result_array as $index => $values)
 			{
 				$conditional = '';
@@ -253,7 +267,7 @@ if(!class_exists('Channel_data_lib'))
 							$index = trim(preg_replace('/^'.$word.'\s/', '', $index));
 						}
 					}
-									
+
 					foreach($this->conditionals as $condition)
 					{
 						if(preg_match('/'.$condition.'/', $index, $matches))
@@ -263,6 +277,7 @@ if(!class_exists('Channel_data_lib'))
 						
 						//$index = trim(preg_replace('/'.$condition.'/', '', $index));
 					}
+
 					if(isset($field_array[$index]))
 					{
 						$field_array[$index] = (object) $field_array[$index];
@@ -1117,8 +1132,9 @@ if(!class_exists('Channel_data_lib'))
 			
 			if($channel_id !== FALSE)
 			{
-				$where_array = array('channel_data.channel_id' => $channel_id);
+				//$where_array = array('channel_data.channel_id' => $channel_id);
 				$fields	 = $this->get_channel_fields($channel_id)->result();
+				$this->EE->db->where('channel_data.channel_id', $channel_id);
 			}
 			else
 			{
@@ -1271,7 +1287,7 @@ if(!class_exists('Channel_data_lib'))
 
 			// Joins the channel_data table
 
-			$this->EE->db->join('member_data', 'members.member_id = member_data.member_id');
+			$this->EE->db->join('member_data', 'members.member_id = member_data.member_id', 'left');
 
 			$params = array(
 				'select' 	=> $select,
@@ -1738,7 +1754,7 @@ if(!class_exists('Channel_data_lib'))
 					else if($term == 'where')
 					{
 						$sql = $this->build_operators($param, TRUE, $debug);
-						
+
 						if(!empty($sql)) $this->EE->db->where($sql, FALSE, FALSE);
 					}
 					else if($term == 'order_by')
