@@ -5,9 +5,13 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.3.1
+ * @version		3.3.3
  * @build		20131008
  */
+
+#### 3.3.3
+##### 10/08/2013
+- (Bug Fix) Fixed issue with the back button triggering an XID error in the search
 
 #### 3.3.2
 ##### 10/08/2013

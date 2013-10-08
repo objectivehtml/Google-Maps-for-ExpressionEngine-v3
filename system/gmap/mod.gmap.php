@@ -1695,7 +1695,12 @@ Class Gmap {
 			
 		$method = strtolower($this->param('method', 'post'));
 		$prefix = $this->param('prefix', 'result');
-		
+
+		if(version_compare(APP_VER, '2.7', '>='))
+		{
+			ee()->security->restore_xid();
+		}
+
 		/* -------------------------------------------
 		/* 'gmap_results_post' hook.
 		/*  - Modify the POST variables before method is executed
