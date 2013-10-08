@@ -5,9 +5,41 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.3.0
- * @build		20130522
+ * @version		3.3.1
+ * @build		20131008
  */
+
+#### 3.3.2
+##### 10/08/2013
+
+- (Feature) Added the ability to search with OR modifiers in the exp:gmap:search tag by delimiting your values with a bar (|) character.
+- (Feature) Added offsetX and offsetY to the regular info windows to offset their position
+- (Bug Fix) Added new ee() method to make add-on consistent with EE 2.6
+- (Bug Fix) Updated Photo Frame geolocation pack for latest Photo Frame API updates
+- (Bug Fix) Fixed issue with Photo Frame compatibility (JS errors)
+- (Bug Fix) Fixed an issue that would cause a memory leak with certain MSM sites
+- (Bug Fix) Fixed an issue that would cause PHP errors if searching categories (in some cases)
+- (Bug Fix) Fixed issue with url helper not being loaded automatically
+- (Bug Fix) Removed lingering PHP short tags
+- (Bug Fix) Fixed the way categories were search is using the match_categories_exact parameter.
+- (Bug Fix) Fixed an issue with the orange dot in the Regions not appearing when plotting new shapes.
+- (Bug Fix) Fixed issue with search on some versions of PHP
+- (Bug Fix) Fixed a bug with 2.7 that was caused by a missing XID parameter
+- (Bug Fix) Fixed an issue with Google Maps last_post not saving with native cookie method. Replace with native PHP method and works fine.
+- (Bug Fix) Fixed a PHP error that was triggered when :formatted_address was called when no locations exist
+- (Bug Fix) Trimmed content variable before outputting
+- (Bug Fix) Fixed EE 2.7 issues
+- (Bug Fix) Fixed an issue with window content not getting prepped before output which would cause JS errors.
+- (Bug Fix) Fixed an issue with editing region names and name not reseting for new regions.
+- (Bug Fix) Fixed issue with adding zoom parameter to the current location tag.
+- (Bug Fix) Removed deprecated EE functions from CP
+
+#### 3.3.1
+##### 06/20/2013
+
+- (Bug Fix) Fixed compatibility issue with Photo Frame
+- (Bug Fix) Fixed an issue with Low Variables
+- (Bug Fix) Fixed an issue when searching categories that would cause a PHP issue to appear.
 
 #### 3.3.0
 ##### 05/22/2013
