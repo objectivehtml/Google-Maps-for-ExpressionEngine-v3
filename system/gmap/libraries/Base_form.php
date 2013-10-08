@@ -145,7 +145,7 @@ if(!class_exists('Base_form'))
 			
 			// Merges the default hidden_fields			
 			$hidden_fields  = array_merge($this->hidden_fields, array(
-				'XID'	   => '{XID_HASH}',
+				'XID'	   => XID_SECURE_HASH,
 				'site_url' => $this->param('site_url') ? $this->param('site_url') : $this->EE->config->item('site_url'),
 				'required' 		=> $this->required,
 				'secure_return' => $this->secure_return,
