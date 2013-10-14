@@ -415,6 +415,11 @@ Class Gmap {
 			return NULL;
 		}
 		
+		if($this->param('address'))
+		{
+			$this->EE->TMPL->tagparams['geocode'] = 'true';
+		}
+
 		//If user doesn't want to pass information to geocoder for limitation reasons
 		//this param is way to opt-out of the system. By default you are opt-out.
 		if($this->param('geocode', FALSE, TRUE))

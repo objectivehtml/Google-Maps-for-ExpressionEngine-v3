@@ -418,7 +418,7 @@ class Google_maps {
 					
 			$js.='
 					infowindow.setPosition(currentPos);
-					infowindow.open('.$params['id'].'_map);
+					infowindow.open('.$params['id'].'_map, obj);
 				});
 				
 				'.$params['id'].'_window = infowindow;
