@@ -112,7 +112,7 @@ class Gmap_ft extends EE_Fieldtype {
 		}
 		else
 		{
-			$settings = $this->EE->channel_data->get_field($this->settings['field_id'])->row('field_settings');
+			$settings = $this->EE->channel_data->get_field(isset($this->settings['field_id']) ? $this->settings['field_id'] : $this->settings['field_name'])->row('field_settings');
 		}
 		
 		$settings = array_merge($merge, is_string($settings) ? unserialize(base64_decode($settings)) : $settings);
