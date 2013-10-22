@@ -186,17 +186,7 @@
 		</tr>
 		<?php endif; ?>
 		
-		<tr class="onchange" id="gmap_marker_mode">
-			<td width="40%">
-				<strong><?php echo $lang['gmap_marker_mode']?></strong> <br>
-				<?php echo $lang['gmap_marker_mode_description']?>
-			</td>
-			<td>
-				<?php echo $gmap_marker_mode_boolean?>
-			</td>
-		</tr>
-		
-		<tr class="gmap_marker_mode">
+		<tr class="">
 			<td width="40%">
 				<strong><?php echo $lang['gmap_total_points']?></strong> <br>
 				<?php echo $lang['gmap_total_points_description']?>
@@ -206,13 +196,23 @@
 			</td>
 		</tr>
 		
-		<tr class="gmap_marker_mode">
+		<tr class="">
 			<td width="40%">
 				<strong><?php echo $lang['gmap_min_points']?></strong> <br>
 				<?php echo $lang['gmap_min_points_description']?>
 			</td>
 			<td>
 				<input type="text" name="gmap_min_points" id="gmap_min_points" value="<?php echo $gmap_min_points?>" />
+			</td>
+		</tr>
+		
+		<tr class="onchange" id="gmap_marker_mode">
+			<td width="40%">
+				<strong><?php echo $lang['gmap_marker_mode']?></strong> <br>
+				<?php echo $lang['gmap_marker_mode_description']?>
+			</td>
+			<td>
+				<?php echo $gmap_marker_mode_boolean?>
 			</td>
 		</tr>
 		
