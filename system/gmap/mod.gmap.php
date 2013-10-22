@@ -1117,10 +1117,13 @@ Class Gmap {
 			visible: '.$this->param('visible', 'true').',
 			zoomControl: '.$this->param('zoomControl', 'true').',
 			zoomControlOptions: {position: google.maps.ControlPosition.'.strtoupper($this->param('zoomControlOptions', 'TOP_LEFT')).'}
-	    }); 
+	    });';
 		
-		'.$id.'_map.setStreetView('.$id.'_streetview_pano);';
-		
+		if(!$this->param('decouple', FALSE, TRUE))
+		{
+			$return .= $id.'_map.setStreetView('.$id.'_streetview_pano);';
+		}
+
 		if($client_side && $address)
 		{
 			$return .= '
