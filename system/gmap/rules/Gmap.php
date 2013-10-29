@@ -159,7 +159,7 @@ class Gmap_channel_search_rule extends Base_rule {
 	
 	public function get_vars_row($row)
 	{
-		return array('distance' => $row['distance']);
+		return array('distance' => isset($row['distance']) ? $row['distance'] : 'N/A');
 	}
 
 	private function _no_distance()
