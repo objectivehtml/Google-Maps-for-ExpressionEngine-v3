@@ -299,7 +299,8 @@ class Gmap_ft extends EE_Fieldtype {
 			reqFields: '.$req_fields.',
 			icons: '.$icons.',
 			plugins: '.json_encode($third_party_js).',
-			safecracker: '.(isset($this->EE->safecracker_lib) ? 'true' : 'false').'
+			safecracker: '.($this->safecracker ? 'true' : 'false').',
+			channel_form: '.($this->safecracker ? 'true' : 'false').'
 		};
 	
 		/* 
