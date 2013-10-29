@@ -1345,10 +1345,13 @@ class Google_maps {
 		
 		$return = NULL;
 		
+
 		if($parse_tags)
 		{
 			$channels = $this->EE->channel_data->get_channels(array(
-				'site_id' => config_item('site_id')
+				'where' => array(
+					'site_id' => config_item('site_id')
+				)
 			))->result_array();
 			
 			$channels = $this->EE->channel_data->utility->reindex($channels, 'channel_id');
