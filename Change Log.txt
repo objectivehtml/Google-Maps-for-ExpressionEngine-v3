@@ -5,12 +5,28 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.3.3
- * @build		20131008
+ * @version		3.3.4
+ * @build		20131103
  */
+
+#### 3.3.4
+##### 11/03/2013
+
+- (Feature) Added new parameter to the exp:gmap:streetview tag that will decouple the streetview from the parent map.
+- (API) Made the geocode parameter by default set to "false" instead of "true". If the address param is set, it auto sets the geocode param to true for backwards compatibility
+- (Bug Fix) Fixed issue with Google Maps marker offset.
+- (Bug Fix) Fixed issues with Safecracker in 2.5.5
+- (Bug Fix) Removed code causing errors on some servers
+- (Bug Fix) Fixed the way some settings were displayed that caused some confusion
+- (Bug Fix) Fixed an issue with Channel Search compatibility
+- (Bug Fix) Fixed an issue with the default region not being set to "us". User outside the US can update this setting in the gmap_config.php
+- (Bug Fix) Fixed compatibility issue for EE versions prior to 2.7
+- (Bug Fix) Fixed an issue that could cause PHP errors to display in the exp:gmap:results tag
+- (Bug Fix) Fixed an issue with Gmap.safecracker not working in 2.7. Updated that and added Gmap.channel_form in addition to the legacy property.
 
 #### 3.3.3
 ##### 10/08/2013
+
 - (Bug Fix) Fixed issue with the back button triggering an XID error in the search
 
 #### 3.3.2
