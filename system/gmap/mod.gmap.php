@@ -283,7 +283,10 @@ Class Gmap {
 	
 	public function clear_cache()
 	{
-		$this->EE->functions->set_cookie('gmap_last_post', serialize(array()), strtotime('-1 year'));
+		if(isset($_COOKIE['gmap_last_post'])) {
+		  	unset($_COOKIE['gmap_last_post']);
+		  	setcookie('gmap_last_post', serialize(array()), strtotime('-1 year')); // empty value and old timestamp
+		}
 	}
 	
 	public function clean_js()
