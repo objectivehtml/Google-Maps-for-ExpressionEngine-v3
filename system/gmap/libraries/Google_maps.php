@@ -825,6 +825,7 @@ class Google_maps {
 	
 	public function convert_metric($metric = 'miles')
 	{
+		
 		$metrics = array(
 			'miles' 	 => 1,
 			'feet'  	 => 5280,
@@ -832,8 +833,22 @@ class Google_maps {
 			'kilometers' => 1.609344,
 			'metres'	 => 1609.344,
 			'meters'	 => 1609.344
-		);	
+		);
 		
+		/*
+		$mile = 3956.547;
+		$kilo = $mile; //6367.445;
+
+		$metrics = array(
+			'miles' 	 => $mile,
+			'feet'  	 => $mile * 5280,
+			'kilometres' => $kilo,
+			'kilometers' => $kilo,
+			'metres'	 => $kilo * 1609.344,
+			'meters'	 => $kilo * 1609.344
+		);		
+		*/
+
 		$metric = strtolower($metric);
 		$return = isset($metrics[$metric]) ? $metrics[$metric] : $metrics['miles'];
 		

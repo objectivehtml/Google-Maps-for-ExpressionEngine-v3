@@ -1874,9 +1874,11 @@ Class Gmap {
 						{
 							$distance_index = '_'.$index;
 						}
-									
+								
 						$select[] = 'ROUND((((ACOS(SIN('.$lat.' * PI() / 180) * SIN('.$lat_field_name.' * PI() / 180) + COS('.$lat.' * PI() / 180) * COS('.$lat_field_name.' * PI() / 180) * COS(('.$lng.' - '.$lng_field_name.') * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * '.$this->EE->google_maps->convert_metric($metric).'), 1) AS distance'.$distance_index;
-							
+						
+						//$select[] = 'ROUND(('.$this->EE->google_maps->convert_metric($metric).' * acos(cos(radians('.$lat.')) * cos(radians(`field_id_14`)) * cos(radians(`field_id_15`) - radians('.$lng.')) + sin(radians('.$lat.')) * sin(radians(`field_id_14`)))), 1) AS distance'.$distance_index;
+
 						$vars[0]['search_distance'] = $distance;
 						$vars[0]['metric'] = $metric;
 					}
@@ -1888,7 +1890,7 @@ Class Gmap {
 					
 					if($distance)
 					{
-						$having[] = '`distance'.$distance_index.'` '.$this->EE->google_maps->prep_value($distance_field, (float) $distance);
+						$having[] = '(`distance'.$distance_index.'` '.$this->EE->google_maps->prep_value($distance_field, (float) $distance).' OR `distance'.$distance_index.'` = NULL)';
 					}
 				}
 				else
