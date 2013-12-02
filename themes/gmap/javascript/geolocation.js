@@ -13,7 +13,7 @@
 		 */
 		
 		classes: {
-			loading: 'photo-frame-loading',
+			loading: 'photo-frame-loading'
 		},
 		
 		/**
