@@ -11,7 +11,7 @@
  * @build		20120522
  */
 
-require 'config/gmap_config.php';
+require_once PATH_THIRD . 'gmap/config/gmap_config.php';
 
 class Gmap_ext {
 	
