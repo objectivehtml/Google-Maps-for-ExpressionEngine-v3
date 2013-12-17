@@ -277,7 +277,7 @@ class Google_maps {
 			'content'				 => $params['content'],
 			'disableAutoPan'		 => 'false',
 			'enableEventPropagation' => 'false',
-			'maxWidth'				 => '0',
+			'maxWidth'				 => 0,
 			'offsetX'				 => 0,
 			'offsetY'				 => 0,
 			'isHidden'				 => 'false',
@@ -308,7 +308,7 @@ class Google_maps {
 	                enableEventPropagation: '.$options['enableEventPropagation'].',
 	                infoBoxClearance: new google.maps.Size('.$options['clearanceX'].', '.$options['clearanceY'].'),
 	                isHidden: '.$options['isHidden'].',
-	                maxWidth: 0,
+	                maxWidth: '.$options['maxWidth'].',
 	                pane: "'.$options['pane'].'",
 	                pixelOffset: new google.maps.Size('.$options['offsetX'].', '.$options['offsetY'].'),
 	                zIndex: null
@@ -730,7 +730,7 @@ class Google_maps {
 
 								$content = isset($params['infowindow']['content']) ? $params['infowindow']['content'] : NULL;
 								$content = $content == NULL && isset($result->content) ? $this->EE->google_maps->clean_js($result->content) : $content;
-								
+
 								$content = $this->parse($geocoded_response, $content);
 								
 								if(isset($params['infobox']) && $params['infobox'])
