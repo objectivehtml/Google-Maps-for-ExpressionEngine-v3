@@ -328,12 +328,12 @@ class Google_maps {
 			$js .= '			
 				
 				'.$params['id'].'_windows.push(infowindow);
-								
-				google.maps.event.addListener(obj, \'click\', function(e) {
+
+				var callback = function(obj, e) {
 					obj.position = e.latLng;							
 					obj.getPosition = function() {
 						return e.latLng;
-					}';
+					};';
 
 					if(isset($params['show_one_window']) && $params['show_one_window'])
 					{
@@ -343,12 +343,34 @@ class Google_maps {
 						}';					
 					}
 					
-			$js.='
-					infowindow.setPosition(e.latLng);
-					infowindow.open('.$params['id'].'_map, obj);
-					
-				});
-				
+					$js.='
+					obj.window.setPosition(e.latLng);
+					obj.window.open('.$params['id'].'_map, obj);
+				};			
+
+				obj.window = infowindow;		
+
+				if(!'.$params['id'].'_oms) {
+					google.maps.event.addListener(obj, "click", function(e) {
+						callback(obj, e);					
+					});
+				}
+				else if(!'.$params['id'].'_oms.clickEventAdded) {
+					'.$params['id'].'_oms.addListener("click", function(marker, e) {
+						callback(marker, e);
+					});
+
+					'.$params['id'].'_oms.addListener("spiderfy", function(markers) {
+					  for(var x in '.$params['id'].'_windows) {
+					  	var window = '.$params['id'].'_windows[x];
+
+					  	window.close();
+					  }
+					});
+
+					'.$params['id'].'_oms.clickEventAdded = true;
+				}
+
 				'.$params['id'].'_window = infowindow;
 				
 			})();
@@ -403,8 +425,9 @@ class Google_maps {
 			$js .= '			
 				'.$params['id'].'_windows.push(infowindow);';
 				
-			$js .= '							
-				google.maps.event.addListener(obj, \''.$params['trigger'].'\', function(e) {
+			$js .= '	
+
+				var callback = function(obj, e) {
 					var currentPos = e.latLng;
 				';
 
@@ -417,12 +440,34 @@ class Google_maps {
 					}
 					
 			$js.='
-					infowindow.setPosition(currentPos);
-					infowindow.open('.$params['id'].'_map, obj);
-				});
-				
+					obj.window.setPosition(currentPos);
+					obj.window.open('.$params['id'].'_map, obj);
+				};	
+
+				obj.window = infowindow;		
+
+				if(!'.$params['id'].'_oms) {
+					google.maps.event.addListener(obj, "click", function(e) {
+						callback(obj, e);					
+					});
+				}
+				else if(!'.$params['id'].'_oms.clickEventAdded) {
+					'.$params['id'].'_oms.addListener("click", function(marker, e) {
+						callback(marker, e);
+					});
+
+					'.$params['id'].'_oms.addListener("spiderfy", function(markers) {
+					  for(var x in '.$params['id'].'_windows) {
+					  	var window = '.$params['id'].'_windows[x];
+
+					  	window.close();
+					  }
+					});
+
+					'.$params['id'].'_oms.clickEventAdded = true;
+				}
+
 				'.$params['id'].'_window = infowindow;
-				
 			})();
 		';
 		
@@ -470,7 +515,7 @@ class Google_maps {
 			var '.$map_id.'_directionsDisplay	= new google.maps.DirectionsRenderer({map: '.$map_id.'_map});
 			var '.$map_id.'_clusterOptions		= {maxZoom: '.$cluster['maxZoom'].', gridSize: '.$cluster['gridSize'].', styles:'.$cluster['styles'].'};
 			var '.$map_id.'_cluster				= new MarkerClusterer('.$map_id.'_map, '.$map_id.'_markers, '.$map_id.'_clusterOptions);
-			
+			var '.$map_id.'_oms					= false;
 		</script>
 		';
 			
@@ -682,6 +727,8 @@ class Google_maps {
 								$js .= $params['id'].'_cluster.addMarker('.$params['id'].'_markers[index]);';
 							}
 
+							$js .= $params['id'].'_oms ? '.$params['id'].'_oms.addMarker('.$params['id'].'_markers[index]) : false;';
+							
 							if(isset($params['entry_id']))
 							{
 								$js .= $params['id'].'_markers[index].entry_id = '.$params['entry_id'].';';

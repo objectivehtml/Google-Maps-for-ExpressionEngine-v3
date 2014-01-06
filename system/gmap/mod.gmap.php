@@ -245,7 +245,7 @@ Class Gmap {
 			$this->EE->load->library('theme_loader');
 			
 			$url = rtrim($this->EE->theme_loader->theme_url(), '/') . '/';
-
+	
 			$return = '
 			<link rel="stylesheet" href="'.$url.'gmap/css/infobox.css" media="screen, projection">
 		
@@ -253,8 +253,14 @@ Class Gmap {
 			<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/infobox.js"></script>
 			<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/markerclusterer.js"></script>
 			' . $return;
+
+			if($this->param('marker_spider', FALSE, TRUE))
+			{
+				$return .= '<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/oms.js"></script>'.
+						   '<script type="text/JavaScript">'.$this->param('id').'_oms = new OverlappingMarkerSpiderfier('.$this->param('id').'_map);</script>';
+			}
 		}
-		
+
 		if(!$map_id)
 		{
 			show_error('You must define an id parameter before continuing. This parameter must be a valid JavaScript variable with no hyphens, special characters, spaces, and cannot begin with a number.');
