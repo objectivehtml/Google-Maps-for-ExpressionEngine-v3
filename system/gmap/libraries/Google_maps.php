@@ -1242,7 +1242,7 @@ class Google_maps {
 				{
 					if(is_string($value))
 					{
-						if(count($explode_value = explode('|', $value)) > 0)
+						if(count($explode_value = explode('|', $value)) > 1)
 						{
 							$value = 'IN (\''.implode('\' OR \'', $explode_value).'\')';
 						}
@@ -1303,13 +1303,7 @@ class Google_maps {
 		{
 			$value = ltrim(rtrim($value, '\''), '\'');
 		}
-			
-		//Preps conditional statement by testing the field_name for keywords
-		if(preg_match('/^IN \(/', $value))
-		{
-			$operator = $value;
-		}
-		else if(strpos($field_name, '_min'))
+		if(strpos($field_name, '_min'))
 		{
 			$operator = ' >= \''.$value.'\'';
 		}
@@ -1326,6 +1320,11 @@ class Google_maps {
 			$value = str_replace('\'', '', $value);
 			$date = $this->EE->localize->convert_human_date_to_gmt(date('Y-m-d 23:59:59', $value));
 			$operator = ' >= '.$this->EE->localize->convert_human_date_to_gmt(date('Y-m-d 00:00:00', $value)).' AND `field_id_'.$field_id.'` <= '.$date;
+		}			
+		//Preps conditional statement by testing the field_name for keywords
+		else if(preg_match('/^IN \(/', $value))
+		{
+			$operator = $value;
 		}
 		else
 		{
