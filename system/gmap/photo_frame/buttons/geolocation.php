@@ -6,7 +6,6 @@ class GeolocationButton extends PhotoFrameButton {
 	
 	public $moduleName = 'gmap'; 
 	
-	
 	public function modifyTables($tables)
 	{    
 		$tables['photo_frame']['lat'] = array(

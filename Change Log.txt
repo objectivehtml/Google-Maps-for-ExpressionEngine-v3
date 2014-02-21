@@ -69,6 +69,7 @@
 - (Bug Fix) Fixed issue with adding zoom parameter to the current location tag.
 - (Bug Fix) Removed deprecated EE functions from CP
 
+>>>>>>> refs/heads/3.3.5
 #### 3.3.1
 ##### 06/20/2013
 
