@@ -3,11 +3,26 @@
  * 
  * @package		Google Maps for ExpressionEngine
  * @author		Justin Kimbrell
- * @copyright	Copyright (c) 2012, Objective HTML
+ * @copyright	Copyright (c) 2014, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.3.4
- * @build		20131103
+ * @version		3.3.5
+ * @build		20140221
  */
+
+#### 3.3.5
+##### 02/21/2014
+
+- (Feature) Added support for "Marker Spidering" (https://github.com/jawj/OverlappingMarkerSpiderfier)
+- (Bug Fix) Fixed an issue with the _min and _max operators not working
+- (Bug Fix) Fixed another issue with MSM
+- (Bug Fix) Fixed an issue with the get_channel_by_name method not returning channel in proper site
+- (Bug Fix) Fixed an issue with the maxWidth property not working for infowindows
+- (Bug Fix) Fixed a JS issues that would cause errors on IE when using Photo Frame
+- (Bug Fix) Change the algorithm used for distance searches
+. If search coordinates match db coordinates exactly, the results were not returned.
+- (Bug Fix) Updated Base Form to latest
+- (Bug Fix) Fixed an issue with the clear_cache tag not working.
+
 
 #### 3.3.4
 ##### 11/03/2013
