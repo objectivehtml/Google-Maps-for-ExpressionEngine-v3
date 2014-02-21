@@ -4,8 +4,8 @@
  *	Version and Build
 */
 
-$config['gmap_version']	= '3.3.1';
-$config['gmap_build']	= '20120620';
+$config['gmap_version']	= '3.3.5';
+$config['gmap_build']	= '20140221';
 
 /* 
  *	Protect JavaScript
@@ -36,7 +36,16 @@ $config['gmap_cache_length'] = 604800;
  
  $config['gmap_force_http'] = FALSE;
  
+
+/* 
+ *	Default Geocoding Region
+ *
+ *  If FALSE, the default region will be used (United States)
+ */
  
+ $config['gmap_default_geocoding_region'] = 'us';
+
+
 /* 
  *	Static Maps
  *
@@ -105,8 +114,22 @@ $config['gmap_import_skip_rows'] = 0;
 
 $config['gmap_import_use_yahoo'] = FALSE;
 
-$config['gmap_import_client_key'] = 'dj0yJmk9ODB6RDBnMktDSzNxJmQ9WVdrOVRUbDJRbTVvTTJVbWNHbzlNVEU0TURZeU1qZzJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD01OA--';
+$config['gmap_import_client_key'] = '';
 
-$config['gmap_import_client_secret'] = 'ee3c471c8f9ba7cb70bf3dda64222e22fe004952';
+$config['gmap_import_client_secret'] = '';
 
-$config['gmap_import_appid'] = 'M9vBnh3e';
+$config['gmap_import_appid'] = '';
+
+/* 
+ *	Define the ee() function introduced in EE 2.6
+ */
+
+if ( ! function_exists('ee'))
+{
+    function ee()
+    {
+        static $EE;
+        if ( ! $EE) $EE = get_instance();
+        return $EE;
+    }
+} 

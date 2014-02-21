@@ -3,12 +3,79 @@
  * 
  * @package		Google Maps for ExpressionEngine
  * @author		Justin Kimbrell
- * @copyright	Copyright (c) 2012, Objective HTML
+ * @copyright	Copyright (c) 2014, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
+<<<<<<< HEAD
  * @version		3.3.1
  * @build		20130620
  */
 
+=======
+ * @version		3.3.5
+ * @build		20140221
+ */
+
+#### 3.3.5
+##### 02/21/2014
+
+- (Feature) Added support for "Marker Spidering" (https://github.com/jawj/OverlappingMarkerSpiderfier)
+- (Bug Fix) Fixed an issue with the _min and _max operators not working
+- (Bug Fix) Fixed another issue with MSM
+- (Bug Fix) Fixed an issue with the get_channel_by_name method not returning channel in proper site
+- (Bug Fix) Fixed an issue with the maxWidth property not working for infowindows
+- (Bug Fix) Fixed a JS issues that would cause errors on IE when using Photo Frame
+- (Bug Fix) Change the algorithm used for distance searches
+. If search coordinates match db coordinates exactly, the results were not returned.
+- (Bug Fix) Updated Base Form to latest
+- (Bug Fix) Fixed an issue with the clear_cache tag not working.
+
+
+#### 3.3.4
+##### 11/03/2013
+
+- (Feature) Added new parameter to the exp:gmap:streetview tag that will decouple the streetview from the parent map.
+- (API) Made the geocode parameter by default set to "false" instead of "true". If the address param is set, it auto sets the geocode param to true for backwards compatibility
+- (Bug Fix) Fixed issue with Google Maps marker offset.
+- (Bug Fix) Fixed issues with Safecracker in 2.5.5
+- (Bug Fix) Removed code causing errors on some servers
+- (Bug Fix) Fixed the way some settings were displayed that caused some confusion
+- (Bug Fix) Fixed an issue with Channel Search compatibility
+- (Bug Fix) Fixed an issue with the default region not being set to "us". User outside the US can update this setting in the gmap_config.php
+- (Bug Fix) Fixed compatibility issue for EE versions prior to 2.7
+- (Bug Fix) Fixed an issue that could cause PHP errors to display in the exp:gmap:results tag
+- (Bug Fix) Fixed an issue with Gmap.safecracker not working in 2.7. Updated that and added Gmap.channel_form in addition to the legacy property.
+
+#### 3.3.3
+##### 10/08/2013
+
+- (Bug Fix) Fixed issue with the back button triggering an XID error in the search
+
+#### 3.3.2
+##### 10/08/2013
+
+- (Feature) Added the ability to search with OR modifiers in the exp:gmap:search tag by delimiting your values with a bar (|) character.
+- (Feature) Added offsetX and offsetY to the regular info windows to offset their position
+- (Bug Fix) Added new ee() method to make add-on consistent with EE 2.6
+- (Bug Fix) Updated Photo Frame geolocation pack for latest Photo Frame API updates
+- (Bug Fix) Fixed issue with Photo Frame compatibility (JS errors)
+- (Bug Fix) Fixed an issue that would cause a memory leak with certain MSM sites
+- (Bug Fix) Fixed an issue that would cause PHP errors if searching categories (in some cases)
+- (Bug Fix) Fixed issue with url helper not being loaded automatically
+- (Bug Fix) Removed lingering PHP short tags
+- (Bug Fix) Fixed the way categories were search is using the match_categories_exact parameter.
+- (Bug Fix) Fixed an issue with the orange dot in the Regions not appearing when plotting new shapes.
+- (Bug Fix) Fixed issue with search on some versions of PHP
+- (Bug Fix) Fixed a bug with 2.7 that was caused by a missing XID parameter
+- (Bug Fix) Fixed an issue with Google Maps last_post not saving with native cookie method. Replace with native PHP method and works fine.
+- (Bug Fix) Fixed a PHP error that was triggered when :formatted_address was called when no locations exist
+- (Bug Fix) Trimmed content variable before outputting
+- (Bug Fix) Fixed EE 2.7 issues
+- (Bug Fix) Fixed an issue with window content not getting prepped before output which would cause JS errors.
+- (Bug Fix) Fixed an issue with editing region names and name not reseting for new regions.
+- (Bug Fix) Fixed issue with adding zoom parameter to the current location tag.
+- (Bug Fix) Removed deprecated EE functions from CP
+
+>>>>>>> refs/heads/3.3.5
 #### 3.3.1
 ##### 06/20/2013
 

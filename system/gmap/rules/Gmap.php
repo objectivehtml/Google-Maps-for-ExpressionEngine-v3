@@ -113,13 +113,13 @@ class Gmap_channel_search_rule extends Base_rule {
 				}
 				else
 				{
-					$select = $this->no_distance();
+					$select = $this->_no_distance();
 				}
 			}
 			
 			if(empty($select))
 			{
-				$select = $this->no_distance();
+				$select = $this->_no_distance();
 			}
 			
 			$this->select = $select;
@@ -157,6 +157,11 @@ class Gmap_channel_search_rule extends Base_rule {
 		return $having;
 	}
 	
+	public function get_vars_row($row)
+	{
+		return array('distance' => isset($row['distance']) ? $row['distance'] : 'N/A');
+	}
+
 	private function _no_distance()
 	{
 		return array('\'N/A\' as \'distance\'');
@@ -177,25 +182,5 @@ class Gmap_channel_search_rule extends Base_rule {
 		}
 		
 		return $trigger;		
-	}
-	/*
-	public function display_rule($data = array())
-	{
-		$rules = InterfaceBuilder::field('rules', $this->fields['rules']);
-		
-		$fields = $this->fields;
-		
-		unset($fields['rules']);
-		
-		$table = InterfaceBuilder::table($this->fields, $data, array(), channel_search_attr());
-		
-		$return  = $rules->display_label();
-		$return .= $rules->display_description();
-		$return .= $rules->display_field($data);
-		
-		$return .= '<hr>'.$table;
-		
-		return $return;
-	}
-	*/
+	}	
 }

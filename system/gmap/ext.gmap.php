@@ -11,7 +11,7 @@
  * @build		20120522
  */
 
-require 'config/gmap_config.php';
+require_once PATH_THIRD . 'gmap/config/gmap_config.php';
 
 class Gmap_ext {
 	
@@ -42,6 +42,11 @@ class Gmap_ext {
 	 
 	public function channel_entries_tagdata($tagdata, $row, $obj)
 	{
+		if(ee()->extensions->last_call)
+		{
+			$tagdata = ee()->extensions->last_call;
+		}
+		
 		$obj->EE->TMPL->protect_javascript = FALSE;
 		
 		if(isset($obj->categories[$row['entry_id']]))
@@ -50,7 +55,7 @@ class Gmap_ext {
 			
 			$tagdata = $obj->EE->TMPL->parse_variables_row($tagdata, array('category_ids' => $categories));
 		}
-		
+	
 		return $tagdata;
 	}
 	 
@@ -64,6 +69,11 @@ class Gmap_ext {
 	 
 	public function channel_entries_tagdata_end($tagdata, $row, $obj)
 	{
+		if(ee()->extensions->last_call)
+		{
+			$tagdata = ee()->extensions->last_call;
+		}
+		
 		if(isset($obj->categories[$row['entry_id']]))
 		{
 			$categories = $this->get_categories($obj, $row['entry_id']);

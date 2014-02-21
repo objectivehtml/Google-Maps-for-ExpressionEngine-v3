@@ -23,6 +23,7 @@ class Google_maps {
 		$this->EE =& get_instance();
 
 		$this->EE->load->config('gmap_config');
+		$this->EE->load->helper('url');
 	}	
 	
 	public function build_response($data)
@@ -120,7 +121,7 @@ class Google_maps {
 				'content'         => $content,
 				'options'         => $params['infowindow']['options'],
 				'script_tag'      => FALSE,
-				'var'             => 'GeoMarker',
+				'var'             => $params['id'].'_GeoMarker',
 				'show_one_window' => $show_one_window,
 				'open_windows'    => $open_windows,
 				'trigger'         => $params['window_trigger']
@@ -133,7 +134,7 @@ class Google_maps {
 				'content'			=> $content, 
 				'options'			=> $params['infowindow']['options'],
 				'script_tag'		=> FALSE,
-				'var'				=> 'GeoMarker',
+				'var'				=> $params['id'].'_GeoMarker',
 				'show_one_window' 	=> $show_one_window,
 				'open_windows'		=> $open_windows,
 				'trigger'			=> $params['window_trigger']
@@ -161,6 +162,7 @@ class Google_maps {
 			          '.$params['id'].'_map.fitBounds(this.getBounds());
 			        });
 			    ' : 'google.maps.event.addListenerOnce('.$params['id'].'_GeoMarker, "position_changed", function() {
+			            '.$params['id'].'_map.setCenter(this.getPosition());
 						'.$params['id'].'_map.setZoom('.$params['zoom'].');
 			        });
 			    ')).'
@@ -206,13 +208,18 @@ class Google_maps {
 	public function search_cache()
 	{
 		if($this->EE->input->post('init_gmap_search') == 'y')
-		{			
-			$this->EE->functions->set_cookie('gmap_last_post', serialize($_POST), strtotime('+1 year'));
+		{	
+			// $this->EE->functions->set_cookie('gmap_last_post', serialize($_POST), strtotime('+1 year'));
+
+			setcookie('gmap_last_post', serialize($_POST), strtotime('+1 year'), '/');	
+
 		}
 		else
 		{
-			$cookie = $this->EE->input->cookie('gmap_last_post');
+			// $cookie = $this->EE->input->cookie('gmap_last_post');
 			
+			$cookie = isset($_COOKIE['gmap_last_post']) ? $_COOKIE['gmap_last_post'] : FALSE;
+
 			if($cookie)
 			{
 				$_POST = unserialize($cookie);
@@ -270,7 +277,7 @@ class Google_maps {
 			'content'				 => $params['content'],
 			'disableAutoPan'		 => 'false',
 			'enableEventPropagation' => 'false',
-			'maxWidth'				 => '0',
+			'maxWidth'				 => 0,
 			'offsetX'				 => 0,
 			'offsetY'				 => 0,
 			'isHidden'				 => 'false',
@@ -301,7 +308,7 @@ class Google_maps {
 	                enableEventPropagation: '.$options['enableEventPropagation'].',
 	                infoBoxClearance: new google.maps.Size('.$options['clearanceX'].', '.$options['clearanceY'].'),
 	                isHidden: '.$options['isHidden'].',
-	                maxWidth: 0,
+	                maxWidth: '.$options['maxWidth'].',
 	                pane: "'.$options['pane'].'",
 	                pixelOffset: new google.maps.Size('.$options['offsetX'].', '.$options['offsetY'].'),
 	                zIndex: null
@@ -321,12 +328,12 @@ class Google_maps {
 			$js .= '			
 				
 				'.$params['id'].'_windows.push(infowindow);
-								
-				google.maps.event.addListener(obj, \'click\', function(e) {
+
+				var callback = function(obj, e) {
 					obj.position = e.latLng;							
 					obj.getPosition = function() {
 						return e.latLng;
-					}';
+					};';
 
 					if(isset($params['show_one_window']) && $params['show_one_window'])
 					{
@@ -336,12 +343,34 @@ class Google_maps {
 						}';					
 					}
 					
-			$js.='
-					infowindow.setPosition(e.latLng);
-					infowindow.open('.$params['id'].'_map, obj);
-					
-				});
-				
+					$js.='
+					obj.window.setPosition(e.latLng);
+					obj.window.open('.$params['id'].'_map, obj);
+				};			
+
+				obj.window = infowindow;		
+
+				if(!'.$params['id'].'_oms) {
+					google.maps.event.addListener(obj, "click", function(e) {
+						callback(obj, e);					
+					});
+				}
+				else if(!'.$params['id'].'_oms.clickEventAdded) {
+					'.$params['id'].'_oms.addListener("click", function(marker, e) {
+						callback(marker, e);
+					});
+
+					'.$params['id'].'_oms.addListener("spiderfy", function(markers) {
+					  for(var x in '.$params['id'].'_windows) {
+					  	var window = '.$params['id'].'_windows[x];
+
+					  	window.close();
+					  }
+					});
+
+					'.$params['id'].'_oms.clickEventAdded = true;
+				}
+
 				'.$params['id'].'_window = infowindow;
 				
 			})();
@@ -364,10 +393,15 @@ class Google_maps {
 		);
 		
 		$params = array_merge($default_params, $params);
-		
+
 		if(!isset($params['content']) || empty($params['content']))
 		{
 			return NULL;	
+		}
+
+		if(!empty($params['options']['offsetX']) || !empty($params['options']['offsetY']))
+		{
+			$options['pixelOffset'] = 'new google.maps.Size('.$params['options']['offsetX'].', '.$params['options']['offsetY'].')';	
 		}
 			
 		if(!isset($options['content']))
@@ -391,8 +425,9 @@ class Google_maps {
 			$js .= '			
 				'.$params['id'].'_windows.push(infowindow);';
 				
-			$js .= '							
-				google.maps.event.addListener(obj, \''.$params['trigger'].'\', function(e) {
+			$js .= '	
+
+				var callback = function(obj, e) {
 					var currentPos = e.latLng;
 				';
 
@@ -405,12 +440,34 @@ class Google_maps {
 					}
 					
 			$js.='
-					infowindow.setPosition(currentPos);
-					infowindow.open('.$params['id'].'_map);
-				});
-				
+					obj.window.setPosition(currentPos);
+					obj.window.open('.$params['id'].'_map, obj);
+				};	
+
+				obj.window = infowindow;		
+
+				if(!'.$params['id'].'_oms) {
+					google.maps.event.addListener(obj, "click", function(e) {
+						callback(obj, e);					
+					});
+				}
+				else if(!'.$params['id'].'_oms.clickEventAdded) {
+					'.$params['id'].'_oms.addListener("click", function(marker, e) {
+						callback(marker, e);
+					});
+
+					'.$params['id'].'_oms.addListener("spiderfy", function(markers) {
+					  for(var x in '.$params['id'].'_windows) {
+					  	var window = '.$params['id'].'_windows[x];
+
+					  	window.close();
+					  }
+					});
+
+					'.$params['id'].'_oms.clickEventAdded = true;
+				}
+
 				'.$params['id'].'_window = infowindow;
-				
 			})();
 		';
 		
@@ -439,7 +496,7 @@ class Google_maps {
 		
 		<script type="text/javascript">
 			
-			'.($visual_refresh ? 'google.maps.visualRefresh = true;' : NULL).'
+			'.($visual_refresh ? 'google.maps.visualRefresh = true;' : false).'
 			
 			var '.$map_id.'_options 			= '.$obj.';
 			var '.$map_id.'_canvas 				= document.getElementById("'.$map_id.'");
@@ -452,12 +509,13 @@ class Google_maps {
 			var '.$map_id.'_html				= [];
 			var '.$map_id.'_waypoints 			= [];
 			var '.$map_id.'_regions 			= [];
+			var '.$map_id.'_isRetina 			= window.devicePixelRatio > 1;
 			var '.$map_id.'_geocoder 			= new google.maps.Geocoder();
 			var '.$map_id.'_directionsService 	= new google.maps.DirectionsService();
 			var '.$map_id.'_directionsDisplay	= new google.maps.DirectionsRenderer({map: '.$map_id.'_map});
 			var '.$map_id.'_clusterOptions		= {maxZoom: '.$cluster['maxZoom'].', gridSize: '.$cluster['gridSize'].', styles:'.$cluster['styles'].'};
 			var '.$map_id.'_cluster				= new MarkerClusterer('.$map_id.'_map, '.$map_id.'_markers, '.$map_id.'_clusterOptions);
-			
+			var '.$map_id.'_oms					= false;
 		</script>
 		';
 			
@@ -478,6 +536,11 @@ class Google_maps {
 			'data'              => array(),
 			'append_data'       => array(),
 			'extend_bounds'     => FALSE,
+			'retina'     		=> FALSE,
+			'size'     			=> FALSE,
+			'scaledSize'     	=> FALSE,
+			'retinaSize'     	=> FALSE,
+			'retinaScaledSize'	=> FALSE,
 			'script_tag'        => TRUE,
 			'duplicate_markers' => TRUE,
 			'clustering' 		=> FALSE,
@@ -505,9 +568,7 @@ class Google_maps {
 		}
 		
 		$js     = NULL;
-		
 		$limit  = isset($params['limit']) && $params['limit'] !== FALSE ? (int) $params['limit'] : FALSE;
-		
 		$offset = isset($params['offset']) ? (int) $params['offset'] : FALSE;
 
 		$data_count = 0;
@@ -544,8 +605,62 @@ class Google_maps {
 							}
 
 							$options['icon'] = $icon;
-
-							$js .= 'var index = '.$params['id'].'_markers.length;';
+							
+							$icon_options = array(
+								'url'        => $icon
+							);
+							
+							if($params['size'])
+							{
+								$icon_options['size'] = 'new google.maps.Size('.$params['size'].')';	
+							}
+							
+							if($params['scaledSize'])
+							{
+								$icon_options['scaledSize'] = 'new google.maps.Size('.$params['scaledSize'].')';	
+							}
+							
+							if($params['retina'] && $icon != "")
+							{
+								$filename = basename(ltrim(rtrim($icon, '"'), '"'));
+								$ext 	  = pathinfo($filename, PATHINFO_EXTENSION);
+								$filebase = str_replace('.'.$ext, '', $filename);
+								
+								$retina_name = $filebase . '@2x' . '.' . $ext;
+								$retina_icon = str_replace($filename, $retina_name, $icon);
+								
+								$options['icon']     = '(' . $params['id'].'_isRetina ? ' . $retina_icon . ' : '. $icon . ')';
+									
+								if($params['retinaSize'])
+								{
+									if(!$params['size'])
+									{
+										$params['size'] = 'new google.maps.Size('.$params['retinaSize'].')';	
+									}
+									
+									$icon_options['size'] = '(' . $params['id'].'_isRetina ? new google.maps.Size(' . $params['retinaSize'] . ') : '. $params['size'] . ')';
+								}
+								
+								if($params['retinaScaledSize'])
+								{
+									if(!$params['scaledSize'])
+									{
+										$params['scaledSize'] = 'new google.maps.Size('.$params['retinaScaledSize'].')';	
+									}
+									
+									$icon_options['scaledSize'] = '(' . $params['id'].'_isRetina ? new google.maps.Size(' . $params['retinaScaledSize'] . ') : '. $params['scaledSize'] . ')';	
+								}
+								
+								$icon_options['url'] = $options['icon'];
+							}
+							
+							if($icon_options['url'] != '""')
+							{
+								$options['icon'] = ''.$this->convert_to_js($icon_options).'';
+							}
+							
+							$js .= '
+							var index = '.$params['id'].'_markers.length;';
 
 							if(isset($params['options']['infowindow'])) {
 								$infowindow = $params['options']['infowindow'];
@@ -574,7 +689,7 @@ class Google_maps {
 										
 										var a = newMarker.getPosition();
 										var b = marker.getPosition();
-											
+
 										if(a.lat() == b.lat() && a.lng() == b.lng()) {
 											newMarker.setMap(null);
 										}		
@@ -591,12 +706,12 @@ class Google_maps {
 							
 							if(isset($result->title))
 							{
-								$js .= $params['id'].'_markers[index].title = \''.str_replace('\'', '\\\'', $result->title).'\';';
+								$js .= $params['id'].'_markers[index].title = \''.$this->clean_js($result->title).'\';';
 							}
 							
 							if(isset($result->content))
 							{
-								$js .= $params['id'].'_markers[index].content = \''.str_replace('\'', '\\\'', $result->content).'\';';
+								$js .= $params['id'].'_markers[index].content = \''.$this->clean_js($result->content).'\';';
 							}
 							
 							if(isset($params['redirect']) && $params['redirect'])
@@ -612,6 +727,8 @@ class Google_maps {
 								$js .= $params['id'].'_cluster.addMarker('.$params['id'].'_markers[index]);';
 							}
 
+							$js .= $params['id'].'_oms ? '.$params['id'].'_oms.addMarker('.$params['id'].'_markers[index]) : false;';
+							
 							if(isset($params['entry_id']))
 							{
 								$js .= $params['id'].'_markers[index].entry_id = '.$params['entry_id'].';';
@@ -660,14 +777,14 @@ class Google_maps {
 
 								$content = isset($params['infowindow']['content']) ? $params['infowindow']['content'] : NULL;
 								$content = $content == NULL && isset($result->content) ? $this->EE->google_maps->clean_js($result->content) : $content;
-								
+
 								$content = $this->parse($geocoded_response, $content);
 								
 								if(isset($params['infobox']) && $params['infobox'])
 								{							
 									$js .= $this->EE->google_maps->infobox(array(
 										'id'              => $params['id'],
-										'content'         => $content,
+										'content'         => trim($content),
 										'options'         => $params['infowindow']['options'],
 										'script_tag'      => FALSE,
 										'var'             => $params['id'].'_markers[index]',
@@ -680,7 +797,7 @@ class Google_maps {
 								{
 									$js .= $this->EE->google_maps->infowindow(array(
 										'id'				=> $params['id'],
-										'content'			=> $content, 
+										'content'			=> trim($content), 
 										'options'			=> $params['infowindow']['options'],
 										'script_tag'		=> FALSE,
 										'var'				=> $params['id'].'_markers[index]',
@@ -755,6 +872,7 @@ class Google_maps {
 	
 	public function convert_metric($metric = 'miles')
 	{
+		
 		$metrics = array(
 			'miles' 	 => 1,
 			'feet'  	 => 5280,
@@ -762,8 +880,22 @@ class Google_maps {
 			'kilometers' => 1.609344,
 			'metres'	 => 1609.344,
 			'meters'	 => 1609.344
-		);	
+		);
 		
+		/*
+		$mile = 3956.547;
+		$kilo = $mile; //6367.445;
+
+		$metrics = array(
+			'miles' 	 => $mile,
+			'feet'  	 => $mile * 5280,
+			'kilometres' => $kilo,
+			'kilometers' => $kilo,
+			'metres'	 => $kilo * 1609.344,
+			'meters'	 => $kilo * 1609.344
+		);		
+		*/
+
 		$metric = strtolower($metric);
 		$return = isset($metrics[$metric]) ? $metrics[$metric] : $metrics['miles'];
 		
@@ -1108,9 +1240,17 @@ class Google_maps {
 				//Validates that a value is not FALSE
 				if($value !== FALSE && !empty($value) || $to_append == FALSE)
 				{
+					if(is_string($value))
+					{
+						if(count($explode_value = explode('|', $value)) > 1)
+						{
+							$value = 'IN (\''.implode('\' OR \'', $explode_value).'\')';
+						}
+					}
+
 					//If to_append is TRUE, then the operator is appended
 					if($to_append == TRUE)
-					{			
+					{	
 						//Converts a value string to a variable
 						$values = is_array($value) ? $value : array($value);
 						
@@ -1143,7 +1283,7 @@ class Google_maps {
 				}
 			}			
 		}
-		
+
 		return $string;
 	}
 	
@@ -1163,8 +1303,6 @@ class Google_maps {
 		{
 			$value = ltrim(rtrim($value, '\''), '\'');
 		}
-			
-		//Preps conditional statement by testing the field_name for keywords
 		if(strpos($field_name, '_min'))
 		{
 			$operator = ' >= \''.$value.'\'';
@@ -1182,6 +1320,11 @@ class Google_maps {
 			$value = str_replace('\'', '', $value);
 			$date = $this->EE->localize->convert_human_date_to_gmt(date('Y-m-d 23:59:59', $value));
 			$operator = ' >= '.$this->EE->localize->convert_human_date_to_gmt(date('Y-m-d 00:00:00', $value)).' AND `field_id_'.$field_id.'` <= '.$date;
+		}			
+		//Preps conditional statement by testing the field_name for keywords
+		else if(preg_match('/^IN \(/', $value))
+		{
+			$operator = $value;
 		}
 		else
 		{
@@ -1263,10 +1406,13 @@ class Google_maps {
 		
 		$return = NULL;
 		
+
 		if($parse_tags)
 		{
 			$channels = $this->EE->channel_data->get_channels(array(
-				'site_id' => config_item('site_id')
+				'where' => array(
+					'site_id' => config_item('site_id')
+				)
 			))->result_array();
 			
 			$channels = $this->EE->channel_data->utility->reindex($channels, 'channel_id');
@@ -1356,9 +1502,11 @@ class Google_maps {
 	
 	function current_url($uri_segments = TRUE, $get_string = TRUE, $base_url = FALSE)
 	{
+		$this->EE->load->helper('addon');
+		
 		if(!$base_url)
 		{
-			$return = $this->EE->config->site_url();
+			$return = base_url();
 		}
 		else
 		{
@@ -1537,16 +1685,9 @@ class Google_maps {
 	
 	public function base_url($append = '', $value = '')
 	{
-		$http = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://';
+		$this->EE->load->helper('addon_helper');
 		
-		$port = $_SERVER['SERVER_PORT'] == '80' || $_SERVER['SERVER_PORT'] == '443' ? NULL : ':' . $_SERVER['SERVER_PORT'];
-		
-		if(!isset($_SERVER['SCRIPT_URI']))
-		{				
-			 $_SERVER['SCRIPT_URI'] = $http . $_SERVER['HTTP_HOST']. $_SERVER['REQUEST_URI'];
-		}
-		
-		$base_url = $http . $_SERVER['HTTP_HOST'];
+		$base_url = base_url();
 		
 		if(!empty($append))
 		{

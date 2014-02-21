@@ -48,6 +48,7 @@ class Gmap_mcp {
 		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js');
 		
 		$vars = array(
+			'xid'      => XID_SECURE_HASH,
 			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_data_action'),
 			'status_url' => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'change_statuses'),
 			'clear_pool_url' => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'clear_pool'),
@@ -58,8 +59,15 @@ class Gmap_mcp {
 			'return'   => $this->cp_url('index', TRUE)
 		);
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
-		
+		if(version_compare(APP_VER, '2.6.0', '<'))
+		{
+			$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
+		}
+		else
+		{
+			$this->EE->view->cp_page_title = $this->EE->lang->line('gmap_module_name');
+		}
+
 		return $this->EE->load->view('csv_index', $vars, TRUE);
 	}
 	
@@ -92,8 +100,15 @@ class Gmap_mcp {
 			'items' => $this->EE->data_import_model->get_log('open')
 		);
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
-		
+		if(version_compare(APP_VER, '2.6.0', '<'))
+		{
+			$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
+		}
+		else
+		{
+			$this->EE->view->cp_page_title = $this->EE->lang->line('gmap_module_name');
+		}
+
 		return $this->EE->load->view('import_log', $vars, TRUE);
 	}
 	
@@ -137,8 +152,15 @@ class Gmap_mcp {
 			'duplicate_url' => $this->cp_url('duplicate_schema_action')
 		);
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
-		
+		if(version_compare(APP_VER, '2.6.0', '<'))
+		{
+			$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
+		}
+		else
+		{
+			$this->EE->view->cp_page_title = $this->EE->lang->line('gmap_module_name');
+		}
+
 		return $this->EE->load->view('schemas', $vars, TRUE);		
 	}
 	
@@ -230,8 +252,15 @@ class Gmap_mcp {
 			$item->data = json_decode($item->data);	
 		}*/
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
-		
+		if(version_compare(APP_VER, '2.6.0', '<'))
+		{
+			$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
+		}
+		else
+		{
+			$this->EE->view->cp_page_title = $this->EE->lang->line('gmap_module_name');
+		}
+
 		return $this->EE->load->view('import_pool', $vars, TRUE);
 	}
 	
@@ -654,6 +683,7 @@ class Gmap_mcp {
 		$this->EE->interface_builder->add_fieldsets($fields);
 
 		$vars = array(
+			'xid'      => XID_SECURE_HASH,
 			'return'   => $this->cp_url('schemas'),
 			'header'   => $this->EE->input->get('id') ? 'Edit' : 'New',
 			'action'   => $this->EE->google_maps->base_url().'?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_csv_save_settings_action'),
@@ -662,8 +692,15 @@ class Gmap_mcp {
 			'schema_id' => $this->EE->input->get('id') ? $this->EE->input->get('id') : NULL
 		);
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
-		
+		if(version_compare(APP_VER, '2.6.0', '<'))
+		{
+			$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('gmap_module_name'));
+		}
+		else
+		{
+			$this->EE->view->cp_page_title = $this->EE->lang->line('gmap_module_name');
+		}
+
 		return $this->EE->load->view('csv_import', $vars, TRUE);
 	}
 	

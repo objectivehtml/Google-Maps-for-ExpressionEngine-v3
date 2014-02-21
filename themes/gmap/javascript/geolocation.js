@@ -13,7 +13,7 @@
 		 */
 		
 		classes: {
-			loading: 'photo-frame-loading',
+			loading: 'photo-frame-loading'
 		},
 		
 		/**
@@ -59,6 +59,12 @@
 		icon: 'location',
 		
 		/**
+		 * Should Photo Frame render the photo after removing the layer
+		 */	
+		 
+		renderAfterRemovingLayer: false,
+		
+		/**
 		 * The JSON object used for Window settings 
 		 */
 		
@@ -83,6 +89,11 @@
 		
 		disable: function() {
 		},
+
+		removeLayer: function() {
+			this.removeManipulation();
+			this.updateJson();
+		},
 		
 		refresh: function() {
 			if(this.marker) {
@@ -90,7 +101,7 @@
 					lat: this.lat,
 					lng: this.lng,
 					loc: this.loc,
-					zoom: this.map.getZoom()
+					zoom: this.map ? this.map.getZoom() : false
 				});
 			}	
 			else {
@@ -103,7 +114,7 @@
 			this.window.ui.lng.val(this.lng);
 			this.window.ui.loc.val(this.loc);
 		
-			this.render();			
+			this.updateJson();			
 		},
 		
 		enable: function() {
@@ -119,9 +130,15 @@
 		},
 		
 		toggleLayer: function(visibility, render) {
-			this.base(visibility, render);
+			this.base(visibility, false);
+
+			if(render) {
+				this.updateJson();
+			}
 			
-			this.marker.setVisible(visibility);
+			if(this.marker) {
+				this.marker.setVisible(visibility);
+			}
 		},
 		
 		addMarker: function(lat, lng, populate) {
@@ -152,7 +169,9 @@
 				t.refresh();
 			});
 			
-			this.map.setCenter(new google.maps.LatLng(lat, lng));
+			if(this.map) {
+				this.map.setCenter(new google.maps.LatLng(lat, lng));
+			}
 			
 			if(typeof populate === "undefined" || populate !== false) {
 				this.window.ui.lat.val(lat);
@@ -163,15 +182,23 @@
 		},
 		
 		removeLayer: function() {
-			this.marker.setMap(null);
-			this.marker = false;
+			if(this.marker) {
+				this.marker.setMap(null);
+				this.marker = false;
+			}
+			if(this.map) {
+				this.map.setCenter(this.geo.getPosition());
+			}
 			this.lat = false;
 			this.lng = false;
 			this.loc = false;
-			this.map.setCenter(this.geo.getPosition());
-			
 			this.base();
 			this.refresh();
+		},
+		
+		startCrop: function() {
+			var t = this;		
+			
 		},
 		
 		buildWindow: function() {	
@@ -222,6 +249,25 @@
 				t.addMarker(lat, lng);
 			});
 			
+			t.bind('metaLatLng', function(lat, lng) {
+				t.lat = lat;
+				t.lng = lng;
+		    	t.addMarker(t.lat, t.lng);
+				t.refresh();
+			});
+			
+			t.bind('metaStaticMap', function(map) {
+				map.html('');
+				if(t.lat !== false && t.lng !== false) {
+					map.html('<img src="https://maps.googleapis.com/maps/api/staticmap?markers='+t.lat+','+t.lng+'&size=400x160&scale=2&sensor=true&zoom=14">')
+				}
+			});
+			
+			t.bind('metaStartCrop', function() {
+				t.lat = false;
+				t.lng = false;
+			});
+			
 			this.window.ui.btn.click(function(e) {
 				var m = t.getManipulation();
 				
@@ -248,6 +294,11 @@
 			google.maps.visualRefresh = true;
 			
 			this.geocoder = new google.maps.Geocoder();
+			
+			this.bind('metaLatLng', function(lat, lng) {
+				t.lat = lat;
+				t.lng = lng;
+			});
 			
 			this.bind('windowOpenEnd', function(window) {
 				if(window.title == 'Geolocation') {	
@@ -302,7 +353,7 @@
 				        }	
 				        
 						t.refresh();	
-					}        
+					}  
 				}
 			});
 		}

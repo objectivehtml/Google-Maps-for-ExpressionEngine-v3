@@ -24,14 +24,14 @@ Class Gmap {
 			'backgroundColor', 'disableDefaultUI', 'disableDoubleClickZoom', 'draggable', 
 			'draggableCursor', 'heading', 'keyboardShortcuts', 'mapTypeControl', 
 			'mapTypeControlOptions', 'mapTypeId', 'maxZoom', 'minZoom', 'noClear', 
-			'overviewMapControl', 'overviewMapControlOptions', 'panControl', 'panControlOptions', 			
+			'overviewMapControl', 'overviewMapControlOptions', 'optimized', 'panControl', 'panControlOptions', 			
 			'rotateControl', 'rotateControlOptions', 'scaleControl', 'scaleControlOptions', 
 			'scrollwheel', 'streetView', 'streetViewControl', 'streetViewControlOptions', 
 			'tilt', 'title', 'zoomControl', 'zoomControlOptions', 'zoom', 'visualRefresh'
 		),
 		
 		'marker' => array(
-			'animation', 'clickable', 'cursor', 'draggable', 'flat', 'icon', 'map', 'optimized',
+			'animation', 'clickable', 'cursor', 'draggable', 'flat', 'icon', 'map',
 			'raiseOnDrag', 'shadow', 'shape', 'title', 'visible', 'zIndex', 'entry_id'
 		),
 		
@@ -40,7 +40,8 @@ Class Gmap {
 		    'author_id', 'backspace', 'cache', 'refresh', 'cat_limit', 'category', 
 		    'category_group', 'isable','channel', 'display_by', 'dynamic', 'dynamic_start',
 	   		'entry_id', 'entry_id_from', 'entry_id_to', 'fixed_order', 'group_id', 'limit', 
-	   		'month_limit', 'offset', 'orderby', 'paginate', 'paginate_base', 'paginate_type', 			'related_categories_mode', 'relaxed_categories', 'require_entry', 'show_current_week', 
+	   		'month_limit', 'offset', 'orderby', 'paginate', 'paginate_base', 'paginate_type', 			
+	   		'related_categories_mode', 'relaxed_categories', 'require_entry', 'show_current_week', 
 	   		'show_expired', 'show_future_entries', 'show_pages', 'sort', 'start_day', 'start_on', 
 	   		'status', 'stop_before', 'sticky', 'track_views', 'uncategorized_entries', 'url_title', 
 	   	 	'username', 'week_sort', 'year', 'month', 'day'
@@ -132,7 +133,7 @@ Class Gmap {
 		);
 		
 		if($icon = $this->param('icon'))
-		{
+		{			
 			$params['marker_options']['icon'] = '"'.$icon.'"';
 		}
 				
@@ -244,7 +245,7 @@ Class Gmap {
 			$this->EE->load->library('theme_loader');
 			
 			$url = rtrim($this->EE->theme_loader->theme_url(), '/') . '/';
-
+	
 			$return = '
 			<link rel="stylesheet" href="'.$url.'gmap/css/infobox.css" media="screen, projection">
 		
@@ -252,8 +253,14 @@ Class Gmap {
 			<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/infobox.js"></script>
 			<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/markerclusterer.js"></script>
 			' . $return;
+
+			if($this->param('marker_spider', FALSE, TRUE))
+			{
+				$return .= '<script type="text/javascript" src="'.rtrim($url, '/').'/gmap/javascript/oms.js"></script>'.
+						   '<script type="text/JavaScript">'.$this->param('id').'_oms = new OverlappingMarkerSpiderfier('.$this->param('id').'_map);</script>';
+			}
 		}
-		
+
 		if(!$map_id)
 		{
 			show_error('You must define an id parameter before continuing. This parameter must be a valid JavaScript variable with no hyphens, special characters, spaces, and cannot begin with a number.');
@@ -282,7 +289,10 @@ Class Gmap {
 	
 	public function clear_cache()
 	{
-		$this->EE->functions->set_cookie('gmap_last_post', serialize(array()), strtotime('-1 year'));
+		if(isset($_COOKIE['gmap_last_post'])) {
+		  	unset($_COOKIE['gmap_last_post']);
+		  	setcookie('gmap_last_post', serialize(array()), strtotime('-1 year')); // empty value and old timestamp
+		}
 	}
 	
 	public function clean_js()
@@ -414,9 +424,14 @@ Class Gmap {
 			return NULL;
 		}
 		
+		if($this->param('address'))
+		{
+			$this->EE->TMPL->tagparams['geocode'] = 'true';
+		}
+
 		//If user doesn't want to pass information to geocoder for limitation reasons
-		//this param is way to opt-out of the system. By default you are opt-in.
-		if($this->param('geocode', TRUE, TRUE))
+		//this param is way to opt-out of the system. By default you are opt-out.
+		if($this->param('geocode', FALSE, TRUE))
 		{
 			$coordinate	= $this->param('latitude') .','.$this->param('longitude');
 			$query 		= ($address = $this->param('address')) ? $address : str_replace(array('<p>', '</p>'), '', $coordinate);
@@ -518,7 +533,6 @@ Class Gmap {
 		$class			= 'ui-infowindow';
 		$close_button 	= $this->param('close_button', 'http://www.google.com/intl/en_us/mapfiles/close.gif');
 		$margin			= '';
-		
 		$data = array();
 		
 		if(is_array($this->EE->TMPL->tagparams))
@@ -533,7 +547,7 @@ Class Gmap {
 				}
 			}
 		}
-		
+
 		$marker_js = $this->EE->google_maps->marker(array(
 			'id' 					=> $map_id, 
 			'options' 				=> $options,
@@ -541,6 +555,11 @@ Class Gmap {
 			'limit'					=> $this->param('limit', FALSE),
 			'offset'				=> $this->param('offset', 0),
 			'extend_bounds'			=> $extend,
+			'retina'				=> $this->param('retina', FALSE, TRUE),
+			'size'					=> $this->param('size'),
+			'scaledSize'			=> $this->param('scaledSize'),
+			'retinaSize'			=> $this->param('retinaSize'),
+			'retinaScaledSize'		=> $this->param('retinaScaledSize'),
 			'infobox'				=> $this->param('infobox', FALSE, TRUE),
 			'infowindow'			=> array(
 				'options' 	=> array(
@@ -1107,10 +1126,13 @@ Class Gmap {
 			visible: '.$this->param('visible', 'true').',
 			zoomControl: '.$this->param('zoomControl', 'true').',
 			zoomControlOptions: {position: google.maps.ControlPosition.'.strtoupper($this->param('zoomControlOptions', 'TOP_LEFT')).'}
-	    }); 
+	    });';
 		
-		'.$id.'_map.setStreetView('.$id.'_streetview_pano);';
-		
+		if(!$this->param('decouple', FALSE, TRUE))
+		{
+			$return .= $id.'_map.setStreetView('.$id.'_streetview_pano);';
+		}
+
 		if($client_side && $address)
 		{
 			$return .= '
@@ -1690,7 +1712,12 @@ Class Gmap {
 			
 		$method = strtolower($this->param('method', 'post'));
 		$prefix = $this->param('prefix', 'result');
-		
+
+		if(version_compare(APP_VER, '2.7', '>='))
+		{
+			ee()->security->restore_xid();
+		}
+
 		/* -------------------------------------------
 		/* 'gmap_results_post' hook.
 		/*  - Modify the POST variables before method is executed
@@ -1853,9 +1880,11 @@ Class Gmap {
 						{
 							$distance_index = '_'.$index;
 						}
-									
+								
 						$select[] = 'ROUND((((ACOS(SIN('.$lat.' * PI() / 180) * SIN('.$lat_field_name.' * PI() / 180) + COS('.$lat.' * PI() / 180) * COS('.$lat_field_name.' * PI() / 180) * COS(('.$lng.' - '.$lng_field_name.') * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * '.$this->EE->google_maps->convert_metric($metric).'), 1) AS distance'.$distance_index;
-							
+						
+						//$select[] = 'ROUND(('.$this->EE->google_maps->convert_metric($metric).' * acos(cos(radians('.$lat.')) * cos(radians(`field_id_14`)) * cos(radians(`field_id_15`) - radians('.$lng.')) + sin(radians('.$lat.')) * sin(radians(`field_id_14`)))), 1) AS distance'.$distance_index;
+
 						$vars[0]['search_distance'] = $distance;
 						$vars[0]['metric'] = $metric;
 					}
@@ -1867,7 +1896,7 @@ Class Gmap {
 					
 					if($distance)
 					{
-						$having[] = '`distance'.$distance_index.'` '.$this->EE->google_maps->prep_value($distance_field, (float) $distance);
+						$having[] = '(`distance'.$distance_index.'` '.$this->EE->google_maps->prep_value($distance_field, (float) $distance).' OR `distance'.$distance_index.'` = NULL)';
 					}
 				}
 				else
@@ -1911,7 +1940,7 @@ Class Gmap {
 					$where[] = 'OR `exp_channel_data`.`channel_id` = \''.$channel_data->channel_id.'\'';
 
 					if(is_array($prep_fields))
-					{				
+					{	
 						foreach($prep_fields as $prep_index => $prep_value)
 						{
 							$where[] = ' AND '.$prep_value;
@@ -1927,7 +1956,7 @@ Class Gmap {
 						{			
 							if(!empty($category))
 							{			
-								$cat_where[] = '`cat_id` = '.$category.'';
+								$cat_where[] = '(`cat_ids` = '.$category.' OR `cat_ids` LIKE \'%|'.$category.'|%\' OR `cat_ids` LIKE \'%|'.$category.'\' OR `cat_ids` LIKE \''.$category.'|%\')';
 							}
 						}
 					}
@@ -1958,7 +1987,7 @@ Class Gmap {
 			$match_categories_exact = $this->param('match_categories_exact');
 			
 			$cat_having       = NULL;
-			
+						
 			if(($match_categories !== FALSE || $match_categories_exact !== FALSE) && is_array($cat_where)) 
 			{
 				$match_categories = str_replace('CAT_COUNT', count($cat_where), $match_categories);
@@ -1969,7 +1998,8 @@ Class Gmap {
 				}
 				else
 				{
-					$cat_op = $this->param('match_category_operator', '>=');
+					$cat_op 	= $this->param('match_category_operator', '>=');
+					$cat_where  = array();
 					$cat_having	= 'HAVING cat_count '.$cat_op.' '.$match_categories;
 				}
 			}
@@ -1981,7 +2011,8 @@ Class Gmap {
 									
 			if(!empty($cat_where))
 			{
-				$cat_where = 'WHERE '.$cat_where;	
+				$cat_having = 'HAVING '.$cat_where;	
+				$cat_where  = NULL;
 			}
 			
 			if(is_array($cat_where))
@@ -2064,7 +2095,7 @@ Class Gmap {
 		FROM
 			'.$table.'
 		INNER JOIN `exp_channel_titles` USING (entry_id)
-		'.(count($where) > 0 ? ' WHERE ' . ltrim(implode(' ', $where), 'OR') : NULL).' 
+		'.(count($where) > 0 ? ' WHERE `exp_channel_titles`.`site_id` = '.config_item('site_id').' AND (' . ltrim(implode(' ', $where), 'OR') . ')' : NULL).' 
 		'.(count($having) > 0 ? ' HAVING '.implode(' AND ', $having) : NULL);
 		
 		$grand_total_results = $this->EE->db->query($base_sql)->num_rows();

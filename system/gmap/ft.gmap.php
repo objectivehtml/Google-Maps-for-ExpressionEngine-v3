@@ -68,7 +68,7 @@ class Gmap_ft extends EE_Fieldtype {
 	{
 		$this->EE =& get_instance();
 		
-		if(isset($this->EE->safecracker_lib))
+		if(isset($this->EE->safecracker_lib) || isset($this->EE->channel_form_lib))
 		{
 			$this->safecracker = TRUE;
 		}
@@ -112,7 +112,7 @@ class Gmap_ft extends EE_Fieldtype {
 		}
 		else
 		{
-			$settings = $this->EE->channel_data->get_field($this->settings['field_id'])->row('field_settings');
+			$settings = $this->EE->channel_data->get_field(isset($this->settings['field_id']) ? $this->settings['field_id'] : $this->settings['field_name'])->row('field_settings');
 		}
 		
 		$settings = array_merge($merge, is_string($settings) ? unserialize(base64_decode($settings)) : $settings);
@@ -299,7 +299,8 @@ class Gmap_ft extends EE_Fieldtype {
 			reqFields: '.$req_fields.',
 			icons: '.$icons.',
 			plugins: '.json_encode($third_party_js).',
-			safecracker: '.(isset($this->EE->safecracker_lib) ? 'true' : 'false').'
+			safecracker: '.($this->safecracker ? 'true' : 'false').',
+			channel_form: '.($this->safecracker ? 'true' : 'false').'
 		};
 	
 		/* 
@@ -831,6 +832,11 @@ class Gmap_ft extends EE_Fieldtype {
 	{
 		$data = json_decode($data);
 
+		if(!$data)
+		{
+			return;
+		}
+
 		$default_vars = array(
 			'limit'   => FALSE,
 			'offset'  => 0,
@@ -1138,11 +1144,18 @@ class Gmap_ft extends EE_Fieldtype {
 				'duplicate_markers' => TRUE,
 				'window_trigger'    => 'click',
 				'redirect'			=> FALSE,
-				'category'			=> FALSE,
+				'retina'			=> FALSE,
+				'retinaSize'		=> FALSE,
+				'retinaScaledSize'	=> FALSE,
+				'size'				=> FALSE,
+				'scaledSize'		=> FALSE,
+				'redirect'			=> FALSE,
+				'category'			=> FALSE
 			);
 			
 			$params                      = array_merge($default_params, $params);
 			$params['clustering']        = $this->bool_param($params['clustering']);
+			$params['retina']       	 = $this->bool_param($params['retina']);
 			$params['duplicate_markers'] = $this->bool_param($params['duplicate_markers']);
 			$params['extend_bounds']     = $this->bool_param($params['extend_bounds']);
 			$params['open_windows']      = $this->bool_param($params['open_windows']);
@@ -1210,6 +1223,21 @@ class Gmap_ft extends EE_Fieldtype {
 						}
 					}
 					
+					$append_data = array();
+		
+					if(is_array($params))
+					{
+						foreach($params as $param => $value)
+						{
+							if(preg_match('/^data:/', $param))
+							{
+								$param = str_replace('data:', '', $param);
+								
+								$append_data[$param] = str_replace(array('URL_TITLE', 'ENTRY_ID'), array($this->row['url_title'], $this->row['entry_id']), $value);
+							}
+						}
+					}
+					
 					$markers 	= array($data->markers);
 					$options	= array(
 						'id' 			=> $params['id'],
@@ -1232,7 +1260,13 @@ class Gmap_ft extends EE_Fieldtype {
 						'duplicate_markers' => $params['duplicate_markers'],
 						'window_trigger'    => $params['window_trigger'],
 						'redirect'			=> $params['redirect'],
-						'category'			=> $params['category']
+						'category'			=> $params['category'],
+						'retina'			=> $params['retina'],
+						'retinaScaledSize'	=> $params['retinaScaledSize'],
+						'retinaSize'		=> $params['retinaSize'],
+						'size'				=> $params['size'],
+						'scaledSize'		=> $params['scaledSize'],
+						'append_data'		=> $append_data
 					);
 					
 					$marker		= $this->EE->google_maps->marker($options);			

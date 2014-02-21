@@ -32,10 +32,10 @@ $lang = array(
 'gmap_zoom_one_marker_description'		=> 'When adding markers to the map, the zoom will go as detailed as possible, while still maintaining visibility of all the markers and regions on the map. This often times leaving the user confused. Override this setting by defining a default zoom for the first marker.',
 
 'gmap_total_points'						=> 'Maximum Points',
-'gmap_total_points_description' 		=> 'The maximum points the user is allowed to add to the map.<br> (0 = Unlimited)',
+'gmap_total_points_description' 		=> 'The maximum points the user is allowed to add to the map. Note, this applies to markers, waypoints, and points for regions.<br> (0 = Unlimited)',
 
 'gmap_min_points'						=> 'Minimum Points',
-'gmap_min_points_description' 			=> 'The minimum points the user is allowed to add to the map.<br> (0 = No minimum)',
+'gmap_min_points_description' 			=> 'The minimum points the user is allowed to add to the map. Note, this applies to markers, waypoints, and points for regions.<br> (0 = No minimum)',
 
 'gmap_map_height'						=> 'Map Height',
 'gmap_map_height_description' 			=> 'Enter a custom height for the map to appear in the control panel. (The default height is "600px")',
