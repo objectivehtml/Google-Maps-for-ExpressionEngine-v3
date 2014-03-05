@@ -102,6 +102,7 @@ class Gmap_ft extends EE_Fieldtype {
 	{
 		$this->EE->load->driver('channel_data');
 		
+		/*
 		if($this->low_variables)
 		{
 			$settings = $this->settings;
@@ -114,6 +115,8 @@ class Gmap_ft extends EE_Fieldtype {
 		{
 			$settings = $this->EE->channel_data->get_field(isset($this->settings['field_id']) ? $this->settings['field_id'] : $this->settings['field_name'])->row('field_settings');
 		}
+		*/
+		$settings = $this->settings;
 		
 		$settings = array_merge($merge, is_string($settings) ? unserialize(base64_decode($settings)) : $settings);
 		
@@ -667,12 +670,12 @@ class Gmap_ft extends EE_Fieldtype {
 		$min  		= isset($settings['min_points']) ? (int) $settings['min_points'] : FALSE;
 		$obj_total	= 0;
 		
+		$total_markers = isset($response->markers) ? $response->markers->total : 0;
+			
 		if($settings['marker_mode'] == 'yes' && isset($response->markers))
 		{	
 			$custom_message = !empty($settings['no_valid_location']) ? $settings['no_valid_location'] : FALSE;
 		
-			$total_markers = $response->markers->total;
-			
 			if($total > 0 && $total < $total_markers)
 			{
 				return $custom_message ? $custom_message : $this->parse(array(
@@ -689,7 +692,12 @@ class Gmap_ft extends EE_Fieldtype {
 				), lang('gmap_under_marker_limit'));
 			}
 		}
-		
+
+		if($total_markers == 0 && $settings['field_required'] == 'y')
+		{
+			return $this->parse(array('name' => $settings['field_label']), lang('gmap_field_required'));
+		}
+
 		return TRUE;
 	}
 	

@@ -127,6 +127,8 @@ $lang = array(
 'gmap_hint'								=> 'Hint',
 
 
+'gmap_field_required' => 'You must enter a location in the {name} field.',
+
 
 //
 ''=>''
