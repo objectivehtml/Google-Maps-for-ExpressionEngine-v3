@@ -464,13 +464,16 @@ class Gmap_ft extends EE_Fieldtype {
 		$components = array();
 		$data       = json_decode($data);
 		
-		foreach($data as $index => $obj)
+		if(is_object($data))
 		{
-			if(isset($obj->results))
+			foreach($data as $index => $obj)
 			{
-				foreach($obj->results as $index => $obj_components)
+				if(isset($obj->results))
 				{
-					$components = array_merge($components, $obj_components->address_components);
+					foreach($obj->results as $index => $obj_components)
+					{
+						$components = array_merge($components, $obj_components->address_components);
+					}
 				}
 			}
 		}
