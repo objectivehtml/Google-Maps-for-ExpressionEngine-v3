@@ -1763,11 +1763,11 @@ Class Gmap {
 				$this->EE->output->show_user_error('error', '\''.$geocode_field.'\' is not valid post variable.');
 			}
 			
-			$location .= $post;
+			$location .= $post . ' ';
 			$location_array[] = trim($post);
 			$vars[0][$geocode_field] = trim($post);
 		}
-		
+
 		$location       = trim($location);
 		$channels       = $this->EE->input->post('channel');
 		$distance_field = $this->EE->input->post('distance_field');
@@ -1810,6 +1810,7 @@ Class Gmap {
 			}
 		}
 		
+
 		foreach($locations as $index => $location)
 		{
 			if($location !== FALSE && !empty($location))
