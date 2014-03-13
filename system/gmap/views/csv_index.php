@@ -87,6 +87,7 @@
 <form id="clear-pool" action="<?php echo $clear_pool_url?>" method="post">
 	<p>Are you sure you want to clear the pool?</p>
 	<input type="hidden" name="return" value="<?php echo $return?>" />
+	<input type="hidden" name="XID" value="<?php echo $xid?>" />
 </form>
 
 <script type="text/javascript">
