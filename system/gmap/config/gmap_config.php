@@ -56,9 +56,9 @@ $config['gmap_cache_length'] = 604800;
  */
  
  
- $config['gmap_static_map_path'] = FALSE;
+ $config['gmap_static_map_path'] = '/Users/justinkimbrell/Sites/addon/public_html/assets/maps/';
  
- $config['gmap_static_map_url']  = FALSE;
+ $config['gmap_static_map_url']  = '/assets/maps/';
  
  
 /* 
