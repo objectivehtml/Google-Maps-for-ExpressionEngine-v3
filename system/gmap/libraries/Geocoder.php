@@ -22,12 +22,14 @@ class Geocoder extends Google_API {
 	public $bounds			= FALSE;
 	public $latlng			= FALSE;
 	public $region			= FALSE;
+	public $language		= FALSE;
 	public $url				= NULL;
 	public $regex			= '/^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$/';
 	
 	public function __construct()
 	{
 		$this->region    = config_item('gmap_default_geocoding_region');
+		$this->language  = config_item('gmap_default_geocoding_language');
 		$this->base_url .= 'geocode/'.$this->format;
 		$this->url = $this->construct_url();
 	}

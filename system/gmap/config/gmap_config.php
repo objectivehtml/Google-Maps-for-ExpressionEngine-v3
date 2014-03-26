@@ -45,6 +45,14 @@ $config['gmap_cache_length'] = 604800;
  
  $config['gmap_default_geocoding_region'] = 'us';
 
+/* 
+ *	Default Geocoding language
+ *
+ *  If FALSE, the default language will be used (English)
+ */
+ 
+ $config['gmap_default_geocoding_language'] = 'en';
+
 
 /* 
  *	Static Maps
