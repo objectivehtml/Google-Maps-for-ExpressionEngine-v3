@@ -80,7 +80,7 @@ class Static_maps extends Google_API {
 		
 		if($base_path)
 		{
-			$file = config_item('gmap_static_map_path') . $cache->row('filename');
+			$file = config_item('gmap_static_map_path');
 
 			if($cache->num_rows() == 0 || !file_exists($file))
 			{		
@@ -89,12 +89,13 @@ class Static_maps extends Google_API {
 					if($cache->num_rows() == 0)
 					{
 						$filename = md5($url.$this->EE->localize->now) . '.' . strtolower($this->format);
-						$file 	  = $base_path . $filename;
 					}
 					else
 					{
 						$filename = $cache->row('filename');
 					}
+
+					$file = $base_path . $filename;
 
 					$this->save($file, $this->rawdata());
 					$this->EE->gmap_log_model->cache_image($url, $filename);
