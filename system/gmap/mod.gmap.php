@@ -722,7 +722,7 @@ Class Gmap {
 		{
 			return $this->EE->TMPL->no_results();
 		}
-		
+
 		$directions 	= $this->EE->google_maps->directions($origin, $destination, array(
 			'waypoints' => urlencode($this->param('waypoints', ''))
 		));
@@ -1538,27 +1538,30 @@ Class Gmap {
 					if((int) $field->field_pre_field_id)
 					{	
 						$pre_field = $field_index[$field->field_pre_field_id];
-						
-						$entries = $this->EE->channel_data->get_channel_entries($field->field_pre_channel_id, array(
-							'select'   => 'field_id_'.$pre_field->field_id.' as \''.$pre_field->field_name.'\'',
-							'order_by' => $pre_field->field_related_orderby,
-							'sort'     => $pre_field->field_related_sort,
-						));
-						
-						$list_items = array();
-						
-						foreach($entries->result() as $entry)
+
+						if(isset($pre_field->field_related_orderby) && isset($pre_field->field_related_sort))
 						{
-							if(!in_array($entry->{$pre_field->field_name}, (array) $list_items))
+							$entries = $this->EE->channel_data->get_channel_entries($field->field_pre_channel_id, array(
+								'select'   => 'field_id_'.$pre_field->field_id.' as \''.$pre_field->field_name.'\'',
+								'order_by' => $pre_field->field_related_orderby,
+								'sort'     => $pre_field->field_related_sort,
+							));
+							
+							$list_items = array();
+							
+							foreach($entries->result() as $entry)
 							{
-								$list_items[] = $entry->{$pre_field->field_name};	
+								if(!in_array($entry->{$pre_field->field_name}, (array) $list_items))
+								{
+									$list_items[] = $entry->{$pre_field->field_name};	
+								}
 							}
+							
+							if(!isset($vars[0]['options:'.$channel_field->field_name]))
+							{
+								$vars[0]['options:'.$channel_field->field_name] = $this->EE->google_maps->prep_field_options($list_items, $field_appendage);	
+							}					
 						}
-						
-						if(!isset($vars[0]['options:'.$channel_field->field_name]))
-						{
-							$vars[0]['options:'.$channel_field->field_name] = $this->EE->google_maps->prep_field_options($list_items, $field_appendage);	
-						}					
 					}
 					
 					//If list items exist, it build the option:field_name array
