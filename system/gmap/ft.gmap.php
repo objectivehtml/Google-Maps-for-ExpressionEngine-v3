@@ -891,21 +891,21 @@ class Gmap_ft extends EE_Fieldtype {
 	{
 		$data = json_decode($data);
 
-		return $data->markers->total;
+		return isset($data->markers->total) ? $data->markers->total : 0;
 	}
 
 	public function replace_total_regions($data, $params, $tagdata = FALSE)
 	{
 		$data = json_decode($data);
 
-		return $data->regions->total;
+		return isset($data->regions->total) ? $data->regions->total : 0;
 	}
 
 	public function replace_total_waypoints($data, $params, $tagdata = FALSE)
 	{
 		$data = json_decode($data);
 
-		return $data->waypoint->total;
+		return isset($data->waypoint->total) ? $data->waypoint->total : 0;
 	}
 	
 	public function replace_static_map($data, $params, $tagdata = FALSE)
