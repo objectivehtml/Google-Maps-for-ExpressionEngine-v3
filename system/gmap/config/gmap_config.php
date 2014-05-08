@@ -4,8 +4,8 @@
  *	Version and Build
 */
 
-$config['gmap_version']	= '3.3.6';
-$config['gmap_build']	= '20140317';
+$config['gmap_version']	= config_item('gmap_version') ? config_item('gmap_version') : '3.3.6';
+$config['gmap_build']	= config_item('gmap_build') ? config_item('gmap_build') : '20140317';
 
 /* 
  *	Protect JavaScript
@@ -15,7 +15,7 @@ $config['gmap_build']	= '20140317';
  *	JavaScript.
  */
 
-$config['protect_javascript'] = 'n';
+$config['protect_javascript'] = config_item('gmap_protect_javascript') ? config_item('gmap_protect_javascript') : 'n';
 
 /* 
  *	API Service Cache Rate
@@ -23,7 +23,7 @@ $config['protect_javascript'] = 'n';
  *  Default cache length is set to 1 week (60 * 60 * 24 * 7)
  */
 
-$config['gmap_cache_length'] = 604800;
+$config['gmap_cache_length'] = config_item('gmap_cache_length') ? config_item('gmap_cache_length') : 604800;
 
 
 /* 
@@ -34,7 +34,7 @@ $config['gmap_cache_length'] = 604800;
  *  installations.
  */
  
- $config['gmap_force_http'] = FALSE;
+ $config['gmap_force_http'] = config_item('gmap_force_http') ? config_item('gmap_force_http') : FALSE;
  
 
 /* 
@@ -43,7 +43,7 @@ $config['gmap_cache_length'] = 604800;
  *  If FALSE, the default region will be used (United States)
  */
  
- $config['gmap_default_geocoding_region'] = 'us';
+ $config['gmap_default_geocoding_region'] = config_item('gmap_default_geocoding_region') ? config_item('gmap_default_geocoding_region') : 'us';
 
 /* 
  *	Default Geocoding language
@@ -51,7 +51,7 @@ $config['gmap_cache_length'] = 604800;
  *  If FALSE, the default language will be used (English)
  */
  
- $config['gmap_default_geocoding_language'] = 'en';
+ $config['gmap_default_geocoding_language'] = config_item('gmap_default_geocoding_language') ? config_item('gmap_default_geocoding_language') : 'en';
 
 
 /* 
@@ -64,9 +64,9 @@ $config['gmap_cache_length'] = 604800;
  */
  
  
- $config['gmap_static_map_path'] = '/Users/justinkimbrell/Sites/addon/public_html/assets/maps/';
+ $config['gmap_static_map_path'] = config_item('gmap_static_map_path') ? config_item('gmap_static_map_path') : false;
  
- $config['gmap_static_map_url']  = '/assets/maps/';
+ $config['gmap_static_map_url']  = config_item('gmap_static_map_url') ? config_item('gmap_static_map_url') : false;
  
  
 /* 
@@ -91,9 +91,9 @@ $config['gmap_cache_length'] = 604800;
  *  By default, there values should be set to FALSE.
  */
 
-$config['gmap_geocoder_proxy_url']   = FALSE;
+$config['gmap_geocoder_proxy_url']   = config_item('gmap_geocoder_proxy_url') ? config_item('gmap_geocoder_proxy_url') : FALSE;
 
-$config['gmap_directions_proxy_url'] = FALSE;
+$config['gmap_directions_proxy_url'] = config_item('gmap_directions_proxy_url') ? config_item('gmap_directions_proxy_url') : FALSE;
 
 
 /* 
@@ -103,13 +103,13 @@ $config['gmap_directions_proxy_url'] = FALSE;
  *  Adjust this for maximum results on your server.
  */
 
-$config['gmap_import_threshold'] = 500;
+$config['gmap_import_threshold'] = config_item('gmap_import_threshold') ? config_item('gmap_import_threshold') : 500;
 
-$config['gmap_import_memory'] = '1028M';
+$config['gmap_import_memory'] = config_item('gmap_import_memory') ? config_item('gmap_import_memory') : '1028M';
 
-$config['gmap_import_max_file_size'] = '200M';
+$config['gmap_import_max_file_size'] = config_item('gmap_import_max_file_size') ? config_item('gmap_import_max_file_size') : '200M';
 
-$config['gmap_import_skip_rows'] = 0;
+$config['gmap_import_skip_rows'] = config_item('gmap_import_skip_rows') ? config_item('gmap_import_skip_rows') : 0;
 
 /* 
  *	Use Yahoo Boss Geocoder for Importing
@@ -120,13 +120,13 @@ $config['gmap_import_skip_rows'] = 0;
  *  account.
  */
 
-$config['gmap_import_use_yahoo'] = FALSE;
+$config['gmap_import_use_yahoo'] = config_item('gmap_import_use_yahoo') ? config_item('gmap_import_use_yahoo') : FALSE;
 
-$config['gmap_import_client_key'] = '';
+$config['gmap_import_client_key'] = config_item('gmap_import_client_key') ? config_item('gmap_import_client_key') : '';
 
-$config['gmap_import_client_secret'] = '';
+$config['gmap_import_client_secret'] = config_item('gmap_import_client_secret') ? config_item('gmap_import_client_secret') : '';
 
-$config['gmap_import_appid'] = '';
+$config['gmap_import_appid'] = config_item('gmap_import_appid') ? config_item('gmap_import_appid') : '';
 
 /* 
  *	Define the ee() function introduced in EE 2.6
