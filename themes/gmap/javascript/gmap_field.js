@@ -1171,6 +1171,7 @@ var Gmap  = function($wrapper, options) {
 					if(i == setField) {
 						$('#'+field.field_name).val(values[x]);
 						$('*[name="'+field.field_name+'"]').val(values[x]);
+						$('*[name="field_id_'+field.field_id+'"]').val(values[x]);
 						$('#field_id_'+field.field_id).val(values[x]);
 					}
 				});
@@ -1191,7 +1192,7 @@ var Gmap  = function($wrapper, options) {
 				];
 				
 				var values = [lat, lng, address];
-				
+
 				t.updateCustomField(fields, values);
 			}
 		},

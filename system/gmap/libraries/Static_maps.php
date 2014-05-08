@@ -80,17 +80,27 @@ class Static_maps extends Google_API {
 		
 		if($base_path)
 		{
-			if($cache->num_rows() == 0)
+			$file = config_item('gmap_static_map_path');
+
+			if($cache->num_rows() == 0 || !file_exists($file))
 			{		
 				if(is_writable($base_path))
 				{			
-					$file = md5($url.$this->EE->localize->now) . '.' . strtolower($this->format);
-			
-					$this->save($base_path . $file, $this->rawdata());
-					
-					$this->EE->gmap_log_model->cache_image($url, $file);
-					
-					return $this->image($file);
+					if($cache->num_rows() == 0)
+					{
+						$filename = md5($url.$this->EE->localize->now) . '.' . strtolower($this->format);
+					}
+					else
+					{
+						$filename = $cache->row('filename');
+					}
+
+					$file = $base_path . $filename;
+
+					$this->save($file, $this->rawdata());
+					$this->EE->gmap_log_model->cache_image($url, $filename);
+
+					return $this->image($filename);
 				}
 				else
 				{
@@ -100,9 +110,7 @@ class Static_maps extends Google_API {
 				}		
 			}
 			else
-			{
-				$path = config_item('gmap_static_map_path') . $cache->row('filename');
-				
+			{				
 				return $this->image($cache->row('filename'));
 			}
 		}

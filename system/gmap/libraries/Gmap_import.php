@@ -85,7 +85,7 @@ class Gmap_import extends BaseClass {
 				$entry_data['field_ft_'.$field->field_id] = $field->field_fmt;
 			}
 		}
-		
+
 		if(isset($settings['title_column']) && !empty($settings['title_column']) && isset($entry[$settings['title_column']]))
 		{
 			$title = $entry[$settings['title_column']];
@@ -389,7 +389,7 @@ class Gmap_import extends BaseClass {
 		
 		$data = (array) json_decode($item->data);
 		$data['category'] = !empty($item->categories) ? explode('|', $item->categories) : array();
-		
+
 		if(preg_match("/^\d*$/", $data['title']) && !empty($settings->title_prefix))
 		{
 			$data['title'] = $settings->title_prefix . $data['title'];
@@ -576,7 +576,7 @@ class Gmap_import extends BaseClass {
 		$this->EE->session->userdata['group_id'] = 1;
 		
 		$entry_id = 0;
-				
+			
 		$this->EE->api_channel_fields->setup_entry_settings($settings->channel, $data);
 		
 		if($new_entry)
@@ -622,6 +622,10 @@ class Gmap_import extends BaseClass {
 	
 	public function import_from_csv($csv_data, $schema_id)
 	{
+		$fc = iconv('windows-1250', 'utf-8', file_get_contents($_FILES['file']['tmp_name']));
+ 
+ 		file_put_contents($_FILES['file']['tmp_name'], $fc);
+		
 		$force_geocoder = $this->EE->input->get_post('force_geocoder');
 		$force_geocoder = $force_geocoder ? 1 : 0;
 		
@@ -638,8 +642,8 @@ class Gmap_import extends BaseClass {
 			$this->delimeter = $settings['delimeter'];
 		}
 		
-		$entries = $this->load_file($csv_data);
-		
+		$entries = $this->load_file($_FILES['file']['tmp_name']);
+
 		$channel_fields = $this->EE->channel_data->get_fields()->result();
 		$fields       = $this->EE->channel_data->utility->reindex($channel_fields, 'field_name');
 		

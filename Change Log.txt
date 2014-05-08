@@ -5,9 +5,23 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2014, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.3.5
- * @build		20140221
+ * @version		3.3.6
+ * @build		20140508
  */
+
+#### 3.3.6
+##### 05/08/2014
+- (Feature) Added new config option to set the default language for the geocoder
+- (Feature) Added ability to override the config options globally with things like Master Config
+- (Bug Fix) Prevent PHP errors from occurring in a rare instance when using the search
+- (Bug Fix) Fixed an issue when using the :total_markers tag that would cause PHP errors if no map data was present.
+- (Bug Fix) Fixed an issue when importing data with UTF8 characters
+- (Bug Fix) Fixed issue with the FT not populated custom fields in 2.8. This was caused when the id="field_id_x" param was removed from the markup.
+- (Bug Fix) Fixed and issue with PHP errors appearing for the address_component tag if no location was entered
+- (Bug Fix) Fixed an issue with the field not properly being required if the settings was set
+- (Bug Fix) Fixed a critical issue when people are geocoding multiple fields, the geolocation would fail
+- (Bug Fix) Fixed an issue causing the import pool to not clear
+- (Bug Fix) Fixed an issue that would cause static maps to not appear if the file was missing but value exists in the cache.
 
 #### 3.3.5
 ##### 02/21/2014
