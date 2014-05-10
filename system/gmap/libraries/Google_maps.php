@@ -231,7 +231,7 @@ class Google_maps {
 	{
 		$params = array_merge(array(
 			'args'     => 'event',
-			'id'       => 'map',
+			'id'       => isset($params['map']) ? $params['map'] : 'map',
 			'event'    => 'click',
 			'obj'      => 'map_markers[map_markers.length - 1]',
 			'callback' => ''
