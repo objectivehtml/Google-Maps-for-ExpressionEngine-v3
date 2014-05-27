@@ -549,7 +549,15 @@ class Gmap_import extends BaseClass {
 		
 		if($has_existing_entry)
 		{
-			$data['status']          = $existing_entry->status;
+			if(isset($settings->force_status_update) && $settings->force_status_update == 'true')
+			{
+				$data['status'] = $settings->status;
+			}
+			else
+			{
+				$data['status'] = $existing_entry->status;
+			}
+
 			$data['author_id']       = $existing_entry->author_id;
 			$data['entry_date']      = $existing_entry->entry_date;
 			$data['expiration_date'] = $existing_entry->expiration_date;
@@ -766,8 +774,7 @@ class Gmap_import extends BaseClass {
 				$data[] = $this->build_entry_data($force_geocoder);	
 			}
 		}
-		
-		
+			
 		if(count($data) > 0)
 		{
 			$this->EE->db->insert_batch('gmap_import_pool', $data);	

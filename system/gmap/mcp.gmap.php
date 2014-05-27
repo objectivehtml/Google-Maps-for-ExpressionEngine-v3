@@ -597,6 +597,17 @@ class Gmap_mcp {
 						'description' => 'This is the status that is assigned to each entry that is imported.',
 						'type'        => 'input'
 					),
+					'force_status_update' => array(
+						'label'       => 'Force Status Update',
+						'description' => 'By default, the status of existing entries will not change. Set this option to "yes" if you want your existing entries to make the status to match your schema.',
+						'type'        => 'select',
+						'settings' => array(
+							'options' => array(
+								'false' => 'No',
+								'true'  => 'Yes',
+							)
+						)
+					),
 					'title' => array(
 						'label'       => 'Title',
 						'description' => 'This is the title assigned to each entry. It can be a combination of channel fields, or a static string.',
