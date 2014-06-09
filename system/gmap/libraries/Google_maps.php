@@ -351,12 +351,12 @@ class Google_maps {
 				obj.window = infowindow;		
 
 				if(!'.$params['id'].'_oms) {
-					google.maps.event.addListener(obj, "click", function(e) {
+					google.maps.event.addListener(obj, "'.$params['trigger'].'", function(e) {
 						callback(obj, e);					
 					});
 				}
 				else if(!'.$params['id'].'_oms.clickEventAdded) {
-					'.$params['id'].'_oms.addListener("click", function(marker, e) {
+					'.$params['id'].'_oms.addListener("'.$params['trigger'].'", function(marker, e) {
 						callback(marker, e);
 					});
 
@@ -447,12 +447,12 @@ class Google_maps {
 				obj.window = infowindow;		
 
 				if(!'.$params['id'].'_oms) {
-					google.maps.event.addListener(obj, "click", function(e) {
+					google.maps.event.addListener(obj, "'.$params['trigger'].'", function(e) {
 						callback(obj, e);					
 					});
 				}
 				else if(!'.$params['id'].'_oms.clickEventAdded) {
-					'.$params['id'].'_oms.addListener("click", function(marker, e) {
+					'.$params['id'].'_oms.addListener("'.$params['trigger'].'", function(marker, e) {
 						callback(marker, e);
 					});
 
