@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		1.1.1
- * @build		20130623
+ * @version		1.1.2
+ * @build		20140618
  */
  
 if(!class_exists('Data_forge'))
@@ -68,7 +68,7 @@ if(!class_exists('Data_forge'))
 		
 		public function field_data($table)
 		{
-			$fields = $this->EE->db->query('SHOW COLUMNS FROM `'.$this->EE->db->dbprefix.$table)->result();
+			$fields = $this->EE->db->query('SHOW COLUMNS FROM `'.$this->EE->db->dbprefix.$table.'`')->result();
 			
 			$field_data = array();
 			$matches	= array();
