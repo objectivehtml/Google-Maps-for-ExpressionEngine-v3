@@ -341,21 +341,21 @@ class Gmap_import extends BaseClass {
 			$entries = $this->check_existing_entries($item->schema_id, $item, $fields);
 			
 			$this->item = $entries['item'];
-			
+
 			if($entries['valid_address'] && (int) $item->force_geocoder != 1)
 			{	
 				$this->import_item($item->schema_id, $entries['valid_address'], array(), (object) $entries['existing_entry'], FALSE);
 			}
 			else
 			{
-				$this->geocode($item->geocode, config_item('gmap_import_use_yahoo'));
+				$data = $this->geocode($item->geocode, config_item('gmap_import_use_yahoo'));
 				
 				if($entries['existing_entry'])
 				{
 					 $entries['existing_entry'] = (object)  $entries['existing_entry'];
 				}
-					
-				$this->import_item($item->schema_id, TRUE, FALSE, $entries['existing_entry'], FALSE);
+
+				$this->import_item($item->schema_id, $entries['valid_address'], FALSE, $entries['existing_entry'], FALSE);
 			}
 		}
 	}
@@ -364,10 +364,9 @@ class Gmap_import extends BaseClass {
 	{
 		$new_entry          = TRUE;
 		$geocode_error      = FALSE;
-		$valid_address      = FALSE;
 		$log_item           = array();
 		$has_existing_entry = FALSE;
-		
+
 		if(!$this->item)
 		{
 			$item = $this->EE->data_import_model->get_item($schema_id);
@@ -472,11 +471,18 @@ class Gmap_import extends BaseClass {
 				}
 			}
 		}
-		
+
 		if(!$valid_address || (int) $this->item->force_geocoder == 1)
 		{
-			$markers = json_decode($markers);
-			
+			if(isset( $this->response[0]->results) && !$markers)
+			{
+				$markers = $this->response[0]->results;
+			}
+			else
+			{
+				$markers = json_decode($markers);
+			}
+
 			if(count($markers) == 0)
 			{
 				$log_item[] = 'The entry has no valid location.';
@@ -489,11 +495,6 @@ class Gmap_import extends BaseClass {
 			
 			if(!empty($settings->gmap_field))
 			{	
-				if($this->response)
-				{
-					$markers = $this->response[0]->results;
-				}
-				
 				$map_data = $this->EE->google_maps->build_response(array('markers' => $markers));
 				
 				$data['field_id_'.$settings->gmap_field] = $map_data;
@@ -518,7 +519,7 @@ class Gmap_import extends BaseClass {
 		else
 		{
 			$new_entry = FALSE;
-			
+
 			if(!empty($settings->gmap_field))
 			{
 				$map_data = isset($existing_entry->{$item->map_field_name}) ? $existing_entry->{$item->map_field_name} : NULL;
@@ -774,7 +775,7 @@ class Gmap_import extends BaseClass {
 				$data[] = $this->build_entry_data($force_geocoder);	
 			}
 		}
-			
+		
 		if(count($data) > 0)
 		{
 			$this->EE->db->insert_batch('gmap_import_pool', $data);	
