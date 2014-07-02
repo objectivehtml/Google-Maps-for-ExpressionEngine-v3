@@ -102,6 +102,13 @@ class Gmap_ft extends EE_Fieldtype {
 	{
 		$this->EE->load->driver('channel_data');
 		
+		$settings = $this->settings;
+
+		if(isset($this->EE->zoo_visitor_lib))
+		{
+			$settings = unserialize(base64_decode($this->EE->channel_data->get_field($this->settings['field_id'])->row('field_settings')));
+		}
+
 		/*
 		if($this->low_variables)
 		{
@@ -116,8 +123,7 @@ class Gmap_ft extends EE_Fieldtype {
 			$settings = $this->EE->channel_data->get_field(isset($this->settings['field_id']) ? $this->settings['field_id'] : $this->settings['field_name'])->row('field_settings');
 		}
 		*/
-		$settings = $this->settings;
-		
+
 		$settings = array_merge($merge, is_string($settings) ? unserialize(base64_decode($settings)) : $settings);
 		
 		foreach($settings as $index => $setting)
@@ -180,10 +186,19 @@ class Gmap_ft extends EE_Fieldtype {
 		{
 			$field	 		= $this->EE->channel_data->get_field($this->settings['field_id'])->row();
 			$field_group	= $this->EE->channel_data->get_field_group($field->group_id)->row();
+
+			$this->settings = $this->get_settings(array(
+				'field_name' 	=> $field->field_name,
+				'field_id' 		=> $this->settings['field_id']
+			));
+			
 			//$channel		= $this->EE->channel_data->get_channel($field_group->channel_id);
 			
-			$fields			= $this->EE->channel_data->get_channel_fields($field->group_id)->result();
-			
+			$fields			= $this->EE->channel_data->get_fields_by_group($field->group_id, array(
+				'order_by' => 'field_order',
+				'sort' 	   => 'asc'
+			))->result();
+
 			$fields_array	= array();
 			
 			foreach($fields as $row)
@@ -198,13 +213,10 @@ class Gmap_ft extends EE_Fieldtype {
 			$fields = array();
 			$fields_array = array();
 			
+			$this->settings = $this->get_settings();
+
 			$this->settings['field_id'] = $this->var_id;
 		}
-		
-		$this->settings = $this->get_settings(!$this->low_variables ? array(
-			'field_name' 	=> $field->field_name,
-			'field_id' 		=> $this->settings['field_id']
-		) : array());
 		
 		$this->settings['field_name'] = !$this->matrix ? $this->field_name : $this->cell_name;
 		$this->settings['theme_url']  = $this->EE->theme_loader->theme_url();
@@ -388,7 +400,7 @@ class Gmap_ft extends EE_Fieldtype {
 			'field_name'	=> !$this->matrix ? $this->field_name : $this->cell_name,
 			'import_url' 	=> $this->_current_url() . '?ACT='.$this->EE->channel_data->get_action_id('Gmap_mcp', 'import_csv_ft_action')
 		);
-		
+
 		return $this->EE->load->view('fieldtype', $vars, TRUE);
 	}
 	
