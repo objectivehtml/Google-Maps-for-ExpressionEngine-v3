@@ -1322,6 +1322,7 @@ class Gmap_ft extends EE_Fieldtype {
 										
 					$options 	= array(
 						'id'			=> $params['id'], 
+						'entry_id'		=> isset($this->row['entry_id']) ? $this->row['entry_id'] : 0,
 						'options'		=> array(), 
 						'data'			=> $regions,
 						'infobox'		=> isset($params['infobox']) ? $params['infobox'] : FALSE,

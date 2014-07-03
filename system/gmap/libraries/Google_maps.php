@@ -1081,7 +1081,8 @@ class Google_maps {
 			'options'			=> array(),
 			'data'				=> array(),
 			'extend_bounds'		=> FALSE,
-			'script_tag'		=> TRUE
+			'script_tag'		=> TRUE,
+			'entry_id'			=> 0,
 		);
 		
 		$params = array_merge($default_params, $params);
@@ -1101,7 +1102,8 @@ class Google_maps {
 					strokeOpacity: '.$result->style->strokeOpacity.',
 					strokeWeight: '.$result->style->strokeWeight.',
 					fillColor: "'.$result->style->fillColor.'",
-					fillOpacity: '.$result->style->fillOpacity.'						
+					fillOpacity: '.$result->style->fillOpacity.',
+					entry_id: '.$params['entry_id'].'						
 				}
 				
 				for(var x = 0; x < paths.length; x++) {
