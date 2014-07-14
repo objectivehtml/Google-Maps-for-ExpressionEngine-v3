@@ -143,7 +143,8 @@ function geocode(index) {
 				if(!data.valid_address) {
 					var geocoder = new google.maps.Geocoder();
 				
-					geocoder.geocode({address: data.item.geocode}, function(results, status) {		
+					geocoder.geocode({address: data.item.geocode}, function(results, status) {
+
 						if(status == "OK") {					
 							$.each(results, function(i, result) {
 								result.geometry.location.lat = result.geometry.location.lat();
@@ -162,7 +163,8 @@ function geocode(index) {
 						if(status == 'OVER_QUERY_LIMIT') {															
 							if(!interval) {
 								delay = timeout;
-								
+								markers = false;
+
 								var count = delay / 1000;
 								
 								$('dd.error').html('Exceeded Query Limit - Waiting... <span>'+count+'</span>');												
@@ -182,7 +184,12 @@ function geocode(index) {
 						}
 						
 						setTimeout(function() {
-							save(id, index, data, markers, status);				
+							if(markers === false) {
+								geocode(index);	
+							}
+							else {
+								save(id, index, data, markers, status);
+							}				
 						}, delay);											
 					});
 						
