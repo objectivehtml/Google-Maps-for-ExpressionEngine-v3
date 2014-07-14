@@ -255,7 +255,8 @@ class Google_maps {
 			'inner_class' 	  => 'ui-infowindow-content',
 			'open_windows'    => FALSE,
 			'show_one_window' => FALSE,
-			'script_tag'	  => FALSE
+			'script_tag'	  => FALSE,
+			'trigger' 		  => 'click'
 		);
 		
 		$params = array_merge($default_params, $params);
