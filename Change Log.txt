@@ -5,12 +5,26 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2014, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.3.6
- * @build		20140508
+ * @version		3.3.7
+ * @build		20140714
  */
+
+
+#### 3.3.7
+##### 07/14/2014
+
+- (Feature) Added option to override statuses in the import schema for existing entries. Previously there was no way to force the statuses to be updated
+- (Bug Fix) Fixed an issue with the event tag not respecting the correct map id
+- (Bug Fix) Fixed an issue with the window_trigger not working
+- (Bug Fix) Fixed an issue with the installer lib
+- (Bug Fix) Fixed an issue with the cron importer
+- (Bug Fix) Fixed an issue with Zoo Visitor forms causing the FT to break on the front-end
+- (Bug Fix) Fixed an issue with the entry_id not being passed to the region objects
+- (Bug Fix) Fixed an issue with the importer not importing the record that was being imported when the OVER_QUERY_LIMIT error is thrown. This resulted in a small percentage of entries imported with no locations
 
 #### 3.3.6
 ##### 05/08/2014
+
 - (Feature) Added new config option to set the default language for the geocoder
 - (Feature) Added ability to override the config options globally with things like Master Config
 - (Bug Fix) Prevent PHP errors from occurring in a rare instance when using the search
