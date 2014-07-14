@@ -5,7 +5,7 @@
 */
 
 $config['gmap_version']	= '3.3.7';
-$config['gmap_build']	= config_item('gmap_build') ? config_item('gmap_build') : '20140317';
+$config['gmap_build']	= config_item('gmap_build') ? config_item('gmap_build') : '20140714';
 
 /* 
  *	Protect JavaScript
