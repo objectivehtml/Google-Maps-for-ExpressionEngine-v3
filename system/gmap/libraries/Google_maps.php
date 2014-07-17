@@ -322,8 +322,14 @@ class Google_maps {
 			
 				if(isset($params['open_windows']) && $params['open_windows'])
 				{
-					$js .= 'try { //Try statement is only temporary
-					infowindow.open('.$params['id'].'_map, obj); } catch(e) {}';
+					$js .= '
+					if(obj.strokeColor) {
+						infowindow.open('.$params['id'].'_map);
+					}
+					else {
+						infowindow.open('.$params['id'].'_map, obj);
+					}
+					';
 				}
 		
 			$js .= '			
@@ -346,7 +352,13 @@ class Google_maps {
 					
 					$js.='
 					obj.window.setPosition(e.latLng);
-					obj.window.open('.$params['id'].'_map, obj);
+
+					if(obj.strokeColor) {
+						obj.window.open('.$params['id'].'_map);
+					}
+					else {
+						obj.window.open('.$params['id'].'_map, obj);
+					}					
 				};			
 
 				obj.window = infowindow;		
@@ -420,7 +432,14 @@ class Google_maps {
 			
 				if(isset($params['open_windows']) && $params['open_windows'])
 				{
-					$js .= 'infowindow.open('.$params['id'].'_map, obj);';
+					$js .= '
+					if(obj.strokeColor) {
+						infowindow.open('.$params['id'].'_map);
+					}
+					else {
+						infowindow.open('.$params['id'].'_map, obj);
+					}
+					';
 				}
 		
 			$js .= '			
@@ -442,7 +461,13 @@ class Google_maps {
 					
 			$js.='
 					obj.window.setPosition(currentPos);
-					obj.window.open('.$params['id'].'_map, obj);
+
+					if(obj.strokeColor) {
+						obj.window.open('.$params['id'].'_map);
+					}
+					else {
+						obj.window.open('.$params['id'].'_map, obj);
+					}
 				};	
 
 				obj.window = infowindow;		
