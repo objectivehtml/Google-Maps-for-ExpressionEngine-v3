@@ -650,11 +650,15 @@ var Gmap  = function($wrapper, options) {
 		    	
 			    google.maps.event.addListener(t.map, 'zoom_changed', function() {
 			    	var zoom = t.map.getZoom();
-		    	
-			    	t.updateCustomField(t.settings.zoom_field, zoom);
+		    		
+		    		if(t.isLoaded) {
+				    	t.updateCustomField(t.settings.zoom_field, zoom);
+				    }
 			    });
 			    
-			    t.updateCustomField(t.settings.zoom_field, zoom);
+			    if(t.isLoaded) {
+				    t.updateCustomField(t.settings.zoom_field, zoom);
+				}
 		    }
 		    
 		    google.maps.event.addListener(t.map, 'dblclick', function(e) {
@@ -1511,10 +1515,10 @@ var Gmap  = function($wrapper, options) {
 									response = t.saveResponse(response, lat, lng);
 									
 									var extendBounds = true;
-									var zoom = $('#'+t.settings.zoom_field).val();
+									var zoom = $('#'+t.settings.zoom_field+', [name="'+t.settings.zoom_field+'"]').val();
 									
 									if(t.settings.zoom_field != "" && zoom != "") {
-										zoom = parseInt(zoom);	
+										zoom = parseInt(zoom);
 										t.map.setZoom(zoom);
 										t.map.setCenter(new google.maps.LatLng(lat, lng));
 										extendBounds = false;
