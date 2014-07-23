@@ -6,9 +6,11 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Objective HTML
  * @link 		http://www.objectivehtml.com/
- * @version		1.0.1
- * @build		20130619
+ * @version		1.0.2
+ * @build		20140723
  */
+
+ee()->load->helper('url_helper');
 
 /**
  * Site URL
@@ -89,8 +91,8 @@ if(!function_exists('page_url'))
 		{
 			$get = '?'.http_build_query($_GET);
 		}
-		
-		return rtrim($base_url . $port, '/') . $uri . $get;
+
+		return rtrim($base_url, '/') . $uri . $get;
 	}
 }
 
@@ -152,5 +154,22 @@ if(!function_exists('base_page'))
 		}
 		
 		return $return;
+	}
+}
+
+/**
+ * Base URL
+ *
+ * Returns the "base_url" item from your config file
+ *
+ * @access	public
+ * @return	string
+ */
+if ( ! function_exists('base_url'))
+{
+	function base_url()
+	{
+		$CI =& get_instance();
+		return $CI->config->slash_item('base_url');
 	}
 }
