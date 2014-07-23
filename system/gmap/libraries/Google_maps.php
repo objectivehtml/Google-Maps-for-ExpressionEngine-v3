@@ -951,6 +951,8 @@ class Google_maps {
 					$vars[$count][$prefix.'types'] 				= isset($result->types) ? implode('|', $result->types) : NULL;
 					$vars[$count][$prefix.'count']				= $count+1;
 					$vars[$count][$prefix.'index']				= $index;
+					$vars[$count][$prefix.'row_index'] 			= (int) $this->EE->extensions->last_call['count'] - 1;
+					$vars[$count][$prefix.'row_count'] 			= (int) $this->EE->extensions->last_call['count'];
 					$vars[$count][$prefix.'limit']				= $limit;
 					$vars[$count][$prefix.'offset']				= $offset;
 					$vars[$count][$prefix.'icon']				= isset($result->icon) ? $result->icon : NULL;
@@ -972,7 +974,7 @@ class Google_maps {
 			}
 		
 		}
-		
+
 		return $vars;
 	}
 
