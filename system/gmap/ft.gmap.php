@@ -102,14 +102,14 @@ class Gmap_ft extends EE_Fieldtype {
 	{
 		$this->EE->load->driver('channel_data');
 		
-		$settings = $this->settings;
+		$settings = unserialize(base64_decode($this->EE->channel_data->get_field($this->settings['field_id'])->row('field_settings')));
 
+		/*
 		if(isset($this->EE->zoo_visitor_lib))
 		{
 			$settings = unserialize(base64_decode($this->EE->channel_data->get_field($this->settings['field_id'])->row('field_settings')));
 		}
 
-		/*
 		if($this->low_variables)
 		{
 			$settings = $this->settings;
@@ -124,7 +124,7 @@ class Gmap_ft extends EE_Fieldtype {
 		}
 		*/
 
-		$settings = array_merge($merge, is_string($settings) ? unserialize(base64_decode($settings)) : $settings);
+		$settings = array_merge($this->settings, $merge, is_string($settings) ? unserialize(base64_decode($settings)) : $settings);
 		
 		foreach($settings as $index => $setting)
 		{
@@ -191,7 +191,7 @@ class Gmap_ft extends EE_Fieldtype {
 				'field_name' 	=> $field->field_name,
 				'field_id' 		=> $this->settings['field_id']
 			));
-			
+
 			//$channel		= $this->EE->channel_data->get_channel($field_group->channel_id);
 			
 			$fields			= $this->EE->channel_data->get_fields_by_group($field->group_id, array(
@@ -672,7 +672,7 @@ class Gmap_ft extends EE_Fieldtype {
 	public function validate($data)
 	{
 		$this->EE->lang->loadfile('gmap');
-		
+
 		$valid		= TRUE;
 		$response 	= json_decode($data);
 		$settings	= $this->get_settings();
