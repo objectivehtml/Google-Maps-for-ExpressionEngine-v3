@@ -1515,9 +1515,10 @@ var Gmap  = function($wrapper, options) {
 									response = t.saveResponse(response, lat, lng);
 									
 									var extendBounds = true;
-									var zoom = $('#'+t.settings.zoom_field+', [name="'+t.settings.zoom_field+'"]').val();
-									
+
 									if(t.settings.zoom_field != "" && zoom != "") {
+										var zoom = $('#'+t.settings.zoom_field+', [name="'+t.settings.zoom_field+'"]').val();
+									
 										zoom = parseInt(zoom);
 										t.map.setZoom(zoom);
 										t.map.setCenter(new google.maps.LatLng(lat, lng));
