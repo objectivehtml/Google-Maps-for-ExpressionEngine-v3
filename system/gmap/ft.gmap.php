@@ -1319,7 +1319,7 @@ class Gmap_ft extends EE_Fieldtype {
 				if(isset($data->regions) && $data->regions->total > 0 && in_array('regions', $params['render']))
 				{
 					$regions	= array($data->regions);
-										
+						
 					$options 	= array(
 						'id'			=> $params['id'], 
 						'entry_id'		=> isset($this->row['entry_id']) ? $this->row['entry_id'] : 0,

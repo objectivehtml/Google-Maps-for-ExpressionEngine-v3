@@ -323,15 +323,15 @@ class Google_maps {
 				if(isset($params['open_windows']) && $params['open_windows'])
 				{
 					$js .= '
-					var bounds  = new google.maps.LatLngBounds();
-
-					obj.getPath().forEach(function(latLng, i) {
-						bounds.extend(latLng);
-					});
-
-					infowindow.setPosition(bounds.getCenter());
-
 					if(obj.strokeColor) {
+						var bounds  = new google.maps.LatLngBounds();
+
+						obj.getPath().forEach(function(latLng, i) {
+							bounds.extend(latLng);
+						});
+
+						infowindow.setPosition(bounds.getCenter());
+						
 						infowindow.open('.$params['id'].'_map);
 					}
 					else {
@@ -442,6 +442,14 @@ class Google_maps {
 				{
 					$js .= '
 					if(obj.strokeColor) {
+						var bounds  = new google.maps.LatLngBounds();
+
+						obj.getPath().forEach(function(latLng, i) {
+							bounds.extend(latLng);
+						});
+
+						infowindow.setPosition(bounds.getCenter());
+
 						infowindow.open('.$params['id'].'_map);
 					}
 					else {
@@ -1128,7 +1136,7 @@ class Google_maps {
 		);
 		
 		$params = array_merge($default_params, $params);
-	
+
 		$js = NULL;
 		
 		foreach($params['data'] as $response)
@@ -1187,14 +1195,15 @@ class Google_maps {
 						
 						if(isset($params['infobox']) && $params['infobox'])
 						{
-							
 							$js .= $this->EE->google_maps->infobox(array(
 								'id'				=> $params['id'],
 								'content'			=> $content,
 								'options'			=> $params['infowindow']['options'],
 								'script_tag'		=> FALSE,
 								'var'				=> $params['id'].'_regions[index]',
-								'open_windows'		=> TRUE
+								'open_windows'		=> isset($params['infowindow']['options']['open_windows']) ? 
+													   $params['infowindow']['options']['open_windows'] : 
+													   false
 							));
 						}
 						else
@@ -1204,7 +1213,10 @@ class Google_maps {
 								'content'		=> $content,
 								'options'		=> $params['options'],
 								'script_tag'	=> FALSE,
-								'var'			=> $params['id'].'_regions[index]'
+								'var'			=> $params['id'].'_regions[index]',
+								'open_windows'	=> isset($params['infowindow']['options']['open_windows']) ? 
+												   $params['infowindow']['options']['open_windows'] : 
+												   false
 							));
 						}
 					}
