@@ -323,6 +323,14 @@ class Google_maps {
 				if(isset($params['open_windows']) && $params['open_windows'])
 				{
 					$js .= '
+					var bounds  = new google.maps.LatLngBounds();
+
+					obj.getPath().forEach(function(latLng, i) {
+						bounds.extend(latLng);
+					});
+
+					infowindow.setPosition(bounds.getCenter());
+
 					if(obj.strokeColor) {
 						infowindow.open('.$params['id'].'_map);
 					}
