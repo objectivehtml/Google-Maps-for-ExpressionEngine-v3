@@ -517,9 +517,14 @@ class Google_maps {
 		$class = isset($args['plugin']['class']) ? $args['plugin']['class'] : '';
 		$style = isset($args['plugin']['style']) ? $args['plugin']['style'] : '';
 		
-		$js = '		
-		<div id="'.$map_id.'" class="'.$class.'" style="'.$style.'"></div>
-		
+		$js = '';
+
+		if(!isset($options['no_div']) || !$options['no_div'])
+		{
+			$js .= '<div id="'.$map_id.'" class="'.$class.'" style="'.$style.'"></div>';
+		}
+
+		$js .= '
 		<script type="text/javascript">
 			
 			'.($visual_refresh ? 'google.maps.visualRefresh = true;' : false).'
@@ -1111,6 +1116,7 @@ class Google_maps {
 			'extend_bounds'		=> FALSE,
 			'script_tag'		=> TRUE,
 			'entry_id'			=> 0,
+			'redirect'          => FALSE,
 		);
 		
 		$params = array_merge($default_params, $params);
@@ -1140,7 +1146,9 @@ class Google_maps {
 					'.$params['id'].'_bounds.extend(path);
 					
 					region.paths.push(path);
-				}';
+				}
+				
+				var index = '.$params['id'].'_regions.length;';
 				
 				if($params['extend_bounds'])
 				{
@@ -1148,15 +1156,20 @@ class Google_maps {
 					'.$params['id'].'_map.fitBounds('.$params['id'].'_bounds);';
 				}
 				
-				$js .= '
-				var index = '.$params['id'].'_regions.length;
-				
+
+				$js .= '				
 				'.$params['id'].'_regions[index] = new google.maps.Polygon(region);					
-				'.$params['id'].'_regions[index].setMap('.$params['id'].'_map);					
-			
-				//'.$params['id'].'_map.fitBounds('.$params['id'].'_bounds);
-				';
+				'.$params['id'].'_regions[index].setMap('.$params['id'].'_map);';
 				
+				if(isset($params['redirect']) && $params['redirect'])
+				{
+					$js .= '
+					google.maps.event.addListener('.$params['id'].'_regions[index], \'click\', function() {
+						window.location = "'.$this->clean_js($params['redirect']).'";
+					});';
+				}
+				
+
 				if($params['infowindow'])
 				{
 					if(isset($result->content) && !empty($result->content) || isset($params['infowindow']))

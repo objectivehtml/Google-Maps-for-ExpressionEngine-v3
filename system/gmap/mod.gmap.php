@@ -198,7 +198,8 @@ Class Gmap {
 		$default_options = array(
 			'zoom'		=> $this->param('zoom', 12),
 			'center' 	=> str_replace(';', '', $this->EE->google_maps->latlng($latitude, $longitude, FALSE)),
-			'mapTypeId' => $map_type
+			'mapTypeId' => $map_type,
+			'no_div'    => $this->param('no_div', false)
 		);
 
 		$map_options 	= array_merge($default_options, $this->get_options('map'));

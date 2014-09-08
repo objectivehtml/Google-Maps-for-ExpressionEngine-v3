@@ -1333,7 +1333,8 @@ class Gmap_ft extends EE_Fieldtype {
 							'show_one_window' 	=> $params['show_one_window']
 						) : FALSE,
 						'extend_bounds'	=> $params['extend_bounds'],
-						'script_tag'	=> FALSE
+						'script_tag'	=> FALSE,
+						'redirect' => $params['redirect']
 					);
 					
 					$js	= $js . $this->EE->google_maps->region($options);
