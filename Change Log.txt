@@ -5,10 +5,24 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2014, Objective HTML
  * @link 		http://www.objectivehtml.com/google-maps
- * @version		3.3.7
- * @build		20140714
+ * @version		3.3.8
+ * @build		20141115
  */
 
+
+#### 3.3.8
+##### 11/15/2014
+
+- (Feature) Added no_div tag to prevent the init tag from generating the map div.
+- (Feature) Added ability to redirect a user when they click on a region
+- (Bug Fix) Fixed an issue with infobox windows not appearing correctly for regions when open_windows is used.
+- (Bug Fix) Fixed an issue with the FT throwing an error in 2.9
+- (Bug Fix) Fixed an issue with the PHP errors being thrown for some versions of EE
+- (Bug Fix) Fixed an issue with the required setting not working in Channel Forms
+- (Bug Fix) Fixed an issue with the zoom_field setting not working properly
+- (Bug Fix) Added a row_index to the available variables when parsing objects in the fieldtype
+- (Bug Fix) Fixed an issue with the page_url method in the addon_helper
+- (Bug Fix) Fixed an issue with the pixel offset not working properly when opening windows for regions
 
 #### 3.3.7
 ##### 07/14/2014
