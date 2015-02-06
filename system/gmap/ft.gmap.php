@@ -871,17 +871,20 @@ class Gmap_ft extends EE_Fieldtype {
 		
 		$formatted_address = array();
 		
-		foreach($data as $index => $obj)
+		if(is_array($data))
 		{
-			if(in_array($index, $params['process']))
+			foreach($data as $index => $obj)
 			{
-				foreach($obj->results as $index => $row)
-				{	
-					if($params['limit'] === FALSE || ($param['limit'] > $index && $index >= $params['offset']))
-					{
-						$formatted_address[] = $row->formatted_address;
-					}	
-				}			
+				if(in_array($index, $params['process']))
+				{
+					foreach($obj->results as $index => $row)
+					{	
+						if($params['limit'] === FALSE || ($param['limit'] > $index && $index >= $params['offset']))
+						{
+							$formatted_address[] = $row->formatted_address;
+						}	
+					}			
+				}
 			}
 		}
 		
