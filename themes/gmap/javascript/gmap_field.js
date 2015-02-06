@@ -1141,14 +1141,12 @@ var Gmap  = function($wrapper, options) {
 			});				
 		
 			var updateFields = [
-				'#'+t.settings.marker_field,
-				'#'+t.settings.waypoint_field,
-				'#'+t.settings.region_field
+				t.settings.marker_field,
+				t.settings.region_field
 			];
 			
 			var updateValues = [
 				JSON.stringify(response.markers.results),
-				JSON.stringify(response.waypoints.results),
 				JSON.stringify(response.regions.results)
 			];
 			
