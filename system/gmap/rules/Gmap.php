@@ -48,7 +48,17 @@ class Gmap_channel_search_rule extends Base_rule {
 			'label'       => 'Search Trigger',
 			'description' => 'Since Google Maps for EE needs sends a request to Google to geocode your response before your results are turned, you can define a GET variable to act as a trigger. If this variable doesn\'t exist, then the location search will not be used. If this field is empty, no specific trigger is used.',
 			'id'          => 'search_trigger',
-		)			
+		),
+		'zipcode_field' => array(
+			'label'       => 'Zipcode Channel Field',
+			'description' => 'Optionally enter a zipcode field that is used for a literal match. Sometimes users want to search by zipcode but some locations are outside the distance being searched but the user still wants to see all matching locations with the same zipcode. Enter the zipcode field here to ensure all locations with the same zipcode are returned.',
+			'id'          => 'zipcode_field',
+		),		
+		'zipcode_form_field' => array(
+			'label'       => 'Zipcode Form Field',
+			'description' => 'If you entered a zipcode channel field, enter the corresponding form field name here.',
+			'id'          => 'zipcode_form_field',
+		),	
 	);
 	
 	public function __construct($properties = array())
@@ -153,8 +163,16 @@ class Gmap_channel_search_rule extends Base_rule {
 				$having[] = 'distance >= 0';
 			}
 		}
+
+		if(isset($this->settings->rules->zipcode_field) && !empty($this->settings->rules->zipcode_field))
+		{
+			if(isset($this->fields[$this->settings->rules->zipcode_field]))
+			{
+				$having[] = 'field_id_' . $this->fields[$this->settings->rules->zipcode_field]->field_id . ' LIKE \'%' . $EE->input->get_post($this->settings->rules->zipcode_form_field) .'%\'';
+			}
+		}
 		
-		return $having;
+		return implode(' or ', $having);
 	}
 	
 	public function get_vars_row($row)
