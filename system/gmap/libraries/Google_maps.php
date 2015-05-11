@@ -958,7 +958,10 @@ class Google_maps {
 		{
 			foreach($row->results as $index => $result)
 			{
-				//echo $limit .' === FALSE || ' . $index . ' <= ' . $limit . ' && ' . $index . ' >= ' . $offset .'<br>';
+				if(!$result)
+				{
+					continue;
+				}
 
 				if($limit === FALSE || $count < $limit && $index >= $offset)
 				{
