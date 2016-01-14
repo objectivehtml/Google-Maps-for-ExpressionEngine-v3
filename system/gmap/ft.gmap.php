@@ -166,6 +166,7 @@ class Gmap_ft extends EE_Fieldtype {
 	public function display_field($data)
 	{	
 		$this->EE->load->driver('channel_data');
+		$this->EE->load->config('gmap_config');
 		
 		$this->EE->lang->loadfile('gmap');		
 		
@@ -177,7 +178,7 @@ class Gmap_ft extends EE_Fieldtype {
 		$this->EE->theme_loader->module_name = 'gmap';
 		$this->EE->theme_loader->requirejs   = FALSE;
 		
-		$this->EE->theme_loader->javascript('https://maps.google.com/maps/api/js?sensor=true');
+		$this->EE->theme_loader->javascript('https://maps.google.com/maps/api/js?sensor=true&v='. $this->EE->config->item('gmap_api_version'));
 		$this->EE->theme_loader->javascript('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js');
 		
 		$this->EE->theme_loader->requirejs   = TRUE;
