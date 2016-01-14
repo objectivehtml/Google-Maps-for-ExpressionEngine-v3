@@ -4,7 +4,7 @@
  *	Version and Build
 */
 
-$config['gmap_version']	= '3.3.9';
+$config['gmap_version']	= '3.3.10';
 $config['gmap_build']	= config_item('gmap_build') ? config_item('gmap_build') : '20150511';
 $config['gmap_api_version'] = '3.22';
 
